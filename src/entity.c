@@ -16,9 +16,15 @@ static EntityManager entity_manager = { 0 };
 
 void entity_draw(Entity* entity) 
 {
-	Vector4D color = { 0, 255, 255, 0 };
-
-	gf2d_draw_circle(entity->position, 10, color);
+	gf2d_sprite_draw(
+		entity->sprite,
+		entity->drawScale,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		entity->sprite->frame_h);
 
 }
 
@@ -59,6 +65,8 @@ void entity_manager_draw_all()
 
 void entity_manager_init(Uint32 max_entities)
 {
+	int i;
+
 	if (max_entities == 0)
 	{
 		slog("cannot allocate memory for zero entities");
@@ -66,6 +74,14 @@ void entity_manager_init(Uint32 max_entities)
 	}
 	entity_manager.max_entities = max_entities;
 	entity_manager.entity_list = malloc(sizeof(Entity) * max_entities);
+
+	for (i = 0; i < max_entities; i++) { // IDK
+		Entity temp;
+		temp._inuse = 0;
+		entity_manager.entity_list[i] = temp;
+	}
+	
+	
 
 	atexit(entity_manager_close);
 }
