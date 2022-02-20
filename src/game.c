@@ -3,7 +3,7 @@
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
 
-#include "entity.h"
+// #include "entity.h"
 
 int main(int argc, char * argv[])
 {
