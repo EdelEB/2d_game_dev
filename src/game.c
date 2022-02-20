@@ -30,14 +30,15 @@ int main(int argc, char * argv[])
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
+    //tile_set_manager_init(16);
     entity_manager_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
-    
-    Sprite* bugSprite = gf2d_sprite_load_all("images/space_bug.png", 32, 32, 16);
+
+
 
     /*main game loop*/
     while(!done)
@@ -48,7 +49,7 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
-        
+        entity_manager_think_all();
         
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
@@ -56,18 +57,9 @@ int main(int argc, char * argv[])
             gf2d_sprite_draw_image(sprite,vector2d(0,0));
             
 
-
-
             //Draw game elements
+            entity_manager_draw_all();
             
-            Entity * myBug = entity_new();
-            myBug->sprite = bugSprite;
-
-            Vector2D pos = { 50, 50 };
-            myBug->position = pos;
-
-            entity_draw(myBug);
-
 
             //Draw UI elements last
             gf2d_sprite_draw(
