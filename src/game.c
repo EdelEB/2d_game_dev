@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
 
     ent_ship_new(vector2d(500,300));
-    ent_asteroid_new(vector2d(700, 600), vector2d(2, 2), 0.15);
+    ent_asteroid_new(vector2d(700, 600), vector2d(2, 2), 0.15); //********WHY WON"T IT MOVE OR CHANGE SPAWN LOCATION?? Think Problems?
 
     /*main game loop*/
     while(!done)
