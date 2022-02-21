@@ -14,17 +14,43 @@ typedef struct
 
 static EntityManager entity_manager = { 0 };
 
-void entity_draw(Entity* entity) 
+Entity* entity_new()
 {
+	int i;
+	for (i = 0; i < entity_manager.max_entities; i++)
+	{
+		if (entity_manager.entity_list[i]._inuse) continue;
+
+		entity_manager.entity_list[i]._inuse = 1;
+		entity_manager.entity_list[i].draw_scale.x = 1;
+		entity_manager.entity_list[i].draw_scale.y = 1;
+		return &entity_manager.entity_list[i];
+	}
+
+	return NULL;  // need a bigger max_entities and bigger entity_list; this shouldn't be a problem right now though
+
+}
+
+void entity_draw(Entity* ent) 
+{
+	Vector2D draw_position;
+	if (!ent) 
+	{
+		slog("Cannot draw NULL entity. I am not an abstract artist");
+		return;
+	}
+	if (!ent->sprite) { return; } // invisible entity?
+
+	vector2d_add(draw_position, ent->position, ent->draw_offset);
 	gf2d_sprite_draw(
-		entity->sprite,
-		entity->draw_scale,
+		ent->sprite,
+		draw_position,
+		&ent->draw_scale,
+		NULL,
+		&ent->rotation,
 		NULL,
 		NULL,
-		NULL,
-		NULL,
-		NULL,
-		entity->sprite->frame_h);
+		(Uint32)ent->frame);	// I don't know whu it needs to be casted as an int
 
 }
 
@@ -90,23 +116,6 @@ void entity_manager_init(Uint32 max_entities)
 
 	atexit(entity_manager_close);
 	slog("entity manager initialized");
-}
-
-Entity* entity_new() 
-{
-	int i;
-	for (i = 0; i < entity_manager.max_entities; i++)
-	{
-		if (entity_manager.entity_list[i]._inuse) continue;
-
-		entity_manager.entity_list[i]._inuse = 1;
-		entity_manager.entity_list[i].draw_scale.x = 1;
-		entity_manager.entity_list[i].draw_scale.y = 1;
-		return &entity_manager.entity_list[i];
-	}
-
-	// need a bigger max_entities; this shouldn't be a problem right now though
-	
 }
 
 void entity_think(Entity* entity) 

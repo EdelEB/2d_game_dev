@@ -6,18 +6,17 @@
 
 typedef struct ENTITY_S
 {
-    Uint8       _inuse;     /**<this flag keeps track if this entity is active or free to reassign*/
-    Sprite*     sprite;     /**<sprite used to draw the sprite*/
-    float       frame;      /**<current frame to draw*/
-    Vector2D    draw_offset;/**<draw position relative to the entity position*/
-    Vector2D    position;   /**<where our entity lives*/
-    Vector2D    velocity;   /**<how our entity moves*/
-    Vector3D    rotation;   /**<how to rotate the sprite*/
-    Vector2D    draw_scale;  /**<the scale factor for drawing the sprite*/
-    Vector2D    mins, maxs;  /**<describe the bounding box around this entity*/
+    Uint8       _inuse;         /**<this flag keeps track if this entity is active or free to reassign*/
+    Sprite*     sprite;         /**<sprite used to draw the sprite*/
+    float       frame;          /**<current frame to draw*/
+    Vector2D    draw_offset;    /**<draw position relative to the entity position*/
+    Vector2D    position;       /**<where our entity lives*/
+    Vector2D    velocity;       /**<how our entity moves*/
+    Vector3D    rotation;       /**<how to rotate the sprite*/
+    Vector2D    draw_scale;     /**<the scale factor for drawing the sprite*/
+    Vector2D    mins, maxs;     /**<describe the bounding box around this entity*/
     void (*think)(struct ENTITY_S* self);   /**<a pointer to a think function for this entity*/
 }Entity;
-
 
 /**
  * @brief initialize the internal entity entity_manager_init
