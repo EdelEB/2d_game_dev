@@ -4,40 +4,46 @@
 #define FRAME_COUNT 2   // This is here becuase the frame count in the sprite is in 2 locations and I don't feel like writing it in both every time
 
 void ship_think(Entity* self)
-{
-    Vector2D direction;
-    int mx, my;
-    float angle;
+{   
+    int speed = 3;
     const Uint8* keys;
+    
     if (!self)return;
+
+    // Handles sprite animation reset
     self->frame = (self->frame + 0.1);
     if (self->frame >= FRAME_COUNT)self->frame = 0;
 
-    
-    SDL_GetMouseState(&mx, &my);
-    direction.x = mx - self->position.x;
-    direction.y = my - self->position.y;
-    angle = vector2d_angle(direction) - 90;
-    self->rotation.z = angle;
-    
-
-    keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+    keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame  
 
     if (keys[SDL_SCANCODE_W])
     {
-        // move forward
-        vector2d_set_magnitude(&direction, 3);
-        vector2d_copy(self->velocity, direction);
+        // is the ship hitting the top of the screen
+        if (self->position.y - self->mins.y < 0) { self->position.y += 5; }
+        // move up
+        else self->position.y -= speed;
     }
-    else
+    if (keys[SDL_SCANCODE_S])
     {
-        vector2d_scale(self->velocity, self->velocity, 0.5);
-        if (vector2d_magnitude(self->velocity) < 0.05)
-        {
-            vector2d_clear(self->velocity);
-        }
+        // is the ship hitting the bottom of the screen
+        if (self->position.y + self->maxs.y > 700) { self->position.y -= 5; }
+        // move down
+        else self->position.y += speed;
     }
-
+    if (keys[SDL_SCANCODE_A])
+    {
+        // is the ship hitting the left of the screen
+        if (self->position.x - self->mins.x < 0) { self->position.x += 5; }
+        // move left
+        else self->position.x -= speed;
+    }
+    if (keys[SDL_SCANCODE_D])
+    {
+        // is the ship hitting the right of the screen
+        if (self->position.x + self->maxs.x > 1160) { self->position.x -= 5; }
+        // move right
+        else self->position.x += speed;
+    }
 }
 
 Entity* ent_ship_new(Vector2D position)
@@ -51,6 +57,8 @@ Entity* ent_ship_new(Vector2D position)
         return NULL;
     }
     ent->sprite = gf2d_sprite_load_all("images/my_ship.png", 128, 128, FRAME_COUNT);
+    ent->maxs = vector2d(20, 20);
+    ent->mins = ent->maxs;
     ent->think = ship_think;
     ent->draw_offset.x = -64;
     ent->draw_offset.y = -64;

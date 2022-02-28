@@ -3,6 +3,7 @@
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
 
+#include "tools.h"
 #include "entity.h"
 #include "ent_ship.h"
 #include "ent_asteroid.h"
@@ -41,7 +42,21 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
 
     ent_ship_new(vector2d(500,300));
-    ent_asteroid_new(vector2d(700, 600), vector2d(2, 2), 0.15); //********WHY WON"T IT MOVE OR CHANGE SPAWN LOCATION?? Think Problems?
+
+    for (int i = 0; i < 10; i++) {
+
+        ent_asteroid_new(
+            vector2d(
+                simple_random(800, 1200),
+                simple_random(0, 700)
+            ),
+            vector2d(
+                simple_random(-4, -2),
+                simple_random(-1, 1)
+            ),
+            gfc_random()/5 + 0.1
+        );
+    }
 
     /*main game loop*/
     while(!done)
