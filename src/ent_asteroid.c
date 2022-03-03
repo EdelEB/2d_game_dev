@@ -20,11 +20,13 @@ Entity* ent_asteroid_new(Vector2D position, Vector2D velocity, float size) {
 		return NULL;
 	}
 
+	ent->team = ANTI_PLAYER;
+
 	Vector2D direction;
 	int mx, my;
 	float angle;
 
-	ent->sprite = gf2d_sprite_load_image("images/asteroid.png");
+	ent->sprite = gf2d_sprite_load_image("assets/images/asteroid.png");
 	ent->think = asteroid_think;
 
 	vector2d_copy(ent->draw_scale, vector2d(size, size));

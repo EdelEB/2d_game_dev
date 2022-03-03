@@ -8,6 +8,9 @@
 #include "ent_ship.h"
 #include "ent_asteroid.h"
 
+const Uint32 WINDOW_HEIGHT = 720;
+const Uint32 WINDOW_WIDTH  = 1200;
+
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
@@ -25,10 +28,10 @@ int main(int argc, char * argv[])
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
         "gf2d",
-        1200,
-        720,
-        1200,
-        720,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
         vector4d(0,0,0,255),
         0);
     gf2d_graphics_set_frame_delay(16);
@@ -38,8 +41,8 @@ int main(int argc, char * argv[])
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/bg_space.png");
-    mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
+    sprite = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
+    mouse = gf2d_sprite_load_all("assets/images/pointer.png",32,32,16);
 
     ent_ship_new(vector2d(500,300));
 
