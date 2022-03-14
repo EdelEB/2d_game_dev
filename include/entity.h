@@ -42,9 +42,19 @@ void entity_manager_init(Uint32 max_entities);
 void entity_manager_draw_all();
 
 /**
+ * @brief draws all active entities with mini_code mini to the screen
+ */
+void entity_manager_draw_mini(mini_code code);
+
+/**
  * @brief runs any think function for all active entities
  */
 void entity_manager_think_all();
+
+/**
+ * @brief runs any think function for all active entities with mini_code mini
+ */
+void entity_manager_think_mini(mini_code code);
 
 /**
  * @brief free all active entities

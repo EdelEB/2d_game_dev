@@ -5,8 +5,7 @@
 
 #include "tools.h"
 #include "entity.h"
-#include "ent_ship.h"
-#include "ent_asteroid.h"
+#include "mini_asteroid_dodge.h"
 
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
@@ -28,8 +27,8 @@ int main(int argc, char * argv[])
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
         "gf2d",
-        WINDOW_WIDTH,
-        WINDOW_HEIGHT,
+        (WINDOW_WIDTH + 300),
+        (WINDOW_HEIGHT + 300),
         WINDOW_WIDTH,
         WINDOW_HEIGHT,
         vector4d(0,0,0,255),
@@ -44,26 +43,19 @@ int main(int argc, char * argv[])
     sprite = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
     mouse = gf2d_sprite_load_all("assets/images/pointer.png",32,32,16);
 
-    ent_ship_new(vector2d(500,300));
-
-    for (int i = 0; i < 10; i++) {
-
-        ent_asteroid_new(
-            vector2d(
-                simple_random(800, 1200),
-                simple_random(0, 700)
-            ),
-            vector2d(
-                simple_random(-4, -2),
-                simple_random(-1, 1)
-            ),
-            gfc_random()/5 + 0.1
-        );
-    }
+    mini_manager_init();
+    MiniGame* mini_asteroid = mini_asteroid_init();
+    SDL_Thread* thread_asteroid;
 
     /*main game loop*/
     while(!done)
     {
+        if (!mini_asteroid->is_running)
+        {
+            thread_asteroid = SDL_CreateThread(mini_asteroid->run, "Asteroid Dodge Game Thread", mini_asteroid);
+            slog("Mini Game Thread Started");
+        }
+
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         /*update things here*/
