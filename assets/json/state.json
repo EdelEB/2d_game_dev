@@ -1,0 +1,30 @@
+{
+    "crew": [
+        {
+            "name": "",
+            "sex": 1,
+            "job": "",
+            "is_alive": 1,
+            "hunger": "",
+            "thirst": "",
+            "morale": 0,
+            "alignment": ""
+        }
+    ],
+
+    "game_state" :  0,
+
+    "location": 0,
+
+    "minis": {
+        "asteroid_dodge": 0,
+        "ration_cut": 0,
+        "mouse_hunt": 0
+    },
+
+    "buildings": {
+        "garden": 0,
+        "lab": 0,
+        "quarters": 0  
+    }
+}

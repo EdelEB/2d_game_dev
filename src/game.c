@@ -6,6 +6,7 @@
 #include "tools.h"
 #include "entity.h"
 #include "mini_asteroid_dodge.h"
+#include "event.h"
 
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
@@ -15,7 +16,7 @@ int main(int argc, char * argv[])
     /*variable declarations*/
     int done = 0;
     const Uint8 * keys;
-    Sprite *sprite;
+    Sprite *background_sprite;
     
     int mx,my;
     float mf = 0;
@@ -40,21 +41,23 @@ int main(int argc, char * argv[])
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
+    background_sprite = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
     mouse = gf2d_sprite_load_all("assets/images/pointer.png",32,32,16);
 
     mini_manager_init();
     MiniGame* mini_asteroid = mini_asteroid_init();
     SDL_Thread* thread_asteroid;
 
+    event_manager_load_all();
+
     /*main game loop*/
     while(!done)
     {
-        if (!mini_asteroid->is_running)
+        /*if (!mini_asteroid->is_running)
         {
             thread_asteroid = SDL_CreateThread(mini_asteroid->run, "Asteroid Dodge Game Thread", mini_asteroid);
             slog("Mini Game Thread Started");
-        }
+        }*/
 
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
@@ -67,7 +70,7 @@ int main(int argc, char * argv[])
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //Draw backgrounds first
-            gf2d_sprite_draw_image(sprite,vector2d(0,0));
+            gf2d_sprite_draw_image(background_sprite,vector2d(0,0));
             
 
             //Draw game elements
