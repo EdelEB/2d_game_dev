@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
@@ -14,7 +15,7 @@ const Uint32 WINDOW_WIDTH  = 1200;
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
-    int done = 0;
+    Uint8 done = 0;
     const Uint8 * keys;
     Sprite *bg_current, *bg_asteroid, *bg_default;
     
@@ -41,7 +42,13 @@ int main(int argc, char * argv[])
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
-    //tile_set_manager_init(16);
+    
+    if (TTF_Init() == -1) //TTF is what allows for font rendering
+    { 
+        slog("TTF Initialization failed with ERROR:  %s", TTF_GetError()); 
+    }
+
+    //tile_set_manager_init(16); // This game does not really need a tile manager
     entity_manager_init(1024);
     event_manager_init(20);
     
@@ -56,17 +63,27 @@ int main(int argc, char * argv[])
     //SDL_ShowCursor(SDL_DISABLE);
 
     bg_current = bg_default;
+    
 
-    /*SDL_RenderClear(m_window_renderer);
+    TTF_Font* title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 20);
+    SDL_Color title_font_color = { 0,255,0,255 };
+    SDL_Surface* title_text_surface = TTF_RenderText_Solid(title_font, "Playing Asteroid Dodge", title_font_color);
+    SDL_Texture* title_text = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), title_text_surface);
+    SDL_Rect title_rect;
+    title_rect.x = 110;
+    title_rect.y = 110;
+    title_rect.w = 20;
+    title_rect.h = 20;
+    SDL_QueryTexture(title_text, NULL, NULL, &title_rect.w, &title_rect.h);
+
     SDL_Rect rect;
-    rect.x = 250;
-    rect.y = 150;
-    rect.w = 200;
-    rect.h = 200;
-    SDL_SetRenderDrawColor(m_window_renderer, 255, 255, 255, 255);
-    SDL_RenderDrawRect(m_window_renderer, &rect);
-    SDL_SetRenderDrawColor(m_window_renderer, 0, 0, 0, 255);
-    SDL_RenderPresent(m_window_renderer);*/
+    rect.x = WINDOW_WIDTH/4;
+    rect.y = WINDOW_HEIGHT/3;
+    rect.w = WINDOW_WIDTH/2;
+    rect.h = WINDOW_HEIGHT/8;
+    SDL_FillRect(gf2d_graphics_create_surface(1000, 1000), &rect, 16);
+    SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 8, 0, 0, 0);
+    SDL_RenderPresent(gf2d_graphics_get_renderer());
 
     /*main game loop*/
     while(!done)
@@ -81,7 +98,14 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
         entity_manager_think_mini(current_mini_code);
         
-        if (mouse_state==1 && !mini_asteroid->is_running)
+        /*if (mouse_state == 1 && mx > rect.x && mx < rect.x + rect.w && my > rect.y && my < rect.y + rect.h)
+        {
+            slog("IN :  (%i, %i)", mx, my);
+        }
+        else if (mouse_state) {
+            slog("OUT:  (%i, %i)", mx, my);
+        }*/
+        if (mouse_state == 1 && !mini_asteroid->is_running)
         {
             current_mini_code = ASTEROID_DODGE;
             bg_current = bg_asteroid;
@@ -96,6 +120,10 @@ int main(int argc, char * argv[])
         gf2d_sprite_draw_image(bg_current,vector2d(0,0));
             
         //Draw game elements
+        
+        SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &rect);
+        SDL_RenderCopy(gf2d_graphics_get_renderer(), title_text, NULL, &title_rect);
+
         entity_manager_draw_mini(current_mini_code);
             
         //Draw UI elements last
@@ -114,6 +142,8 @@ int main(int argc, char * argv[])
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
+
+    TTF_Quit();
     slog("---==== END ====---");
     return 0;
 }
