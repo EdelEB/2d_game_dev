@@ -16,20 +16,25 @@ int main(int argc, char * argv[])
     /*variable declarations*/
     int done = 0;
     const Uint8 * keys;
-    Sprite *background_sprite;
+    Sprite *bg_current, *bg_asteroid, *bg_default;
     
     int mx,my;
     float mf = 0;
+    Uint32 mouse_state;
     Sprite *mouse;
     Vector4D mouseColor = {255,100,255,200};
-    
+
+    mini_code current_mini_code = NO_GAME;
+    MiniGame* mini_asteroid;
+    SDL_Thread* mini_thread;
+
     /*program initializtion*/
     init_logger("gf2d.log");
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
         "gf2d",
-        (WINDOW_WIDTH + 300),
-        (WINDOW_HEIGHT + 300),
+        (WINDOW_WIDTH + 3000),
+        (WINDOW_HEIGHT + 3000),
         WINDOW_WIDTH,
         WINDOW_HEIGHT,
         vector4d(0,0,0,255),
@@ -38,55 +43,72 @@ int main(int argc, char * argv[])
     gf2d_sprite_init(1024);
     //tile_set_manager_init(16);
     entity_manager_init(1024);
-    SDL_ShowCursor(SDL_DISABLE);
+    event_manager_init(20);
     
-    /*demo setup*/
-    background_sprite = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
-    mouse = gf2d_sprite_load_all("assets/images/pointer.png",32,32,16);
+    /*minigame intializations*/
+    mini_asteroid = mini_asteroid_init();
+    code_vomit_add_all_events();
 
-    mini_manager_init();
-    MiniGame* mini_asteroid = mini_asteroid_init();
-    SDL_Thread* thread_asteroid;
+    /*preloads background images for later*/
+    bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_flat.png");
+    bg_asteroid = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
+    //mouse = gf2d_sprite_load_all("assets/images/pointer.png",32,32,16);
+    //SDL_ShowCursor(SDL_DISABLE);
 
-    event_manager_load_all();
+    bg_current = bg_default;
+
+    /*SDL_RenderClear(m_window_renderer);
+    SDL_Rect rect;
+    rect.x = 250;
+    rect.y = 150;
+    rect.w = 200;
+    rect.h = 200;
+    SDL_SetRenderDrawColor(m_window_renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRect(m_window_renderer, &rect);
+    SDL_SetRenderDrawColor(m_window_renderer, 0, 0, 0, 255);
+    SDL_RenderPresent(m_window_renderer);*/
 
     /*main game loop*/
     while(!done)
     {
-        /*if (!mini_asteroid->is_running)
-        {
-            thread_asteroid = SDL_CreateThread(mini_asteroid->run, "Asteroid Dodge Game Thread", mini_asteroid);
-            slog("Mini Game Thread Started");
-        }*/
-
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+        mouse_state = SDL_GetMouseState(&mx,&my);
+        //slog("%i", mouse_state);
+                                     
         /*update things here*/
-        SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
-        entity_manager_think_all();
+        entity_manager_think_mini(current_mini_code);
         
+        if (mouse_state==1 && !mini_asteroid->is_running)
+        {
+            current_mini_code = ASTEROID_DODGE;
+            bg_current = bg_asteroid;
+            mini_thread = SDL_CreateThread(mini_asteroid->run, "Asteroid Dodge Game Thread", mini_asteroid);
+            slog("Mini Game Thread Started");
+        }
+
         gf2d_graphics_clear_screen();// clears drawing buffers
+        
         // all drawing should happen betweem clear_screen and next_frame
-            //Draw backgrounds first
-            gf2d_sprite_draw_image(background_sprite,vector2d(0,0));
+        //Draw backgrounds first
+        gf2d_sprite_draw_image(bg_current,vector2d(0,0));
             
-
-            //Draw game elements
-            entity_manager_draw_all();
+        //Draw game elements
+        entity_manager_draw_mini(current_mini_code);
             
-
-            //Draw UI elements last
-            gf2d_sprite_draw(
-                mouse,
-                vector2d(mx,my),
-                NULL,
-                NULL,
-                NULL,
-                NULL,
-                &mouseColor,
-                (int)mf);
+        //Draw UI elements last
+        /* gf2d_sprite_draw(
+            mouse,
+            vector2d(mx,my),
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            &mouseColor,
+            (int)mf);*/
+        
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
         
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition

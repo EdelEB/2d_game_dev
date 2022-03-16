@@ -15,4 +15,9 @@ typedef	struct CREW_MEMBER{
 	Uint8			_inuse;			/**<flag used to determine if a slot is open in crew_manager*/
 }crew_member;
 
+void crew_lower_morale();
+void crew_raise_morale();
+void crew_lower_hunger();
+void crew_raise_hunger();
+
 #endif

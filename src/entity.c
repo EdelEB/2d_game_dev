@@ -20,6 +20,7 @@ Entity* entity_new()
 		if (entity_manager.entity_list[i]._inuse) continue;
 
 		entity_manager.entity_list[i]._inuse = 1;
+		entity_manager.entity_list[i].mini_code = NO_GAME;
 		entity_manager.entity_list[i].draw_scale.x = 1;
 		entity_manager.entity_list[i].draw_scale.y = 1;
 		return &entity_manager.entity_list[i];

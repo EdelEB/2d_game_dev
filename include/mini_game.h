@@ -5,23 +5,20 @@
 #include <gf2d_sprite.h>
 #include "simple_logger.h"
 
-typedef enum 
-{
+typedef enum {
 	NO_GAME,
 	ASTEROID_DODGE,
 	MOUSE_HUNT,
 	RATION_CUT
 }mini_code;
 
-typedef struct MINI_GAME
-{
+typedef struct MINI_GAME{
 	char	   *title;			/**<name of the mini game*/
-	Uint8	   _inuse;
 	Sprite	   *background;		/**<background image*/
 	mini_code	code;			/**<number that represents the game name(for rules)*/
 	Uint8		is_running;		/**<true when mini game is being played, false when closed*/
-	void (*run)(struct MINI_GAME* self);		/**<function starts and renders game*/
-	void (*end)(struct MINI_GAME* self);		/**<function ends the game and clears it from the screen*/
+	void (*run)(struct MINI_GAME* self); /**<function starts and renders game*/
+	void (*end)(struct MINI_GAME* self); /**<function ends the game and clears it from the screen*/
 }MiniGame;
 
 void mini_manager_init();

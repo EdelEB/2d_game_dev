@@ -49,7 +49,8 @@ Entity* ent_asteroid_new(Vector2D position, Vector2D velocity, float size) {
 		)
 	);
 	ent->rotation.z = angle;
-	
 	vector2d_copy(ent->position, position);
+	
+	slog("Asteroid Spawned at (%d,  %d)", position.x, position.y);
 	return ent;
 }
