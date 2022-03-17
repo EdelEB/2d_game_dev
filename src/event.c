@@ -23,8 +23,8 @@ void event_manager_init(Uint32 max_events)
 	}
 	event_manager.max_events = max_events;
 	event_manager.event_list = gfc_allocate_array(sizeof(Event), max_events);
-	event_manager.title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 20);
-	event_manager.text_font = TTF_OpenFont("assets/fonts/Swansea.ttf", 20);
+	event_manager.title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 80);
+	event_manager.text_font = TTF_OpenFont("assets/fonts/Swansea.ttf", 30);
 	SDL_Color temp = { 255,255,255,255 }; // Why is this necessary you ask? I don't know. I get an error if I do it directly without the temporary variable
 	event_manager.font_color = temp; 
 
@@ -123,6 +123,7 @@ void event_listen(Uint8 mouse_state, int* mx, int* my)
 void event_draw(Event* e) 
 {
 	SDL_RenderCopy(gf2d_graphics_get_renderer(), e->title_texture, NULL, &e->title_rect);
+	SDL_RenderCopy(gf2d_graphics_get_renderer(), e->prompt_texture, NULL, &e->prompt_rect);
 
 	for (int i = 0; i < MAX_OPTIONS; i++)
 	{
@@ -137,6 +138,7 @@ void create_render_variables(Event* e)
 {
 	SDL_Surface* surface;
 	
+	/*Title*/
 	surface = TTF_RenderText_Solid(
 		event_manager.title_font, 
 		e->title, 
@@ -146,17 +148,29 @@ void create_render_variables(Event* e)
 		gf2d_graphics_get_renderer(), 
 		surface
 	);
-	e->title_rect.x = WINDOW_WIDTH / 3;
-	e->title_rect.y = WINDOW_HEIGHT / 8;
+	e->title_rect.x = WINDOW_WIDTH >> 2;
+	e->title_rect.y = WINDOW_HEIGHT >> 4;
+	SDL_QueryTexture(e->title_texture, NULL, NULL, &e->title_rect.w, &e->title_rect.h); // I don't understand what this does but it doesn't render the text unless I do it
 
-	SDL_QueryTexture(e->title_texture, NULL, NULL, &e->title_rect.w, &e->title_rect.h);
+	/*Prompt*/
+	surface = TTF_RenderText_Solid(
+		event_manager.text_font,
+		e->prompt,
+		event_manager.font_color
+	);
+	e->prompt_texture = SDL_CreateTextureFromSurface(
+		gf2d_graphics_get_renderer(),
+		surface
+	);
+	e->prompt_rect.x = WINDOW_WIDTH >> 2;
+	e->prompt_rect.y = WINDOW_HEIGHT >> 2; 
+	SDL_QueryTexture(e->prompt_texture, NULL, NULL, &e->prompt_rect.w, &e->prompt_rect.h); // I don't understand what this does but it doesn't render the text unless I do it
 
+	/*Options*/
 	for (int i = 0; i < MAX_OPTIONS; i++)
 	{
 		if(e->options[i]._inuse)
 		{
-			//slog("Creating Textures for %s : %i",e->title, i);
-
 			surface = TTF_RenderText_Solid(
 				event_manager.text_font,
 				e->options[i].text,
@@ -166,12 +180,10 @@ void create_render_variables(Event* e)
 				gf2d_graphics_get_renderer(),
 				surface
 			);
-
-			e->options[i].rect.x = WINDOW_WIDTH / 3;
-			e->options[i].rect.y = WINDOW_HEIGHT/8 + WINDOW_HEIGHT/8 * (i+1);
+			e->options[i].rect.x = WINDOW_WIDTH >>3;
+			e->options[i].rect.y = (WINDOW_HEIGHT >> 3) * (i+3);
 			//e->options[i].rect.w = 100;
 			//e->options[i].rect.h = 10; //why aren't these needed? aren't they just NULL then. What do these even do when printing out text
-
 			SDL_QueryTexture(e->options[i].texture, NULL, NULL, &e->options[i].rect.w, &e->options[i].rect.h); // you probably shouldn't mess with this
 		}
 	}
@@ -188,6 +200,7 @@ void create_all_render_variables()
 		}
 	}
 }
+
 // I know this is gross and there is a better way to do this with 
 // JSON but it isn't working right now and I am annoyed
 void code_vomit_add_all_events() 
@@ -201,11 +214,11 @@ void code_vomit_add_all_events()
 		return; 
 	}
 	e->id = ASTEROIDS_AHEAD;
-	e->title	= "Asteroids Ahead";
+	e->title = "Asteroids Ahead";
 	e->prompt = "You are approaching an asteroid field...";
 	o = &e->options[0];
 	o->_inuse = 1;
-	o->text	= "Your the bes=-t. Navigate the asteroid field yourself. <mini game>";
+	o->text	= "Your the best. Navigate the asteroid field yourself. <mini game>";
 	o->clearance = DEFAULT;
 	o = &e->options[1];
 	o->_inuse = 1;

@@ -43,9 +43,9 @@ typedef struct EVENT{
 	char*				prompt;
 	EventOption			options[MAX_OPTIONS]; /**<location of the options in the array is important becuase it determines where it is displayed and which function is called on_press*/
 
-	SDL_Texture*		title_texture;	/**<for rendering purposes*/
+	SDL_Texture		   *title_texture, *prompt_texture;	/**<for rendering purposes*/
 	//for some reason I get a memory access location exception when I make this SDL_Rect a pointer, so it's not
-	SDL_Rect			title_rect;		/**<for rendering purposes*/
+	SDL_Rect			title_rect, prompt_rect;		/**<for rendering purposes*/
 }Event;
 
 void event_manager_init(Uint32 max_events);
