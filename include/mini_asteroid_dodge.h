@@ -6,8 +6,8 @@
 
 MiniGame* mini_asteroid_init();
 
-void mini_asteroid_run(MiniGame* mini);
+void mini_asteroid_run();
 
-void mini_asteroid_end(MiniGame* mini);
+void mini_asteroid_close (MiniGame* mini);
 
 #endif

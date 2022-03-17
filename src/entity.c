@@ -155,6 +155,10 @@ void entity_draw(Entity* ent)
 		NULL,
 		NULL,
 		(Uint32)ent->frame);	// I don't know whu it needs to be casted as an int
+
+	
+
+
 }
 
 void entity_manager_draw_all()

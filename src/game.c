@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include "gf2d_graphics.h"
+#include "gf2d_draw.h"
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
 
@@ -17,7 +18,7 @@ int main(int argc, char * argv[])
     /*variable declarations*/
     Uint8 done = 0;
     const Uint8 * keys;
-    Sprite *bg_current, *bg_asteroid, *bg_default;
+    Sprite *bg_current, *bg_default;
     
     int mx,my;
     float mf = 0;
@@ -56,34 +57,20 @@ int main(int argc, char * argv[])
     mini_asteroid = mini_asteroid_init();
     code_vomit_add_all_events();
 
-    /*preloads background images for later*/
-    bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_flat.png");
-    bg_asteroid = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
+    
+    bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_black.png");
     //mouse = gf2d_sprite_load_all("assets/images/pointer.png",32,32,16);
     //SDL_ShowCursor(SDL_DISABLE);
-
-    bg_current = bg_default;
-    
-
-    TTF_Font* title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 20);
-    SDL_Color title_font_color = { 0,255,0,255 };
-    SDL_Surface* title_text_surface = TTF_RenderText_Solid(title_font, "Playing Asteroid Dodge", title_font_color);
-    SDL_Texture* title_text = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), title_text_surface);
-    SDL_Rect title_rect;
-    title_rect.x = 110;
-    title_rect.y = 110;
-    title_rect.w = 20;
-    title_rect.h = 20;
-    SDL_QueryTexture(title_text, NULL, NULL, &title_rect.w, &title_rect.h);
 
     SDL_Rect rect;
     rect.x = WINDOW_WIDTH/4;
     rect.y = WINDOW_HEIGHT/3;
     rect.w = WINDOW_WIDTH/2;
     rect.h = WINDOW_HEIGHT/8;
-    SDL_FillRect(gf2d_graphics_create_surface(1000, 1000), &rect, 16);
-    SDL_SetRenderDrawColor(gf2d_graphics_get_renderer(), 8, 0, 0, 0);
-    SDL_RenderPresent(gf2d_graphics_get_renderer());
+    Vector4D rect_color = { 255,255,255,255 };
+
+    /*set default background*/
+    bg_current = bg_default;
 
     /*main game loop*/
     while(!done)
@@ -107,8 +94,8 @@ int main(int argc, char * argv[])
         }*/
         if (mouse_state == 1 && !mini_asteroid->is_running)
         {
-            current_mini_code = ASTEROID_DODGE;
-            bg_current = bg_asteroid;
+            current_mini_code = mini_asteroid->code;
+            bg_current = mini_asteroid->background;
             mini_thread = SDL_CreateThread(mini_asteroid->run, "Asteroid Dodge Game Thread", mini_asteroid);
             slog("Mini Game Thread Started");
         }
@@ -121,12 +108,12 @@ int main(int argc, char * argv[])
             
         //Draw game elements
         
-        SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &rect);
-        SDL_RenderCopy(gf2d_graphics_get_renderer(), title_text, NULL, &title_rect);
+        gf2d_draw_rect(rect, rect_color);
 
         entity_manager_draw_mini(current_mini_code);
             
         //Draw UI elements last
+
         /* gf2d_sprite_draw(
             mouse,
             vector2d(mx,my),
@@ -136,6 +123,10 @@ int main(int argc, char * argv[])
             NULL,
             &mouseColor,
             (int)mf);*/
+        
+        event_draw(get_event_by_id(ASTEROIDS_AHEAD));
+
+
         
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
         

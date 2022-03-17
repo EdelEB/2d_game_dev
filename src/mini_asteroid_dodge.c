@@ -9,7 +9,7 @@ void spawn_asteroids()
     int i;
     Entity* asteroid1, * asteroid2, *asteroid3;
 
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < 10 && asteroid_dodge.is_running; i++)
     {
         SDL_Delay(2000);
 
@@ -47,6 +47,7 @@ void spawn_asteroids()
             gfc_random() / 5 + 0.1
         );
 
+        // mini codes determine what is rendered by the game
         asteroid1->mini_code = ASTEROID_DODGE;
         asteroid2->mini_code = ASTEROID_DODGE;
         asteroid3->mini_code = ASTEROID_DODGE;
@@ -58,10 +59,10 @@ void spawn_asteroids()
     }
 }
 
-void mini_asteroid_run(MiniGame* mini)
+void mini_asteroid_run()
 {
     slog("Running Asteroid Dodge");
-    mini->is_running = 1;
+    asteroid_dodge.is_running = 1;
     Entity* ship = ent_ship_new(vector2d(500, 300));
     
     slog("Asteroid Spawner Started");
@@ -69,10 +70,8 @@ void mini_asteroid_run(MiniGame* mini)
     slog("Asteroid Spawner Done");
 
     entity_free(ship);
-    mini->is_running = 0;
+    asteroid_dodge.is_running = 0;
 }
-
-void mini_asteroid_end(MiniGame* mini) {}
 
 MiniGame* mini_asteroid_init()
 {
@@ -80,8 +79,14 @@ MiniGame* mini_asteroid_init()
     asteroid_dodge.background   = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
     asteroid_dodge.code         = ASTEROID_DODGE;
     asteroid_dodge.run          = mini_asteroid_run;
-    asteroid_dodge.end          = mini_asteroid_end;
+    asteroid_dodge.end          = mini_asteroid_close;
 
+    atexit(mini_asteroid_close);
     slog("Asteroid Dodge initialized");
     return &asteroid_dodge;
+}
+
+void mini_asteroid_close(MiniGame* mini) 
+{
+    slog("mini_asteroid_dodge closed???");
 }

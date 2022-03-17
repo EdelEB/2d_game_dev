@@ -9,7 +9,7 @@ typedef struct{
 	crew_member		crew[5];
 	Uint16			food;
 	Uint32			progress; 
-	event_title		completed_events[20];
+	event_id		completed_events[20];
 }game_state;
 
 game_state* load_gamestate(char* filename);
