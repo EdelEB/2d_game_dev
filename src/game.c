@@ -62,15 +62,10 @@ int main(int argc, char * argv[])
     //mouse = gf2d_sprite_load_all("assets/images/pointer.png",32,32,16);
     //SDL_ShowCursor(SDL_DISABLE);
 
-    SDL_Rect rect;
-    rect.x = WINDOW_WIDTH/4;
-    rect.y = WINDOW_HEIGHT/3;
-    rect.w = WINDOW_WIDTH/2;
-    rect.h = WINDOW_HEIGHT/8;
-    Vector4D rect_color = { 255,255,255,255 };
-
     /*set default background*/
     bg_current = bg_default;
+
+    MiniGame* AD = get_event_by_id(ASTEROIDS_AHEAD);
 
     /*main game loop*/
     while(!done)
@@ -92,13 +87,14 @@ int main(int argc, char * argv[])
         else if (mouse_state) {
             slog("OUT:  (%i, %i)", mx, my);
         }*/
-        if (mouse_state == 1 && !mini_asteroid->is_running)
+
+        /*if (mouse_state == 1 && !mini_asteroid->is_running)
         {
             current_mini_code = mini_asteroid->code;
             bg_current = mini_asteroid->background;
             mini_thread = SDL_CreateThread(mini_asteroid->run, "Asteroid Dodge Game Thread", mini_asteroid);
             slog("Mini Game Thread Started");
-        }
+        }*/
 
         gf2d_graphics_clear_screen();// clears drawing buffers
         
@@ -107,8 +103,6 @@ int main(int argc, char * argv[])
         gf2d_sprite_draw_image(bg_current,vector2d(0,0));
             
         //Draw game elements
-        
-        gf2d_draw_rect(rect, rect_color);
 
         entity_manager_draw_mini(current_mini_code);
             
@@ -124,8 +118,8 @@ int main(int argc, char * argv[])
             &mouseColor,
             (int)mf);*/
         
-        event_draw(get_event_by_id(ASTEROIDS_AHEAD));
-
+        event_draw(AD);
+        event_listen(AD, mouse_state, &mx, &my);
 
         
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame

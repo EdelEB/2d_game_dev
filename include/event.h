@@ -7,6 +7,7 @@
 #include "simple_json.h"
 
 #include "gf2d_graphics.h"
+#include "gf2d_draw.h"
 
 #define MAX_OPTIONS 5
 extern const Uint32 WINDOW_HEIGHT;
@@ -33,7 +34,7 @@ typedef	struct EVENT_OPTION{
 	event_clearance	clearance;	/**<clearance code determines if this option is visible to the player*/
 
 	SDL_Texture*	texture;
-	SDL_Rect		rect; 
+	SDL_Rect		render_rect, button_rect; 
 }EventOption;
 
 typedef struct EVENT{
@@ -48,6 +49,11 @@ typedef struct EVENT{
 	SDL_Rect			title_rect, prompt_rect;		/**<for rendering purposes*/
 }Event;
 
+/**
+ * @brief creates a manager which holds an array of events as well as some rendering info (text fonts and color)
+ * @param max_events is the maximum number of events that the manager is capable of holding at one time
+ */
+
 void event_manager_init(Uint32 max_events);
 
 void event_manager_load_all();
@@ -56,12 +62,43 @@ void event_free(Event* e);
 
 void event_manager_close();
 
+/**
+ * @brief looks through all currently initialized events and returns the one with the inputted id
+ * @param id is an used to identify unique events (multiple events should not have the same id)
+ * @return a pointer to the Event with id or NULL if not found
+ */
+
 Event* get_event_by_id(event_id id);
+
+/**
+ * @brief uses simple_logger's slog to log all string variables in an event. This is for debugging
+ * @param e is the Event* whose variables will be logged
+ */
 
 void event_log(Event* e);
 
-void code_vomit_add_all_events();
+/**
+ * @brief draws all event text(title, prompt, options) to the screen and button outlines
+ * @param e is a Event* that provides the strings to be printed
+ */
 
 void event_draw(Event* e);
+
+/**
+ * @brief listens for mouse events that and determines if/which event button is pressed
+ * @param e is the Event object that it will be listening for. This is important because it determines how many buttons it is checking for and what functions will be called if one is clicked
+ * @param mouse_state = 1 if mouse is clicked
+ * @param mx is the x position of the mouse
+ * @param my is the y position of the mouse
+ */
+
+void event_listen(Event* e, Uint32 mouse_state, int* mx, int* my);
+
+/**
+ * @brief this initializes all unique events. 
+ * @note simple_json is giving me issues. This is my alternative. It's called code_vomit because I know it's terrible and bad practice.
+ */
+
+void code_vomit_add_all_events();
 
 #endif
