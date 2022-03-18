@@ -17,7 +17,7 @@ typedef struct ENTITY_S
 {
     Uint8       _inuse;                     /**<this flag keeps track if this entity is active or free to reassign*/
     team_code   team;                       /**<this defines who an entity will collide with and how*/
-    mini_code   mini_code;                  /**<this defines what mini game an entity is part of*/
+    mini_id   mini_id;                  /**<this defines what mini game an entity is part of*/
     Sprite*     sprite;                     /**<sprite used to draw the sprite*/
     float       frame;                      /**<current frame to draw*/
     Vector2D    draw_offset;                /**<draw position relative to the entity position*/
@@ -42,9 +42,9 @@ void entity_manager_init(Uint32 max_entities);
 void entity_manager_draw_all();
 
 /**
- * @brief draws all active entities with mini_code mini to the screen
+ * @brief draws all active entities with mini_id mini to the screen
  */
-void entity_manager_draw_mini(mini_code code);
+void entity_manager_draw_mini(mini_id code);
 
 /**
  * @brief runs any think function for all active entities
@@ -52,9 +52,9 @@ void entity_manager_draw_mini(mini_code code);
 void entity_manager_think_all();
 
 /**
- * @brief runs any think function for all active entities with mini_code mini
+ * @brief runs any think function for all active entities with mini_id mini
  */
-void entity_manager_think_mini(mini_code code);
+void entity_manager_think_mini(mini_id code);
 
 /**
  * @brief free all active entities

@@ -53,7 +53,7 @@ Entity* ent_ship_new(Vector2D position)
         return NULL;
     }
 
-    ent->mini_code  = ASTEROID_DODGE;
+    ent->mini_id  = ASTEROID_DODGE;
     ent->team       = PLAYER;
     ent->sprite     = gf2d_sprite_load_all("assets/images/my_ship.png", 128, 128, FRAME_COUNT);
     ent->maxs       = vector2d(20, 20);

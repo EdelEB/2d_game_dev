@@ -20,7 +20,7 @@ Entity* entity_new()
 		if (entity_manager.entity_list[i]._inuse) continue;
 
 		entity_manager.entity_list[i]._inuse = 1;
-		entity_manager.entity_list[i].mini_code = NO_GAME;
+		entity_manager.entity_list[i].mini_id = NO_GAME;
 		entity_manager.entity_list[i].draw_scale.x = 1;
 		entity_manager.entity_list[i].draw_scale.y = 1;
 		return &entity_manager.entity_list[i];
@@ -115,7 +115,7 @@ void entity_manager_think_all()
 	}
 }
 
-void entity_manager_think_mini(mini_code code)
+void entity_manager_think_mini(mini_id id)
 {
 	int i;
 
@@ -128,7 +128,7 @@ void entity_manager_think_mini(mini_code code)
 	for (i = 0; i < entity_manager.max_entities; i++)
 	{
 		if (entity_manager.entity_list[i]._inuse &&
-			entity_manager.entity_list[i].mini_code == code) 
+			entity_manager.entity_list[i].mini_id == id) 
 		{
 			entity_think(&entity_manager.entity_list[i]);
 		}
@@ -173,13 +173,13 @@ void entity_manager_draw_all()
 	}
 }
 
-void entity_manager_draw_mini(mini_code code)
+void entity_manager_draw_mini(mini_id id)
 {
 	int i;
 	for (i = 0; i < entity_manager.max_entities; i++)
 	{
 		if (entity_manager.entity_list[i]._inuse && 
-			entity_manager.entity_list[i].mini_code == code)
+			entity_manager.entity_list[i].mini_id == id)
 		{
 			entity_draw(&entity_manager.entity_list[i]);
 		}

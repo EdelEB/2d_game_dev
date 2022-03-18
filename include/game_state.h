@@ -3,7 +3,8 @@
 
 #include <SDL.h>
 #include "crew.h"
-#include "event.h"
+#include "enum_declarations.h"
+
 
 typedef struct{
 	crew_member		crew[5];
@@ -12,8 +13,8 @@ typedef struct{
 	event_id		completed_events[20];
 }game_state;
 
-game_state* load_gamestate(char* filename);
+//game_state* load_gamestate(char* filename);
 
-void save_gamestate(char* filename);
+//void save_gamestate(char* filename);
 
 #endif // !__GAME_STATE_H__

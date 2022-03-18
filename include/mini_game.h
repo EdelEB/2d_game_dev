@@ -2,20 +2,16 @@
 #define __MINI_GAME_H__
 
 #include <SDL.h>
-#include <gf2d_sprite.h>
+
+#include "gf2d_sprite.h"
 #include "simple_logger.h"
 
-typedef enum {
-	NO_GAME,
-	ASTEROID_DODGE,
-	MOUSE_HUNT,
-	RATION_CUT
-}mini_code;
+#include "enum_declarations.h"
 
 typedef struct MINI_GAME{
 	char	   *title;			/**<name of the mini game*/
 	Sprite	   *background;		/**<background image*/
-	mini_code	code;			/**<number that represents the game name(for rules)*/
+	mini_id		id;				/**<number that represents the game name(for rules)*/
 	Uint8		is_running;		/**<true when mini game is being played, false when closed*/
 	void (*run)(struct MINI_GAME* self); /**<function starts and renders game*/
 	void (*end)(struct MINI_GAME* self); /**<function ends the game and clears it from the screen*/

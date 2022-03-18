@@ -1,5 +1,9 @@
 #include "event.h"
 
+Vector4D rect_color = { 255,255,255,255 }; // for some reason I can't use SDL_Color with gf2d_draw
+Uint32 rest = 0;		// prevents the button clicks from activating a bunch of times
+Uint32 REST_DELAY = 50;	// determines how long it will take before a button can be pressed again (game loop iterations)
+
 typedef struct{
 	Uint32 max_events;
 	TTF_Font *title_font, *prompt_font, *text_font;
@@ -8,10 +12,6 @@ typedef struct{
 }EventManager;
 
 EventManager event_manager = { 0 };
-Vector4D rect_color = { 255,255,255,255 };
-SDL_Rect util_rect; // utility rectangle used to render all text boxes. This is probably bad practice but I don't know what else to do right now
-Uint32 rest = 0;		// prevents the button clicks from activating a bunch of times
-Uint32 REST_DELAY = 50;	// determines how long it will take before a button can be pressed again (game loop iterations)
 
 void event_manager_init(Uint32 max_events)
 {
@@ -26,9 +26,9 @@ void event_manager_init(Uint32 max_events)
 	}
 	event_manager.max_events = max_events;
 	event_manager.event_list = gfc_allocate_array(sizeof(Event), max_events);
-	event_manager.title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 80);
-	event_manager.prompt_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 40);
-	event_manager.text_font = TTF_OpenFont("assets/fonts/Swansea.ttf", 30);
+	event_manager.title_font	= TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 80);
+	event_manager.prompt_font	= TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 35);
+	event_manager.text_font		= TTF_OpenFont("assets/fonts/Swansea.ttf", 30);
 	SDL_Color temp = { 255,255,255,255 }; // Why is this necessary you ask? I don't know. I get an error if I do it directly without the temporary variable
 	event_manager.font_color = temp; 
 
@@ -96,11 +96,14 @@ Event* get_event_by_id(event_id id)
 
 void event_log(Event* e) 
 {
-	if (!e) { slog("-ERROR: tried logging a NULL event"); return; }
-	int i;
+	if (!e) 
+	{ 
+		slog("event_log received NULL Event*"); 
+		return; 
+	}
 
 	slog("\n-EVENT LOG: %s\nPrompt: %s", e->title, e->prompt);
-	for (i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (&e->options[0])
 		{
@@ -112,11 +115,17 @@ void event_log(Event* e)
 	}
 }
 
-void event_listen(Event* e, Uint32 mouse_state, int* mx, int* my)
+game_state_id event_listen(Event* e, Uint32 mouse_state, int* mx, int* my)
 {
-	if (rest > 0) {
+	if (rest > 0) 
+	{
 		rest--;
-		return;
+		return NONE;
+	}
+	if (!e)
+	{
+		slog("event_listen received NULL Event*");
+		return NONE;
 	}
 
 	if (mouse_state == 1) {
@@ -132,7 +141,7 @@ void event_listen(Event* e, Uint32 mouse_state, int* mx, int* my)
 				{
 					slog("button %i pressed", i);
 					rest = REST_DELAY;
-					return;
+					return NONE;
 				}
 			}
 		}
@@ -141,9 +150,15 @@ void event_listen(Event* e, Uint32 mouse_state, int* mx, int* my)
 
 void event_draw(Event* e) 
 {
+	if (!e) 
+	{
+		slog("event_draw recieved NULL Event*");
+		return;
+	}
+
 	SDL_RenderCopy(gf2d_graphics_get_renderer(), e->title_texture, NULL, &e->title_rect);
 	SDL_RenderCopy(gf2d_graphics_get_renderer(), e->prompt_texture, NULL, &e->prompt_rect);
-
+	
 	for (int i = 0; i < MAX_OPTIONS; i++)
 	{
 		if (e->options[i]._inuse)
@@ -182,7 +197,7 @@ void create_render_variables(Event* e)
 		gf2d_graphics_get_renderer(),
 		surface
 	);
-	e->prompt_rect.x = WINDOW_WIDTH >> 3;
+	e->prompt_rect.x = WINDOW_WIDTH >> 4;
 	e->prompt_rect.y = WINDOW_HEIGHT >> 2; 
 	SDL_QueryTexture(e->prompt_texture, NULL, NULL, &e->prompt_rect.w, &e->prompt_rect.h); // I don't understand what this does but it doesn't render the text unless I do it
 
@@ -244,7 +259,7 @@ void code_vomit_add_all_events()
 	e->prompt = "You are approaching an asteroid field...";
 	o = &e->options[0];
 	o->_inuse = 1;
-	o->text	= "Your the best. Navigate the asteroid field yourself. <mini game>";
+	o->text	= "I'm the best. Navigate the asteroid field yourself. <mini game>";
 	o->clearance = DEFAULT;
 	o = &e->options[1];
 	o->_inuse = 1;
@@ -252,7 +267,7 @@ void code_vomit_add_all_events()
 	o->clearance = DEFAULT;
 	o = &e->options[2];
 	o->_inuse = 1;
-	o->text	= "Trust your pilot to guide you through the field. <skip mini game>";
+	o->text	= "Trust my pilot to guide us through the field. <skip mini game>";
 	o->clearance = PILOT;
 	o = &e->options[3];
 	o->_inuse = 1;
@@ -267,7 +282,7 @@ void code_vomit_add_all_events()
 	}
 	e->id =	RATIONS_LOW;
 	e->title = "Rations Low";
-	e->prompt = "You are running out of food. It seems you have to split your rations. How will you do so.";	
+	e->prompt = "Rations are dwindling. What is your solution?";	
 	o = &e->options[0];
 	o->_inuse = 1;
 	o->text = "Try and divide them equally. <mini game>";
@@ -289,7 +304,7 @@ void code_vomit_add_all_events()
 	}
 	e->id = RATIONS_MISSING;
 	e->title = "Rations Missing";
-	e->prompt = "You discover that some of the rations are missing.";
+	e->prompt = "You discover that rations are missing. What now?";
 	o = &e->options[0];
 	o->_inuse = 1;
 	o->text = "Investigate the crime seen.";
@@ -300,7 +315,7 @@ void code_vomit_add_all_events()
 	o->clearance = DEFAULT;
 	o = &e->options[2];
 	o->_inuse = 1;
-	o->text = "Blame someone you don't like.";
+	o->text = "Blame someone I don't like.";
 	o->clearance = DEFAULT;
 
 
@@ -311,20 +326,19 @@ void code_vomit_add_all_events()
 	}
 	e->id = MOUSE_FOUND;
 	e->title = "Mouse Found";
-	e->prompt = "You discover a mouse has stowed away on your ship and has been eating your rations";
+	e->prompt = "A mouse was found eating rations. What will you do?";
 	o = &e->options[0];
 	o->_inuse = 1;
-	o->text = "Try and throw things at it. <mini game>";
+	o->text = "I played baseball. Try and throw things at it. <mini game>";
 	o->clearance = DEFAULT;
 	o = &e->options[1];
 	o->_inuse = 1;
-	o->text = "Have you engineer make a mouse trap. <skip mini game>";
-	o->clearance = DEFAULT;
+	o->text = "Have the engineer make a mouse trap. <skip mini game>";
+	o->clearance = ENGINEER;
 	o = &e->options[2];
 	o->_inuse = 1;
-	o->text = "Blame someone you don't like.";
-	o->clearance = ENGINEER;
-
+	o->text = "Animals love me. Try and befriend the mouse.";
+	o->clearance = DEFAULT;
 
 
 	create_all_render_variables();

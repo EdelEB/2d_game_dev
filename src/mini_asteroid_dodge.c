@@ -48,9 +48,9 @@ void spawn_asteroids()
         );
 
         // mini codes determine what is rendered by the game
-        asteroid1->mini_code = ASTEROID_DODGE;
-        asteroid2->mini_code = ASTEROID_DODGE;
-        asteroid3->mini_code = ASTEROID_DODGE;
+        asteroid1->mini_id = ASTEROID_DODGE;
+        asteroid2->mini_id = ASTEROID_DODGE;
+        asteroid3->mini_id = ASTEROID_DODGE;
 
         SDL_Delay(2500);
         entity_free(asteroid1);
@@ -77,7 +77,7 @@ MiniGame* mini_asteroid_init()
 {
     asteroid_dodge.title        = "Asteroid Dodge";
     asteroid_dodge.background   = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
-    asteroid_dodge.code         = ASTEROID_DODGE;
+    asteroid_dodge.id         = ASTEROID_DODGE;
     asteroid_dodge.run          = mini_asteroid_run;
     asteroid_dodge.end          = mini_asteroid_close;
 
