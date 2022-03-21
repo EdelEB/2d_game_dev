@@ -22,16 +22,15 @@ int main(int argc, char * argv[])
     const Uint8 * keys;
     float mf = 0;
     
-    game_state_id current_state, new_state;
+    
     Sprite *bg_current, *bg_default;
 
     int mx,my;
     Uint32 mouse_state;
-
-    event_id current_event_id, new_event_id;
+    
+    game_state_id current_game_state_id, new_game_state_id;
     Event* event_object;
 
-    mini_id current_mini_id = NO_GAME;
     MiniGame* mini_asteroid;
     SDL_Thread* mini_thread;
 
@@ -68,9 +67,7 @@ int main(int argc, char * argv[])
     bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_black.png");
     bg_current = bg_default;
 
-    current_event_id = ASTEROIDS_AHEAD;
-    current_state = NONE;
-    current_mini_id = NO_GAME;
+    current_game_state_id = EVENT_ASTEROIDS_AHEAD;
 
     /*main game loop*/
     while(!done)
@@ -83,19 +80,19 @@ int main(int argc, char * argv[])
         /*update things here*/
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
-        entity_manager_think_mini(current_mini_id);
+        entity_manager_think_mini(current_game_state_id);
         
-        event_object = get_event_by_id(current_event_id);
+        event_object = get_event_by_id(current_game_state_id);
         
-        new_state = event_listen(event_object, mouse_state, &mx, &my);
+        new_game_state_id = event_listen(event_object, mouse_state, &mx, &my);
         
-        if (new_state != NONE) {
-            current_state = new_state;
+        if (new_game_state_id != NONE) {
+            current_game_state_id = new_game_state_id;
         }
 
         /*if (mouse_state == 1 && !mini_asteroid->is_running)
         {
-            current_mini_id = mini_asteroid->id;
+            current_game_state_id = mini_asteroid->id;
             bg_current = mini_asteroid->background;
             mini_thread = SDL_CreateThread(mini_asteroid->run, "Asteroid Dodge Game Thread", mini_asteroid);
             slog("Mini Game Thread Started");
@@ -109,7 +106,7 @@ int main(int argc, char * argv[])
             
         //Draw game elements
 
-        entity_manager_draw_mini(current_mini_id);
+        entity_manager_draw_mini(current_game_state_id);
             
         //Draw UI elements last
         
