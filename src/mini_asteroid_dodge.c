@@ -61,6 +61,7 @@ void spawn_asteroids()
 
 void mini_asteroid_run()
 {
+    asteroid_dodge.end_state = NONE;
     slog("Running Asteroid Dodge");
     asteroid_dodge.is_running = 1;
     Entity* ship = ent_ship_new(vector2d(500, 300));
@@ -68,9 +69,12 @@ void mini_asteroid_run()
     slog("Asteroid Spawner Started");
     spawn_asteroids();
     slog("Asteroid Spawner Done");
+    asteroid_dodge.end_state = EVENT_ASTEROIDS_AHEAD;
+    
 
     entity_free(ship);
     asteroid_dodge.is_running = 0;
+    
 }
 
 MiniGame* mini_asteroid_init()
@@ -78,6 +82,7 @@ MiniGame* mini_asteroid_init()
     asteroid_dodge.title        = "Asteroid Dodge";
     asteroid_dodge.background   = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
     asteroid_dodge.id           = MINI_ASTEROID_DODGE;
+    asteroid_dodge.end_state    = NONE;
     asteroid_dodge.run          = mini_asteroid_run;
     asteroid_dodge.end          = mini_asteroid_close;
 

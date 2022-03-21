@@ -157,8 +157,18 @@ void event_draw(Event* e)
 		return;
 	}
 
-	SDL_RenderCopy(gf2d_graphics_get_renderer(), e->title_texture, NULL, &e->title_rect);
-	SDL_RenderCopy(gf2d_graphics_get_renderer(), e->prompt_texture, NULL, &e->prompt_rect);
+	SDL_RenderCopy(
+		gf2d_graphics_get_renderer(), 
+		e->title_texture, 
+		NULL, 
+		&e->title_rect
+	);
+	SDL_RenderCopy(
+		gf2d_graphics_get_renderer(), 
+		e->prompt_texture, 
+		NULL, 
+		&e->prompt_rect
+	);
 	
 	for (int i = 0; i < MAX_OPTIONS; i++)
 	{

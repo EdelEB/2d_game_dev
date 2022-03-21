@@ -2,6 +2,7 @@
 #define __NOTIFICATION_H__
 
 #include <SDL.h>
+#include <SDL.h>
 #include <SDL_ttf.h>
 
 #include "gf2d_graphics.h"

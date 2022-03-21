@@ -101,7 +101,6 @@ void entity_think(Entity* entity)
 void entity_manager_think_all()
 {
 	int i;
-
 	if (!entity_manager.entity_list)
 	{
 		slog("No entity list for entity_think_all()");
@@ -118,7 +117,6 @@ void entity_manager_think_all()
 void entity_manager_think_mini(game_state_id id)
 {
 	int i;
-
 	if (!entity_manager.entity_list)
 	{
 		slog("No entity list for entity_think_all()");
@@ -127,11 +125,9 @@ void entity_manager_think_mini(game_state_id id)
 
 	for (i = 0; i < entity_manager.max_entities; i++)
 	{
-		if (entity_manager.entity_list[i]._inuse &&
-			entity_manager.entity_list[i].id == id) 
-		{
-			entity_think(&entity_manager.entity_list[i]);
-		}
+		if (!entity_manager.entity_list[i]._inuse) continue;
+		if (entity_manager.entity_list[i].id != id) continue;
+		entity_think(&entity_manager.entity_list[i]);
 	}
 }
 
@@ -154,8 +150,8 @@ void entity_draw(Entity* ent)
 		&ent->rotation,
 		NULL,
 		NULL,
-		(Uint32)ent->frame);	// I don't know whu it needs to be casted as an int
-
+		(Uint32)ent->frame  // I don't know why it needs to be casted as an int
+	);
 	
 
 

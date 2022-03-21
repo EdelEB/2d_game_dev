@@ -51,6 +51,18 @@ Notification* note_new()
 	return NULL;
 }
 
+Notification* get_note_by_id(game_state_id id)
+{
+	int i;
+	for (i = 0; i < note_manager.max_notes; i++)
+	{
+		if (note_manager.note_list[i]._inuse && note_manager.note_list->id == id)
+		{
+			return &note_manager.note_list[i];
+		}
+	}
+}
+
 void note_draw_by_id(game_state_id id)
 {
 	
@@ -145,28 +157,21 @@ void note_create_all_render_variables()
 	}
 }
 
-Notification* get_note_by_id(game_state_id id)
-{
-	int i;
-	for (i = 0; i < note_manager.max_notes; i++)
-	{
-		if (note_manager.note_list[i]._inuse && note_manager.note_list->id == id)
-		{
-			return &note_manager.note_list[i];
-		}
-	}
-}
 
 void add_all_notes()
 {
 	Notification* n = note_new();
-
-	n->id = NOTE_RESULT;
+	
+	if (!n) {
+		slog("failed to create Notification in add_all_notes");
+		return;
+	}
+	/*n->id = NOTE_RESULT;
 	n->line_strings[0] = "";
 	n->line_strings[1] = "";
 	n->line_strings[2] = "";
 	n->line_strings[3] = "";
-	
+	*/
 	
 	n = note_new();
 	n->id = NOTE_CREW_DEATH;
@@ -176,7 +181,7 @@ void add_all_notes()
 	n->line_strings[2] = "You must be a terrible captain.";
 	n->line_strings[3] = "";
 	
-	n = note_new();
+	/*n = note_new();
 	n->id = SUCCESS_ASTEROID_DODGE;
 	n->line_strings[0] = "";
 	n->line_strings[1] = "";
@@ -286,5 +291,7 @@ void add_all_notes()
 	n->line_strings[0] = "";
 	n->line_strings[1] = "";
 	n->line_strings[2] = "";
-	n->line_strings[3] = "";
+	n->line_strings[3] = "";*/
+
+
 }

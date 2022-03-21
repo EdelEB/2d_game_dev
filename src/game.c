@@ -6,10 +6,8 @@
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
 
-#include "tools.h"
-#include "entity.h"
 #include "mini_asteroid_dodge.h"
-#include "event.h"
+#include "director.h"
 //#include "game_state.h"
 
 const Uint32 WINDOW_HEIGHT = 720;
@@ -30,9 +28,6 @@ int main(int argc, char * argv[])
     
     game_state_id current_game_state_id, new_game_state_id;
     Event* event_object;
-
-    MiniGame* mini_asteroid;
-    SDL_Thread* mini_thread;
 
     /*program initializtion*/
     init_logger("gf2d.log");
@@ -56,13 +51,16 @@ int main(int argc, char * argv[])
     //tile_set_manager_init(16); // This game does not really need a tile manager
     entity_manager_init(1024);
     event_manager_init(20);
+    note_manager_init(50);
+    director_init();
     
     /*minigame intializations*/
-    mini_asteroid = mini_asteroid_init();
+    //mini_asteroid = mini_asteroid_init();
 
     /*event initialization*/
     code_vomit_add_all_events();
-    
+    add_all_notes();
+
     /*set default background*/
     bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_black.png");
     bg_current = bg_default;
@@ -75,46 +73,33 @@ int main(int argc, char * argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         mouse_state = SDL_GetMouseState(&mx,&my);
-        //slog("%i", mouse_state);
                                      
-        /*update things here*/
-        mf+=0.1;
+        mf += 0.1;
         if (mf >= 16.0)mf = 0;
-        entity_manager_think_mini(current_game_state_id);
         
-        event_object = get_event_by_id(current_game_state_id);
+        /*update things here*/
+        new_game_state_id = director_think(current_game_state_id, mouse_state, &mx, &my);        
         
-        new_game_state_id = event_listen(event_object, mouse_state, &mx, &my);
-        
-        if (new_game_state_id != NONE) {
+        if (new_game_state_id) {
             current_game_state_id = new_game_state_id;
         }
 
-        /*if (mouse_state == 1 && !mini_asteroid->is_running)
-        {
-            current_game_state_id = mini_asteroid->id;
-            bg_current = mini_asteroid->background;
-            mini_thread = SDL_CreateThread(mini_asteroid->run, "Asteroid Dodge Game Thread", mini_asteroid);
-            slog("Mini Game Thread Started");
-        }*/
+        /* clear drawing buffer */
+        gf2d_graphics_clear_screen(); 
 
-        gf2d_graphics_clear_screen();// clears drawing buffers
-        
-        // all drawing should happen betweem clear_screen and next_frame
-        //Draw backgrounds first
-        gf2d_sprite_draw_image(bg_current,vector2d(0,0));
+        /* Draw backgrounds first */
+        //gf2d_sprite_draw_image(bg_current,vector2d(0,0));
             
-        //Draw game elements
+        /* Draw game elements */
+        director_draw(current_game_state_id); // director handles everything elements, UI, and backgrounds
 
-        entity_manager_draw_mini(current_game_state_id);
-            
-        //Draw UI elements last
+        /* Draw UI elements last */
         
-        event_draw(event_object);
+        /* render current draw frame and skip to the next frame */
+        gf2d_grahics_next_frame();
         
-        gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
-        
-        if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
+        /*exit condition*/
+        if (keys[SDL_SCANCODE_ESCAPE])done = 1;
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
 
