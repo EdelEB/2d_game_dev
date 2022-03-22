@@ -1,5 +1,7 @@
 #include "notification.h"
 
+extern Uint32 rest;
+extern Uint32 REST_DELAY;
 
 typedef struct {
 	Uint32			max_notes;
@@ -119,6 +121,22 @@ void note_draw(Notification* n)
 			);
 		}
 	}
+}
+
+game_state_id note_listen(Uint32 mouse_state)
+{
+	if (rest > 0)
+	{
+		rest--;
+		return NONE;
+	}
+
+	if (mouse_state == 1) 
+	{ 
+		rest = REST_DELAY;
+		return MAP; 
+	}
+	return NONE;
 }
 
 void note_create_render_variables(Notification *n)

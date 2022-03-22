@@ -47,6 +47,8 @@ void note_log_all();
 
 void note_draw(Notification* n);
 
+game_state_id note_listen(Uint32 mouse_state);
+
 void add_all_notes();
 
 #endif

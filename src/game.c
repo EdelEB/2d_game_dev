@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
     bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_black.png");
     bg_current = bg_default;
 
-    current_game_state_id = AI_ACCEPT_DEFEAT;
+    current_game_state_id = EVENT_AI_TAKEOVER;
 
     /*main game loop*/
     while(!done)

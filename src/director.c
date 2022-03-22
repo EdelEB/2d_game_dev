@@ -41,7 +41,7 @@ void director_draw(game_state_id id)
 			event_draw( get_event_by_id(id) );
 			break;
 		case NOTE:
-			note_draw(get_note_by_id(id));
+			note_draw( get_note_by_id(id) );
 			break;
 		case MINI:
 			if (minis.current_mini) {
@@ -67,8 +67,7 @@ game_state_id director_think(game_state_id id, Uint32 mouse_state, int *mx, int 
 			return event_listen(get_event_by_id(id), mouse_state, mx, my);
 		
 		case NOTE:
-			if (mouse_state == 1){ return MAP; }
-			return NONE;
+			return note_listen(mouse_state);
 
 		case MINI:
 			switch (id) {
