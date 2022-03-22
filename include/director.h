@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 
-#include "game_state.h"
+#include "gamestate.h"
 #include "entity.h"
 #include "event.h"
 #include "notification.h"
@@ -21,8 +21,8 @@ typedef enum {
 
 void director_init();
 
-void director_draw(game_state_id id);
+void director_draw(gamestate_id id);
 
-game_state_id director_think(game_state_id id, Uint32 mouse_state, int *mx, int *my);
+gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my);
 
 #endif

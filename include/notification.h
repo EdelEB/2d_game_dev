@@ -7,7 +7,7 @@
 #include "gf2d_graphics.h"
 #include "simple_logger.h"
 
-#include "game_state.h"
+#include "gamestate.h"
 
 #define MAX_LINES 4
 extern const Uint32 WINDOW_HEIGHT;
@@ -15,7 +15,7 @@ extern const Uint32 WINDOW_WIDTH;
 
 typedef struct NOTIFICATION{
 	Uint8		   _inuse;
-	game_state_id	id;
+	gamestate_id	id;
 	char*			title;
 	char*			line_strings[MAX_LINES];
 
@@ -39,7 +39,7 @@ void note_create_render_variables(Notification *n);
 
 void note_create_all_render_variables();
 
-Notification* get_note_by_id(game_state_id id);
+Notification* get_note_by_id(gamestate_id id);
 
 void note_log(Notification* n);
 
@@ -47,7 +47,7 @@ void note_log_all();
 
 void note_draw(Notification* n);
 
-game_state_id note_listen(Uint32 mouse_state);
+gamestate_id note_listen(Uint32 mouse_state);
 
 void add_all_notes();
 

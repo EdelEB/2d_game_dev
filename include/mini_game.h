@@ -11,8 +11,8 @@
 typedef struct MINI_GAME{
 	char	   *title;			/**<name of the mini game*/
 	Sprite	   *background;		/**<background image*/
-	game_state_id	id;			/**<number that represents the game name(for rules)*/
-	game_state_id	end_state;	/**<the id of the state after the game ends (this is changed to different id's depending on a  win or loss)*/
+	gamestate_id	id;			/**<number that represents the game name(for rules)*/
+	gamestate_id	end_state;	/**<the id of the state after the game ends (this is changed to different id's depending on a  win or loss)*/
 	Uint8		is_running;		/**<true when mini game is being played, false when closed*/
 	void (*run)(struct MINI_GAME* self); /**<function starts and renders game*/
 	void (*end)(struct MINI_GAME* self); /**<function ends the game and clears it from the screen*/

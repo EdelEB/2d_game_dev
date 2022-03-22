@@ -9,7 +9,7 @@
 #include "gf2d_graphics.h"
 #include "gf2d_draw.h"
 
-#include "game_state.h"
+#include "gamestate.h"
 
 #define MAX_OPTIONS 5
 extern const Uint32 WINDOW_HEIGHT;
@@ -23,13 +23,13 @@ typedef	struct EVENT_OPTION{
 	SDL_Texture    *texture;
 	SDL_Rect		render_rect, button_rect; 
 
-	game_state_id   clicked;   /**<a pointer to a clicked function for this option*/
+	gamestate_id   clicked;   /**<a pointer to a clicked function for this option*/
 }EventOption;
 
 typedef struct EVENT{
 	Uint8		   _inuse;
 	char		   *title;
-	game_state_id	id;
+	gamestate_id	id;
 	char		   *prompt;
 	EventOption		options[MAX_OPTIONS]; /**<location of the options in the array is important becuase it determines where it is displayed and which function is called on_press*/
 
@@ -56,7 +56,7 @@ void event_manager_close();
  * @param id is an used to identify unique events (multiple events should not have the same id)
  * @return a pointer to the Event with id or NULL if not found
  */
-Event* get_event_by_id(game_state_id id);
+Event* get_event_by_id(gamestate_id id);
 
 /**
  * @brief uses simple_logger's slog to log all string variables in an event. This is for debugging
@@ -76,9 +76,9 @@ void event_draw(Event* e);
  * @param mouse_state = 1 if mouse is clicked
  * @param mx is the x position of the mouse
  * @param my is the y position of the mouse
- * @return if something is pressed it returns the corresponding new game_state_id, NULL if no buttons are pressed
+ * @return if something is pressed it returns the corresponding new gamestate_id, NULL if no buttons are pressed
  */
-game_state_id event_listen(Event* e, Uint32 mouse_state, int* mx, int* my);
+gamestate_id event_listen(Event* e, Uint32 mouse_state, int* mx, int* my);
 
 /**
  * @brief this initializes all unique events. 

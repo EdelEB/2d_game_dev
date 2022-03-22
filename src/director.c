@@ -13,7 +13,7 @@ void director_init()
 	minis.asteroid_dodge = mini_asteroid_init();
 }
 
-state_type get_state_type(game_state_id id)
+state_type get_state_type(gamestate_id id)
 {
 	if (id > THRESHOLD_MINI){
 		return MINI;	// MINIGAME
@@ -32,7 +32,7 @@ state_type get_state_type(game_state_id id)
 	}
 }
 
-void director_draw(game_state_id id)
+void director_draw(gamestate_id id)
 {
 	switch (get_state_type(id))
 	{
@@ -60,7 +60,7 @@ void director_draw(game_state_id id)
 	}
 }
 
-game_state_id director_think(game_state_id id, Uint32 mouse_state, int *mx, int *my)
+gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my)
 {
 	switch (get_state_type(id))
 	{

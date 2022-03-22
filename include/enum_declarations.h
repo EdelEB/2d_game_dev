@@ -13,7 +13,7 @@ typedef enum {
 	MAP,
 
 	/* Notification States */
-	THRESHOLD_NOTE_START,  // used to divide game_states in game loop
+	THRESHOLD_NOTE_START,  // used to divide gamestates in game loop
 	NOTE_RESULT,
 	NOTE_CREW_DEATH,
 
@@ -35,7 +35,7 @@ typedef enum {
 	RM_BLAME,
 
 	/* Decision States */
-	THRESHOLD_DECISION_START, // used to divide game_states in game loop
+	THRESHOLD_DECISION_START, // used to divide gamestates in game loop
 	EVENT_CREW_STARVING,
 	EVENT_CREW_BREAKDOWN,
 	EVENT_ASTEROIDS_AHEAD,
@@ -45,12 +45,12 @@ typedef enum {
 	EVENT_AI_TAKEOVER,
 	
 	/* Mini Game States */	
-	THRESHOLD_MINI,  // used to divide game_states in game loop
+	THRESHOLD_MINI,  // used to divide gamestates in game loop
 	MINI_ASTEROID_DODGE,
 	MINI_RATION_SPLIT,
 	MINI_MOUSE_HUNT,
 
-}game_state_id;
+}gamestate_id;
 
 typedef enum {
 	DEFAULT,

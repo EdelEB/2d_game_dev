@@ -82,7 +82,7 @@ void event_manager_load_all()
 	}
 }
 
-Event* get_event_by_id(game_state_id id)
+Event* get_event_by_id(gamestate_id id)
 {
 	int i;
 	for (i = 0; i < event_manager.max_events; i++)
@@ -117,7 +117,7 @@ void event_log(Event* e)
 	}
 }
 
-game_state_id event_listen(Event* e, Uint32 mouse_state, int* mx, int* my)
+gamestate_id event_listen(Event* e, Uint32 mouse_state, int* mx, int* my)
 {
 	if (rest > 0) 
 	{

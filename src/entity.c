@@ -114,7 +114,7 @@ void entity_manager_think_all()
 	}
 }
 
-void entity_manager_think_mini(game_state_id id)
+void entity_manager_think_mini(gamestate_id id)
 {
 	int i;
 	if (!entity_manager.entity_list)
@@ -169,7 +169,7 @@ void entity_manager_draw_all()
 	}
 }
 
-void entity_manager_draw_mini(game_state_id id)
+void entity_manager_draw_mini(gamestate_id id)
 {
 	int i;
 	for (i = 0; i < entity_manager.max_entities; i++)

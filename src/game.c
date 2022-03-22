@@ -8,7 +8,7 @@
 
 #include "mini_asteroid_dodge.h"
 #include "director.h"
-//#include "game_state.h"
+//#include "gamestate.h"
 
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
@@ -26,7 +26,7 @@ int main(int argc, char * argv[])
     int mx,my;
     Uint32 mouse_state;
     
-    game_state_id current_game_state_id, new_game_state_id;
+    gamestate_id current_gamestate_id, new_gamestate_id;
     Event* event_object;
 
     /*program initializtion*/
@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
     bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_map.png");
     bg_current = bg_default;
 
-    current_game_state_id = EVENT_AI_TAKEOVER;
+    current_gamestate_id = EVENT_AI_TAKEOVER;
 
     /*main game loop*/
     while(!done)
@@ -71,12 +71,12 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
         
         /*update things here*/
-        new_game_state_id = director_think(current_game_state_id, mouse_state, &mx, &my);        
+        new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my);        
         
-        if (new_game_state_id) 
+        if (new_gamestate_id) 
         { 
             slog("STATE CHANGE");
-            current_game_state_id = new_game_state_id;
+            current_gamestate_id = new_gamestate_id;
         }
 
         /* clear drawing buffer */
@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
         //gf2d_sprite_draw_image(bg_current,vector2d(0,0));
             
         /* Draw game elements */
-        director_draw(current_game_state_id); // director handles everything elements, UI, and backgrounds
+        director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
 
         /* Draw UI elements last */
         

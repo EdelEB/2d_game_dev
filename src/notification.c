@@ -55,7 +55,7 @@ Notification* note_new()
 	return NULL;
 }
 
-Notification* get_note_by_id(game_state_id id)
+Notification* get_note_by_id(gamestate_id id)
 {
 	int i;
 	for (i = 0; i < note_manager.max_notes; i++)
@@ -123,7 +123,7 @@ void note_draw(Notification* n)
 	}
 }
 
-game_state_id note_listen(Uint32 mouse_state)
+gamestate_id note_listen(Uint32 mouse_state)
 {
 	if (rest > 0)
 	{
