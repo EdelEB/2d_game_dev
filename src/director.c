@@ -9,6 +9,7 @@ mini_holder minis = { 0 };
 
 void director_init()
 {
+	map_init();
 	minis.asteroid_dodge = mini_asteroid_init();
 }
 
@@ -36,6 +37,9 @@ void director_draw(game_state_id id)
 	switch (get_state_type(id))
 	{
 		case MENU:
+			if (id == MAP) {
+				map_draw();
+			}
 			break;
 		case EVENT:
 			event_draw( get_event_by_id(id) );
@@ -61,6 +65,7 @@ game_state_id director_think(game_state_id id, Uint32 mouse_state, int *mx, int 
 	switch (get_state_type(id))
 	{
 		case MENU:
+			if (MAP) { return NONE; } 
 			break;
 		
 		case EVENT:

@@ -55,7 +55,7 @@ int main(int argc, char * argv[])
     director_init();
     
     /*set default background*/
-    bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_black.png");
+    bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_map.png");
     bg_current = bg_default;
 
     current_game_state_id = EVENT_AI_TAKEOVER;
@@ -73,7 +73,11 @@ int main(int argc, char * argv[])
         /*update things here*/
         new_game_state_id = director_think(current_game_state_id, mouse_state, &mx, &my);        
         
-        if (new_game_state_id) { current_game_state_id = new_game_state_id; }
+        if (new_game_state_id) 
+        { 
+            slog("STATE CHANGE");
+            current_game_state_id = new_game_state_id;
+        }
 
         /* clear drawing buffer */
         gf2d_graphics_clear_screen(); 

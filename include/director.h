@@ -9,7 +9,7 @@
 #include "notification.h"
 #include "mini_game.h"
 #include "mini_asteroid_dodge.h"
-
+#include "map.h"
 
 typedef enum {
 	NO_STATE,
