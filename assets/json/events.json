@@ -1,0 +1,82 @@
+{
+	"Asteroids Ahead": {
+		"prompt": "You are approaching an asteroid field...",
+		"options": [
+			{
+				"permission": 0,
+				"text": "Your the best. Navigate the asteroid field yourself. <mini game>",
+				"func": "?"
+			},
+			{
+				"permission": 0,
+				"text": "Let Jesus take the wheel. <random>",
+				"func": "?"
+			},
+			{
+				"permission": 1,
+				"text": "Trust your pilot to guide you through the field. <skip mini game>",
+				"func": "?"
+			},
+			{
+				"permission": 0,
+				"text": "Take the long way around",
+				"func": "?"
+			}
+		]
+	},
+	"Rations Low": {
+		"prompt": "You are running out of food. It seems you have to split your rations. How will you do so.",
+		"options": [
+			{
+				"permission": 0,
+				"text": "Try and divide them equally. <mini game>",
+				"func": "?"
+			},
+			{
+				"permission": 0,
+				"text": "I am the greatest and most important. I will eat all the rations myself.",
+				"func": "?"
+			},
+			{
+				"permission": 0,
+				"text": "Let the crew fight it out.",
+				"func": "?"
+			}
+		]
+	},
+	"Rations Missing" : {
+		"prompt": "You discover that some of the rations are missing.",
+		"options": [
+			{
+				"permission": 0,
+				"text": "Investigate the crime seen.",
+				"func": "?"
+			},
+			{
+				"permission": 0,
+				"text": "Tell the group to deal with it.",
+				"func": "?"
+			},
+			{
+				"permission": 0,
+				"text": "Blame someone you don't like.",
+				"func": "?"
+			}
+		]
+	},
+	"Mouse Found": {
+		"prompt":  "You discover a mouse has been eating your rations",
+		"options": [
+			{
+				"permission": 0,
+				"text": "Try and throw things at it. <mini game>",
+				"func": "?"
+			},
+			{
+				"permission": 2,
+				"text": "Have you engineer make a mouse trap. <skip mini game",
+				"func": "?"
+			}
+		]
+	}
+}

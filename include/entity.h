@@ -4,17 +4,28 @@
 #include <SDL.h>
 #include "gf2d_sprite.h"
 
+#include "mini_game.h"
+
+typedef enum {
+    PLAYER,         /**<human controlled entity*/
+    NPE,            /**<Non Player Entity : player phases through*/
+    ANTI_PLAYER,    /**<kills player on impact*/
+    WORLD           /**<player collides with these and some other entities*/
+}team_code;
+
 typedef struct ENTITY_S
 {
-    Uint8       _inuse;         /**<this flag keeps track if this entity is active or free to reassign*/
-    Sprite*     sprite;         /**<sprite used to draw the sprite*/
-    float       frame;          /**<current frame to draw*/
-    Vector2D    draw_offset;    /**<draw position relative to the entity position*/
-    Vector2D    position;       /**<where our entity lives*/
-    Vector2D    velocity;       /**<how our entity moves*/
-    Vector3D    rotation;       /**<how to rotate the sprite*/
-    Vector2D    draw_scale;     /**<the scale factor for drawing the sprite*/
-    Vector2D    mins, maxs;     /**<describe the bounding box around this entity*/
+    Uint8          _inuse;          /**<this flag keeps track if this entity is active or free to reassign*/
+    team_code       team;           /**<this defines who an entity will collide with and how*/
+    game_state_id   id;             /**<this defines what mini game an entity is part of*/
+    Sprite*         sprite;         /**<sprite used to draw the sprite*/
+    float           frame;          /**<current frame to draw*/
+    Vector2D        draw_offset;    /**<draw position relative to the entity position*/
+    Vector2D        position;       /**<where our entity lives*/
+    Vector2D        velocity;       /**<how our entity moves*/
+    Vector3D        rotation;       /**<how to rotate the sprite*/
+    Vector2D        draw_scale;     /**<the scale factor for drawing the sprite*/
+    Vector2D        mins, maxs;     /**<describe the bounding box around this entity*/
     void (*think)(struct ENTITY_S* self);   /**<a pointer to a think function for this entity*/
 }Entity;
 
@@ -31,9 +42,19 @@ void entity_manager_init(Uint32 max_entities);
 void entity_manager_draw_all();
 
 /**
+ * @brief draws all active entities with game_state_id mini to the screen
+ */
+void entity_manager_draw_mini(game_state_id code);
+
+/**
  * @brief runs any think function for all active entities
  */
 void entity_manager_think_all();
+
+/**
+ * @brief runs any think function for all active entities with game_state_id mini
+ */
+void entity_manager_think_mini(game_state_id code);
 
 /**
  * @brief free all active entities
