@@ -5,10 +5,10 @@ Uint32 rest = 0;		// prevents the button clicks from activating a bunch of times
 Uint32 REST_DELAY = 50;	// determines how long it will take before a button can be pressed again (game loop iterations)
 
 typedef struct{
-	Uint32 max_events;
-	TTF_Font *title_font, *prompt_font, *text_font;
-	SDL_Color font_color;
-	Event* event_list;
+	Uint32		max_events;
+	TTF_Font   *title_font, *prompt_font, *text_font;
+	SDL_Color	font_color;
+	Event	   *event_list;
 }EventManager;
 
 EventManager event_manager = { 0 };
@@ -34,6 +34,20 @@ void event_manager_init(Uint32 max_events)
 
 	atexit(event_manager_close);
 	slog("event manager initialized");
+
+	code_vomit_add_all_events();
+}
+
+void event_manager_close() 
+{
+	int i;
+	for (i = 0; i < event_manager.max_events; i++)
+	{
+		event_free(&event_manager.event_list[i]);
+	}
+	if (event_manager.event_list) {
+		free(event_manager.event_list);
+	}
 }
 
 Event* event_new()
@@ -52,18 +66,6 @@ void event_free(Event* e)
 {
 	if (!e)	{ slog("cannot free nothing (event)"); }
 	else { memset(e, 0, sizeof(Event)); }
-}
-
-void event_manager_close() 
-{
-	int i;
-	for (i = 0; i < event_manager.max_events; i++)
-	{
-		event_free(&event_manager.event_list[i]);
-	}
-	if (event_manager.event_list) {
-		free(event_manager.event_list);
-	}
 }
 
 void event_manager_load_all()
@@ -180,7 +182,7 @@ void event_draw(Event* e)
 	}
 }
 
-void create_render_variables(Event* e)
+void event_create_render_variables(Event* e)
 {
 	SDL_Surface* surface;
 	
@@ -241,14 +243,14 @@ void create_render_variables(Event* e)
 }
 
 
-void create_all_render_variables() 
+void event_create_all_render_variables() 
 {
 	int i;
 	for (i = 0; i < event_manager.max_events; i++)
 	{
 		if (event_manager.event_list[i]._inuse) 
 		{
-			create_render_variables(&event_manager.event_list[i]);
+			event_create_render_variables(&event_manager.event_list[i]);
 		}
 	}
 }
@@ -393,5 +395,5 @@ void code_vomit_add_all_events()
 	o->clearance = PROGRAMMER;
 	o->clicked = AI_FIXED;
 
-	create_all_render_variables();
+	event_create_all_render_variables();
 }

@@ -29,7 +29,7 @@ typedef	struct EVENT_OPTION{
 typedef struct EVENT{
 	Uint8		   _inuse;
 	char		   *title;
-	game_state_id		id;
+	game_state_id	id;
 	char		   *prompt;
 	EventOption		options[MAX_OPTIONS]; /**<location of the options in the array is important becuase it determines where it is displayed and which function is called on_press*/
 

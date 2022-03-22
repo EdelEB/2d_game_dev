@@ -54,18 +54,11 @@ int main(int argc, char * argv[])
     note_manager_init(50);
     director_init();
     
-    /*minigame intializations*/
-    //mini_asteroid = mini_asteroid_init();
-
-    /*event initialization*/
-    code_vomit_add_all_events();
-    add_all_notes();
-
     /*set default background*/
     bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_black.png");
     bg_current = bg_default;
 
-    current_game_state_id = EVENT_ASTEROIDS_AHEAD;
+    current_game_state_id = AI_ACCEPT_DEFEAT;
 
     /*main game loop*/
     while(!done)
@@ -80,9 +73,7 @@ int main(int argc, char * argv[])
         /*update things here*/
         new_game_state_id = director_think(current_game_state_id, mouse_state, &mx, &my);        
         
-        if (new_game_state_id) {
-            current_game_state_id = new_game_state_id;
-        }
+        if (new_game_state_id) { current_game_state_id = new_game_state_id; }
 
         /* clear drawing buffer */
         gf2d_graphics_clear_screen(); 

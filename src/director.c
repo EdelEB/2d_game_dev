@@ -41,7 +41,7 @@ void director_draw(game_state_id id)
 			event_draw( get_event_by_id(id) );
 			break;
 		case NOTE:
-			note_draw_by_id(id);
+			note_draw(get_note_by_id(id));
 			break;
 		case MINI:
 			if (minis.current_mini) {
