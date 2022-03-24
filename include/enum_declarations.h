@@ -5,6 +5,7 @@
 typedef enum {
 
 	NONE,
+	PROBLEM_STATE,
 
 	/*Menu States*/
 	PAUSE,

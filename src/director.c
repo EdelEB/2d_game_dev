@@ -1,16 +1,15 @@
 #include "director.h"
 
-typedef struct {
+struct MINIHOLDER{
 	MiniGame *current_mini, *asteroid_dodge, *ration_split, *mouse_hunt;
 	SDL_Thread *mini_thread;
 }mini_holder;
 
-mini_holder minis = { 0 };
-
 void director_init()
 {
 	map_init();
-	minis.asteroid_dodge = mini_asteroid_init();
+	mini_holder.asteroid_dodge = mini_asteroid_init();
+	//mini_holder.mouse_hunt = mini_mouse_init();
 }
 
 state_type get_state_type(gamestate_id id)
@@ -48,8 +47,8 @@ void director_draw(gamestate_id id)
 			note_draw( get_note_by_id(id) );
 			break;
 		case MINI:
-			if (minis.current_mini) {
-				gf2d_sprite_draw_image(minis.current_mini->background, vector2d(0, 0));
+			if (mini_holder.current_mini) {
+				gf2d_sprite_draw_image(mini_holder.current_mini->background, vector2d(0, 0));
 			}
 			entity_manager_draw_all();
 			break;
@@ -75,32 +74,36 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 			return note_listen(mouse_state);
 
 		case MINI:
-			switch (id) {
+			switch (id) 
+			{
 				case MINI_ASTEROID_DODGE:
-					slog("THINKING");
-					minis.current_mini = minis.asteroid_dodge;
+					mini_holder.current_mini = mini_holder.asteroid_dodge;
 					break;
 				case MINI_RATION_SPLIT:
-					minis.current_mini = minis.ration_split;
+					mini_holder.current_mini = mini_holder.ration_split;
 					break;
 				case MINI_MOUSE_HUNT:
-					minis.current_mini = minis.mouse_hunt;
+					mini_holder.current_mini = mini_holder.mouse_hunt;
 					break;
 			}
 
-			if (!minis.current_mini->is_running)
+			if (!mini_holder.current_mini->is_running)
 			{
-				minis.mini_thread = SDL_CreateThread(
-					minis.current_mini->run,
-					"Asteroid Dodge Game Thread",
-					minis.current_mini
-				);
-				
+				mini_holder.current_mini->start(mini_holder.current_mini);
+				return NONE;
 			}
-
-			if (minis.current_mini->end_state) { return minis.current_mini->end_state; }
-			entity_manager_think_all();
-			break;
+			else
+			{
+				entity_manager_think_all();
+				
+				mini_holder.current_mini->run(mini_holder.current_mini);
+				if (mini_holder.current_mini->end_state)
+				{
+					return mini_holder.current_mini->end_state;
+				}
+				return NONE;
+			}
+			break; // This should never be hit
 
 		case NO_STATE:
 			break;

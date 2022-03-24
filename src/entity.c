@@ -4,6 +4,8 @@
 #include "gfc_color.h"
 #include "entity.h"
 
+extern const Uint8 DEBUG;
+
 typedef struct
 {
 	Uint32 max_entities;		/**<max number of entities in game*/
@@ -11,58 +13,6 @@ typedef struct
 }EntityManager;
 
 static EntityManager entity_manager = { 0 };
-
-Entity* entity_new()
-{
-	int i;
-	for (i = 0; i < entity_manager.max_entities; i++)
-	{
-		if (entity_manager.entity_list[i]._inuse) continue;
-
-		entity_manager.entity_list[i]._inuse = 1;
-		entity_manager.entity_list[i].id = NONE;
-		entity_manager.entity_list[i].draw_scale.x = 1;
-		entity_manager.entity_list[i].draw_scale.y = 1;
-		return &entity_manager.entity_list[i];
-	}
-	return NULL;  // you need a bigger max_entities and bigger entity_list; this shouldn't be a problem right now though
-}
-
-void entity_free(Entity* entity)
-{
-	if (!entity) {
-		slog("Attempted to free null entity pointer. You are nothing to me");
-		return;
-	}
-	if (entity->sprite) {
-		gf2d_sprite_free(entity->sprite);
-	}
-	memset(entity, 0, sizeof(Entity));
-}
-
-void entity_manager_clear()
-{
-	int i;
-	for (i = 0; i < entity_manager.max_entities; i++)
-	{
-		if (entity_manager.entity_list[i]._inuse)
-		{
-			entity_free(&entity_manager.entity_list[i]);
-		}
-	}
-}
-
-void entity_manager_close()
-{
-	entity_manager_clear;
-
-	if (entity_manager.entity_list) 
-	{
-		free(entity_manager.entity_list);								// is this allowed ? 
-	}
-
-	slog("entity manager closed");
-}
 
 void entity_manager_init(Uint32 max_entities)
 {
@@ -82,6 +32,57 @@ void entity_manager_init(Uint32 max_entities)
 	slog("entity manager initialized");
 }
 
+void entity_manager_clear()
+{
+	int i;
+	for (i = 0; i < entity_manager.max_entities; i++)
+	{
+		if (entity_manager.entity_list[i]._inuse)
+		{
+			entity_free(&entity_manager.entity_list[i]);
+		}
+	}
+}
+
+void entity_manager_close()
+{
+	entity_manager_clear;
+
+	if (entity_manager.entity_list)
+	{
+		free(entity_manager.entity_list);								// is this allowed ? 
+	}
+
+	slog("entity manager closed");
+}
+
+Entity* entity_new()
+{
+	int i;
+	for (i = 0; i < entity_manager.max_entities; i++)
+	{
+		if (entity_manager.entity_list[i]._inuse) continue;
+
+		entity_manager.entity_list[i]._inuse = 1;
+		entity_manager.entity_list[i].draw_scale.x = 1;
+		entity_manager.entity_list[i].draw_scale.y = 1;
+		return &entity_manager.entity_list[i];
+	}
+	return NULL;  // you need a bigger max_entities and bigger entity_list; this shouldn't be a problem right now though
+}
+
+void entity_free(Entity* entity)
+{
+	if (!entity) {
+		slog("Attempted to free null entity pointer. You are nothing to me");
+		return;
+	}
+	if (entity->sprite) {
+		gf2d_sprite_free(entity->sprite);
+	}
+	memset(entity, 0, sizeof(Entity));
+}
+
 void entity_think(Entity* entity)
 {
 	if (!entity)
@@ -95,7 +96,37 @@ void entity_think(Entity* entity)
 		entity->think(entity);
 	}
 	vector2d_add(entity->position, entity->position, entity->velocity);
+	entity->hitbox.x = entity->position.x;
+	entity->hitbox.y = entity->position.y;
 	return;
+}
+
+void entity_draw(Entity* ent)
+{
+	Vector2D draw_position;
+	if (!ent)
+	{
+		slog("Cannot draw NULL entity. I am not an abstract artist");
+		return;
+	}
+	if (!ent->sprite) { return; } // invisible entity?
+
+	vector2d_add(draw_position, ent->position, ent->draw_offset);
+	gf2d_sprite_draw(
+		ent->sprite,
+		draw_position,
+		&ent->draw_scale,
+		NULL,
+		&ent->rotation,
+		NULL,
+		NULL,
+		(Uint32)ent->frame  // I don't know why it needs to be casted as an int
+	);
+
+	if (DEBUG)
+	{
+		gf2d_draw_rect(ent->hitbox, vector4d(255, 255, 255, 255));
+	}
 }
 
 void entity_manager_think_all()
@@ -114,68 +145,12 @@ void entity_manager_think_all()
 	}
 }
 
-void entity_manager_think_mini(gamestate_id id)
-{
-	int i;
-	if (!entity_manager.entity_list)
-	{
-		slog("No entity list for entity_think_all()");
-		return;
-	}
-
-	for (i = 0; i < entity_manager.max_entities; i++)
-	{
-		if (!entity_manager.entity_list[i]._inuse) continue;
-		if (entity_manager.entity_list[i].id != id) continue;
-		entity_think(&entity_manager.entity_list[i]);
-	}
-}
-
-void entity_draw(Entity* ent) 
-{
-	Vector2D draw_position;
-	if (!ent) 
-	{
-		slog("Cannot draw NULL entity. I am not an abstract artist");
-		return;
-	}
-	if (!ent->sprite) { return; } // invisible entity?
-
-	vector2d_add(draw_position, ent->position, ent->draw_offset);
-	gf2d_sprite_draw(
-		ent->sprite,
-		draw_position,
-		&ent->draw_scale,
-		NULL,
-		&ent->rotation,
-		NULL,
-		NULL,
-		(Uint32)ent->frame  // I don't know why it needs to be casted as an int
-	);
-	
-
-
-}
-
 void entity_manager_draw_all()
 {
 	int i;
 	for (i = 0; i < entity_manager.max_entities; i++)
 	{
 		if (entity_manager.entity_list[i]._inuse) 
-		{
-			entity_draw(&entity_manager.entity_list[i]);
-		}
-	}
-}
-
-void entity_manager_draw_mini(gamestate_id id)
-{
-	int i;
-	for (i = 0; i < entity_manager.max_entities; i++)
-	{
-		if (entity_manager.entity_list[i]._inuse && 
-			entity_manager.entity_list[i].id == id)
 		{
 			entity_draw(&entity_manager.entity_list[i]);
 		}

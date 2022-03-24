@@ -5,6 +5,7 @@
 
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
+#include "simple_logger.h"
 
 struct MAP {
 	Sprite*		image;
@@ -15,7 +16,7 @@ struct MAP {
 
 void map_init();
 
-void map_set_position_for_spot(Uint32 spot);
+void map_set_position_by_spot(Uint32 spot);
 
 void map_draw();
 

@@ -1,6 +1,5 @@
 
 #include "map.h"
-#include "simple_logger.h"
 
 void map_init()
 {
@@ -9,10 +8,10 @@ void map_init()
 
 	// NOTE : This is where game data will be loaded
 	map.spot = 0;
-	map_set_position_for_spot(0);
+	map_set_position_by_spot(0);
 }
 
-void map_set_position_for_spot(Uint32 spot)
+void map_set_position_by_spot(Uint32 spot)
 {
 	switch (spot)
 	{

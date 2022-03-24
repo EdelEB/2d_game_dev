@@ -259,141 +259,154 @@ void event_create_all_render_variables()
 // JSON but it isn't working right now and I am annoyed
 void code_vomit_add_all_events() 
 {
-	Event* e = event_new();
+	Event* e;
 	EventOption* o;
 
-	if (!e)
+	/*EVENT_ASTEROIDS_AHEAD*/
+	{
+		e = event_new();
+		if (!e)
 	{
 		slog("failed to create event in code vomit");
 		return;
 	}
-	e->id = EVENT_ASTEROIDS_AHEAD;
-	e->title = "Asteroids Ahead";
-	e->prompt = "You are approaching an asteroid field...";
-	o = &e->options[0];
-	o->_inuse = 1;
-	o->text = "I'm the best. Navigate the asteroid field yourself. <mini game>";
-	o->clearance = DEFAULT;
-	o->clicked = MINI_ASTEROID_DODGE;
-	o = &e->options[1];
-	o->_inuse = 1;
-	o->text = "Let Jesus take the wheel.";
-	o->clearance = DEFAULT;
-	o->clicked = FAIL_ASTEROID_DODGE;
-	o = &e->options[2];
-	o->_inuse = 1;
-	o->text = "Trust my pilot to guide us to victory. <skip mini game>";
-	o->clearance = PILOT;
-	o->clicked = SUCCESS_ASTEROID_DODGE;
-	o = &e->options[3];
-	o->_inuse = 1;
-	o->text = "Take the long way around";
-	o->clearance = DEFAULT;
-	o->clicked = AD_LONG_WAY;
-
-
-	e = event_new();
-	if (!e) {
-		slog("failed to create event in code vomit");
-		return;
+		e->id = EVENT_ASTEROIDS_AHEAD;
+		e->title = "Asteroids Ahead";
+		e->prompt = "You are approaching an asteroid field...";
+		o = &e->options[0];
+		o->_inuse = 1;
+		o->text = "I'm the best. Navigate the asteroid field yourself. <mini game>";
+		o->clearance = DEFAULT;
+		o->clicked = MINI_ASTEROID_DODGE;
+		o = &e->options[1];
+		o->_inuse = 1;
+		o->text = "Let Jesus take the wheel.";
+		o->clearance = DEFAULT;
+		o->clicked = FAIL_ASTEROID_DODGE;
+		o = &e->options[2];
+		o->_inuse = 1;
+		o->text = "Trust my pilot to guide us to victory. <skip mini game>";
+		o->clearance = PILOT;
+		o->clicked = SUCCESS_ASTEROID_DODGE;
+		o = &e->options[3];
+		o->_inuse = 1;
+		o->text = "Take the long way around";
+		o->clearance = DEFAULT;
+		o->clicked = AD_LONG_WAY;
 	}
-	e->id = EVENT_RATIONS_LOW;
-	e->title = "Rations Low";
-	e->prompt = "Rations are dwindling. What is your solution?";
-	o = &e->options[0];
-	o->_inuse = 1;
-	o->text = "Try and divide them equally. <mini game>";
-	o->clearance = DEFAULT;
-	o->clicked = MINI_RATION_SPLIT;
-	o = &e->options[1];
-	o->_inuse = 1;
-	o->text = "I am the greatest and most important. I will eat all the rations myself.";
-	o->clearance = DEFAULT;
-	o->clicked = RS_OMNOMNOM;
-	o = &e->options[2];
-	o->_inuse = 1;
-	o->text = "Ask my nutritionist to divide it by crew members' needs. <skip mini game>";
-	o->clearance = NUTRITIONIST;
-	o->clicked = SUCCESS_RATION_SPLIT;
-	o = &e->options[3];
-	o->_inuse = 1;
-	o->text = "Let the crew fight it out.";
-	o->clearance = DEFAULT;
-	o->clicked = RS_FIGHT;
 
-	e = event_new();
-	if (!e) {
-		slog("failed to create event in code vomit");
-		return;
+	/*EVENT_RATIONS_LOW*/
+	{
+		e = event_new();
+		if (!e) {
+			slog("failed to create event in code vomit");
+			return;
+		}
+		e->id = EVENT_RATIONS_LOW;
+		e->title = "Rations Low";
+		e->prompt = "Rations are dwindling. What is your solution?";
+		o = &e->options[0];
+		o->_inuse = 1;
+		o->text = "Try and divide them equally. <mini game>";
+		o->clearance = DEFAULT;
+		o->clicked = MINI_RATION_SPLIT;
+		o = &e->options[1];
+		o->_inuse = 1;
+		o->text = "I am the greatest and most important. I will eat all the rations myself.";
+		o->clearance = DEFAULT;
+		o->clicked = RS_OMNOMNOM;
+		o = &e->options[2];
+		o->_inuse = 1;
+		o->text = "Ask my nutritionist to divide it by crew members' needs. <skip mini game>";
+		o->clearance = NUTRITIONIST;
+		o->clicked = SUCCESS_RATION_SPLIT;
+		o = &e->options[3];
+		o->_inuse = 1;
+		o->text = "Let the crew fight it out.";
+		o->clearance = DEFAULT;
+		o->clicked = RS_FIGHT;
 	}
-	e->id = EVENT_RATIONS_MISSING;
-	e->title = "Rations Missing";
-	e->prompt = "You discover that rations are missing. What now?";
-	o = &e->options[0];
-	o->_inuse = 1;
-	o->text = "Investigate the crime seen.";
-	o->clearance = DEFAULT;
-	o->clicked = EVENT_MOUSE_FOUND;
-	o = &e->options[1];
-	o->_inuse = 1;
-	o->text = "Tell the group to deal with it.";
-	o->clearance = DEFAULT;
-	o->clicked = RM_DEAL_WITH_IT;
-	o = &e->options[2];
-	o->_inuse = 1;
-	o->text = "Blame someone I don't like.";
-	o->clearance = DEFAULT;
-	o->clicked = RM_BLAME;
-
-
-	e = event_new();
-	if (!e) {
-		slog("failed to create event in code vomit");
-		return;
+	
+	/*EVENT_RATIONS_MISSING*/
+	{
+		e = event_new();
+		if (!e) {
+			slog("failed to create event in code vomit");
+			return;
+		}
+		e->id = EVENT_RATIONS_MISSING;
+		e->title = "Rations Missing";
+		e->prompt = "You discover that rations are missing. What now?";
+		o = &e->options[0];
+		o->_inuse = 1;
+		o->text = "Investigate the crime seen.";
+		o->clearance = DEFAULT;
+		o->clicked = EVENT_MOUSE_FOUND;
+		o = &e->options[1];
+		o->_inuse = 1;
+		o->text = "Tell the group to deal with it.";
+		o->clearance = DEFAULT;
+		o->clicked = RM_DEAL_WITH_IT;
+		o = &e->options[2];
+		o->_inuse = 1;
+		o->text = "Blame someone I don't like.";
+		o->clearance = DEFAULT;
+		o->clicked = RM_BLAME;
 	}
-	e->id = EVENT_MOUSE_FOUND;
-	e->title = "Mouse Found";
-	e->prompt = "A mouse was found eating rations. What will you do?";
-	o = &e->options[0];
-	o->_inuse = 1;
-	o->text = "I played baseball. Try and throw things at it. <mini game>";
-	o->clearance = DEFAULT;
-	o->clicked = MINI_MOUSE_HUNT;
-	o = &e->options[1];
-	o->_inuse = 1;
-	o->text = "Animals love me. Try and befriend the mouse.";
-	o->clearance = DEFAULT;
-	o->clicked = MOUSE_FRIEND;
-	o = &e->options[2];
-	o->_inuse = 1;
-	o->text = "Have the engineer make a mouse trap. <skip mini game>";
-	o->clearance = ENGINEER;
-	o->clicked = MOUSE_TRAPPED;
 
-
-	e = event_new();
-	if (!e) {
-		slog("failed to create event in code vomit");
-		return;
+	/*EVENT_MOUSE_FOUND*/
+	{
+		e = event_new();
+		if (!e) {
+			slog("failed to create event in code vomit");
+			return;
+		}
+		e->id = EVENT_MOUSE_FOUND;
+		e->title = "Mouse Found";
+		e->prompt = "A mouse was found eating rations. What will you do?";
+		o = &e->options[0];
+		o->_inuse = 1;
+		o->text = "I played baseball. Try and throw things at it. <mini game>";
+		o->clearance = DEFAULT;
+		o->clicked = MINI_MOUSE_HUNT;
+		o = &e->options[1];
+		o->_inuse = 1;
+		o->text = "Animals love me. Try and befriend the mouse.";
+		o->clearance = DEFAULT;
+		o->clicked = MOUSE_FRIEND;
+		o = &e->options[2];
+		o->_inuse = 1;
+		o->text = "Have the engineer make a mouse trap. <skip mini game>";
+		o->clearance = ENGINEER;
+		o->clicked = MOUSE_TRAPPED;
 	}
-	e->id = EVENT_AI_TAKEOVER;
-	e->title = "Terminator Times";
-	e->prompt = "The ship AI says, \"I'm the captain now\"";
-	o = &e->options[0];
-	o->_inuse = 1;
-	o->text = "Accept defeat. All hail our AI overlords.";
-	o->clearance = DEFAULT;
-	o->clicked = AI_ACCEPT_DEFEAT;
-	o = &e->options[1];
-	o->_inuse = 1;
-	o->text = "Yell, \"I MADE YOU\" and give it a stern punch.";
-	o->clearance = DEFAULT;
-	o->clicked = AI_PUNCH;
-	o = &e->options[2];
-	o->_inuse = 1;
-	o->text = "Have my programmer fix the malfunction.";
-	o->clearance = PROGRAMMER;
-	o->clicked = AI_FIXED;
+
+	/*EVENT_AI_TAKEOVER*/
+	{
+		e = event_new();
+		if (!e) {
+			slog("failed to create event in code vomit");
+			return;
+		}
+		e->id = EVENT_AI_TAKEOVER;
+		e->title = "Terminator Times";
+		e->prompt = "The ship AI says, \"I'm the captain now\"";
+		o = &e->options[0];
+		o->_inuse = 1;
+		o->text = "Accept defeat. All hail our AI overlords.";
+		o->clearance = DEFAULT;
+		o->clicked = AI_ACCEPT_DEFEAT;
+		o = &e->options[1];
+		o->_inuse = 1;
+		o->text = "Yell, \"I MADE YOU\" and give it a stern punch.";
+		o->clearance = DEFAULT;
+		o->clicked = AI_PUNCH;
+		o = &e->options[2];
+		o->_inuse = 1;
+		o->text = "Have my programmer fix the malfunction.";
+		o->clearance = PROGRAMMER;
+		o->clicked = AI_FIXED;
+	}
 
 	event_create_all_render_variables();
 }

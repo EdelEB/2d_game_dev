@@ -1,7 +1,10 @@
 #include "crew.h"
 
+#define TOTAL_CREW_MEMBERS 20
 #define MAX_CREW 5
 crew_member* current_crew[MAX_CREW];
+
+crew_member* crew_options[TOTAL_CREW_MEMBERS];
 
 void crew_mental_breakdown(crew_member* cm)
 {

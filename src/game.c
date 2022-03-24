@@ -10,6 +10,7 @@
 #include "director.h"
 //#include "gamestate.h"
 
+const Uint8 DEBUG = 1;
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
 
@@ -19,7 +20,6 @@ int main(int argc, char * argv[])
     Uint8 done = 0;
     const Uint8 * keys;
     float mf = 0;
-    
     
     Sprite *bg_current, *bg_default;
 
@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
     bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_map.png");
     bg_current = bg_default;
 
-    current_gamestate_id = EVENT_AI_TAKEOVER;
+    current_gamestate_id = EVENT_ASTEROIDS_AHEAD;
 
     /*main game loop*/
     while(!done)
