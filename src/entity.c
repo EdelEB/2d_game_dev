@@ -1,10 +1,4 @@
-
-#include "simple_logger.h"
-#include "gf2d_draw.h"
-#include "gfc_color.h"
 #include "entity.h"
-
-extern const Uint8 DEBUG;
 
 typedef struct
 {

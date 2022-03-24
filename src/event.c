@@ -22,7 +22,7 @@ void event_manager_init(Uint32 max_events)
 	}
 	if (event_manager.event_list)
 	{
-		slog("event manager already initialized dumb dumb");
+		slog("event_manager already initialized");
 	}
 	event_manager.max_events = max_events;
 	event_manager.event_list = gfc_allocate_array(sizeof(Event), max_events);

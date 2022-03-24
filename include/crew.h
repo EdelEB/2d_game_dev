@@ -2,8 +2,15 @@
 #define __CREW_H__
 
 #include <SDL.h>
+#include <SDL_ttf.h>
+
 #include "simple_logger.h"
 #include "enum_declarations.h"
+
+#include "ui_stuff.h"
+
+#define TOTAL_CREW_MEMBERS 20
+#define MAX_CREW 5
 
 typedef	struct CREW_MEMBER{
 	char		   *name;			/**<name of crew member*/
@@ -16,9 +23,12 @@ typedef	struct CREW_MEMBER{
 	Uint8		   _inuse;			/**<flag used to determine if a slot is open in crew_manager*/
 }crew_member;
 
-gamestate_id crew_lower_morale();
-gamestate_id crew_raise_morale();
-gamestate_id crew_lower_hunger();
-gamestate_id crew_raise_hunger();
+//gamestate_id crew_lower_morale();
+//gamestate_id crew_raise_morale();
+//gamestate_id crew_lower_hunger();
+//gamestate_id crew_raise_hunger();
 
+void display_crew_select();
+void think_crew_select();
+void code_vomit_create_crew_members();
 #endif

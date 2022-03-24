@@ -1,7 +1,6 @@
 #include "mini_game.h"
 
 
-
 void mini_start(MiniGame* self)
 {
 

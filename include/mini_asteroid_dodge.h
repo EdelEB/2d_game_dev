@@ -1,8 +1,9 @@
 #ifndef __MINI_ASTEROID_DODGE_H__
 #define __MINI_ASTEROID_DODGE_H__
 
-#include <SDL.h>
 #include "mini_game.h"
+#include "ent_ship.h"
+#include "ent_asteroid.h"
 
 MiniGame* mini_asteroid_init();
 

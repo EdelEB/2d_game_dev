@@ -1,9 +1,4 @@
-#include "ent_ship.h"
-#include "ent_asteroid.h"
 #include "mini_asteroid_dodge.h"
-#include "tools.h"
-
-extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
 
 const Uint32 MAX_ROUNDS = 5;
 Uint32 rounds = 0;

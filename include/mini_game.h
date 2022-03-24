@@ -4,10 +4,17 @@
 #include <SDL.h>
 
 #include "gf2d_sprite.h"
+#include "gf2d_graphics.h"
+#include "gf2d_draw.h"
+
 #include "simple_logger.h"
 
+#include "tools.h"
 #include "entity.h"
 #include "enum_declarations.h"
+
+
+extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
 
 #define MAX_MINI_ENTITIES 10
 

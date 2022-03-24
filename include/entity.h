@@ -2,9 +2,14 @@
 #define __ENTITY_H__
 
 #include <SDL.h>
+
+#include "simple_logger.h"
+#include "gf2d_draw.h"
+#include "gfc_color.h"
 #include "gf2d_sprite.h"
 
-#include "mini_game.h"
+extern const Uint8 DEBUG;
+extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
 
 typedef enum {
     PLAYER,         /**<human controlled entity*/

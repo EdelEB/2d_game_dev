@@ -10,6 +10,7 @@
 #include "mini_game.h"
 #include "mini_asteroid_dodge.h"
 #include "mini_mouse_hunt.h"
+#include "mini_ration_split.h"
 #include "map.h"
 
 typedef enum {

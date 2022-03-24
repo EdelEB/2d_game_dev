@@ -1,7 +1,5 @@
 #include "mini_mouse_hunt.h"
 
-extern const Uint32 WINDOW_WIDTH;
-
 MiniGame mouse_hunt = { 0 };
 
 #define ROUND_DELAY 400;

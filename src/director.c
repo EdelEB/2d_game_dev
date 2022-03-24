@@ -10,6 +10,9 @@ void director_init()
 	map_init();
 	mini_holder.asteroid_dodge = mini_asteroid_init();
 	mini_holder.mouse_hunt = mini_mouse_init();
+	mini_holder.ration_split = mini_ration_init();
+
+	code_vomit_create_crew_members();
 }
 
 state_type get_state_type(gamestate_id id)
@@ -39,6 +42,9 @@ void director_draw(gamestate_id id)
 			if (id == MAP) {
 				map_draw();
 			}
+			if (id == CREW_SELECT) {
+				display_crew_select();
+			}
 			break;
 		case EVENT:
 			event_draw( get_event_by_id(id) );
@@ -49,6 +55,9 @@ void director_draw(gamestate_id id)
 		case MINI:
 			if (mini_holder.current_mini) {
 				gf2d_sprite_draw_image(mini_holder.current_mini->background, vector2d(0, 0));
+			}
+			if (id == MINI_RATION_SPLIT){
+				mini_ration_draw();
 			}
 			entity_manager_draw_all();
 			break;
@@ -64,7 +73,13 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 	switch (get_state_type(id))
 	{
 		case MENU:
-			if (MAP) { return NONE; } 
+			if (MAP) 
+			{ 
+				return map_listen(mouse_state, *mx, *my); 
+			} 
+			else if (id == CREW_SELECT) {
+				think_crew_select();
+			}
 			break;
 		
 		case EVENT:

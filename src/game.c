@@ -8,6 +8,7 @@
 
 #include "mini_asteroid_dodge.h"
 #include "director.h"
+#include "crew.h"
 //#include "gamestate.h"
 
 const Uint8 DEBUG = 1;
@@ -54,11 +55,12 @@ int main(int argc, char * argv[])
     note_manager_init(50);
     director_init();
     
-    /*set default background*/
-    bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_map.png");
-    bg_current = bg_default;
+    /* Set default background */
+    //bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_map.png");
+    //bg_current = bg_default;
 
-    current_gamestate_id = EVENT_MOUSE_FOUND;
+    /* Set game start state */
+    current_gamestate_id = CREW_SELECT;
 
     /*main game loop*/
     while(!done)
@@ -73,9 +75,9 @@ int main(int argc, char * argv[])
         /*update things here*/
         new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my);        
         
-        if (new_gamestate_id) 
+        if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 
         { 
-            slog("STATE CHANGE");
+            slog("STATE CHANGE %d -> %d", current_gamestate_id, new_gamestate_id);
             current_gamestate_id = new_gamestate_id;
         }
 

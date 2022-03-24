@@ -1,4 +1,3 @@
-#include "simple_logger.h"
 #include "ent_ship.h"
 
 // This is here becuase the frame count in the sprite is in 2 locations and 

@@ -1,7 +1,5 @@
 #include "ent_mouse.h"
 
-extern const Uint32 WINDOW_HEIGHT;
-
 void mouse_think(Entity* e)
 {
     if (!e) { slog("mouse think recieved NULL Entity*"); return; }
