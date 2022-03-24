@@ -317,7 +317,7 @@ void add_all_notes()
 	}
 	n->id = FAIL_MOUSE_HUNT;
 	n->title = "Failure";
-	n->line_strings[0] = "You have embarrassed yourself with you inability to handle";
+	n->line_strings[0] = "You have embarrassed yourself with your inability to handle";
 	n->line_strings[1] = "a simple mouse. Your crew morale has dropped.";
 	n->line_strings[2] = "";
 	n->line_strings[3] = "";

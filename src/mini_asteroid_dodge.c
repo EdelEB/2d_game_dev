@@ -32,8 +32,10 @@ void mini_asteroid_start(MiniGame* self)
     
     rounds = 0;
 
+    /* Spawn Player Ship */
     self->entities[0] = ent_ship_new(vector2d(500,300));
     
+    /* Spawn Asteroids */
     for (int i = 1; i < 4; i++) 
     {
         self->entities[i] = ent_asteroid_new();

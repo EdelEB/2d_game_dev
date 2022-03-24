@@ -9,7 +9,7 @@ void director_init()
 {
 	map_init();
 	mini_holder.asteroid_dodge = mini_asteroid_init();
-	//mini_holder.mouse_hunt = mini_mouse_init();
+	mini_holder.mouse_hunt = mini_mouse_init();
 }
 
 state_type get_state_type(gamestate_id id)

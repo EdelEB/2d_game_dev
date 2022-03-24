@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
     bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_map.png");
     bg_current = bg_default;
 
-    current_gamestate_id = EVENT_ASTEROIDS_AHEAD;
+    current_gamestate_id = EVENT_MOUSE_FOUND;
 
     /*main game loop*/
     while(!done)
