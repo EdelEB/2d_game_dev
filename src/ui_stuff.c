@@ -81,6 +81,8 @@ void ui_label_render(ui_label* l)
 		NULL,
 		&l->render_rect
 	);
+
+	if (DEBUG){ gf2d_draw_rect(l->render_rect, vector4d(55, 255, 255, 255)); }
 }
 
 void ui_button_render(ui_button* b)

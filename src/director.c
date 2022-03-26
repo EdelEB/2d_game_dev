@@ -6,7 +6,7 @@ struct MINI_HOLDER{
 }mini_holder;
 
 struct MENU_HOLDER {
-	Menu* crew_select;
+	Menu* crew_select, *crew_view;
 }menu_holder;
 
 void director_init(void)
@@ -20,6 +20,7 @@ void director_init(void)
 	
 	map_init();
 	menu_holder.crew_select = menu_crew_select_init();
+	menu_holder.crew_view = menu_crew_view_init();
 	
 	entity_manager_init(1024);
 	mini_holder.asteroid_dodge = mini_asteroid_init();
@@ -31,17 +32,21 @@ void director_init(void)
 
 gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my)
 {
+	Menu* current_menu;
+
 	switch (get_state_type(id))
 	{
 		case MENU:
-			if (id == MAP) 
-			{ 
-				return map_listen(mouse_state, *mx, *my); 
-			} 
-			else if (id == CREW_SELECT)
+			switch(id) 
 			{
-				return menu_listen(menu_holder.crew_select);
+				case MAP: 
+					return map_listen(mouse_state, *mx, *my); 
+				case CREW_SELECT:
+					return menu_listen(menu_holder.crew_select);
+				case CREW_VIEW:
+					return menu_listen(menu_holder.crew_view);		
 			}
+			slog("director_think miss 1");
 			break;
 		
 		case EVENT:
@@ -80,14 +85,15 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 				}
 				return NONE;
 			}
+			slog("director_think miss 2");
 			break; // This should never be hit
 		case NO_STATE:
 			break;
 		default:
 			break;
 	}
-	
 
+	return PROBLEM_STATE;
 }
 
 void director_draw(gamestate_id id)
@@ -95,11 +101,17 @@ void director_draw(gamestate_id id)
 	switch (get_state_type(id))
 	{
 	case MENU:
-		if (id == MAP) {
-			map_draw();
-		}
-		if (id == CREW_SELECT) {
-			menu_draw(menu_holder.crew_select);
+		switch (id)
+		{ 
+			case MAP:
+				map_draw();
+				break;
+			case CREW_SELECT:
+				menu_draw(menu_holder.crew_select);
+				break;
+			case CREW_VIEW:
+				menu_draw(menu_holder.crew_view);
+				break;
 		}
 		break;
 	case EVENT:
@@ -113,7 +125,7 @@ void director_draw(gamestate_id id)
 			gf2d_sprite_draw_image(mini_holder.current_mini->background, vector2d(0, 0));
 		}
 		if (id == MINI_RATION_SPLIT) {
-			mini_ration_draw(); // The background gets drawn over the UI without this. I will fix this later
+			mini_ration_draw(); // The background gets drawn over the UI without this. I will fix this later. It's also because ration_split has no entities
 		}
 		entity_manager_draw_all();
 		break;

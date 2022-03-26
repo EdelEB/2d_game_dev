@@ -77,7 +77,11 @@ gamestate_id select_crew_member(void)
 	crew_options[crew_options_index]._inuse = 0;
 	crew_additions++;
 
-	if (crew_additions == MAX_CREW)	{ return CREW_VIEW; }
+	if (crew_additions == MAX_CREW)	
+	{ 
+		menu_crew_view_init();
+		return CREW_VIEW; 
+	}
 
 	next_crew_member();
 
