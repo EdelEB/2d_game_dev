@@ -7,9 +7,9 @@
 // this is the only way it worked. I don't know why
 struct MENU* menu_crew_select_init(void);
 
-void next_crew_member(void);
+gamestate_id next_crew_member(void);
 
-void select_crew_member(void);
+gamestate_id select_crew_member(void);
 
 
-#endif
+#endif=

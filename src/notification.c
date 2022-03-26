@@ -455,4 +455,5 @@ void add_all_notes(void)
 		n->line_strings[2] = "You didn't have a crew member named Ken? He was undercover.";
 		n->line_strings[3] = "Don't worry; we got'm";
 	}
+
 }

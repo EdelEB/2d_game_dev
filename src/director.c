@@ -11,6 +11,8 @@ struct MENU_HOLDER {
 
 void director_init(void)
 {
+	code_vomit_create_crew_member_options();
+
 	ui_font_info_init();
 
 	event_manager_init(20);
@@ -24,7 +26,7 @@ void director_init(void)
 	mini_holder.mouse_hunt = mini_mouse_init();
 	mini_holder.ration_split = mini_ration_init();
 
-	code_vomit_create_crew_member_options();
+	
 }
 
 gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my)
@@ -79,7 +81,6 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 				return NONE;
 			}
 			break; // This should never be hit
-
 		case NO_STATE:
 			break;
 		default:

@@ -7,7 +7,7 @@
 #include "simple_logger.h"
 #include "enum_declarations.h"
 
-#define TOTAL_CREW_MEMBERS 20
+#define MAX_CREW_OPTIONS 20
 #define MAX_CREW 5
 
 typedef	struct CREW_MEMBER{
@@ -22,7 +22,7 @@ typedef	struct CREW_MEMBER{
 }crew_member;
 
 crew_member current_crew[MAX_CREW];
-crew_member crew_options[TOTAL_CREW_MEMBERS];
+crew_member crew_options[MAX_CREW_OPTIONS];
 
 //gamestate_id crew_lower_morale();
 //gamestate_id crew_raise_morale();
