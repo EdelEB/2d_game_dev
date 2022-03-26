@@ -10,9 +10,9 @@
 
 #include "enum_declarations.h"
 
+#define CLICK_TIMER 20
 extern Uint8 DEBUG;
 extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
-#define CLICK_TIMER 20
 
 struct FONT_INFO{
 	TTF_Font	*title_font, *header_font, *text_font;

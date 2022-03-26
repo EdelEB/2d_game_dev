@@ -12,8 +12,15 @@ Menu* menu_crew_view_init(void)
 
 	crew_view.label_list[0] = ui_create_title_label(
 		"Crew View",
-		(WINDOW_WIDTH >> 1) - 300,
+		(WINDOW_WIDTH >> 1) - 250,
 		WINDOW_HEIGHT >> 4
+	);
+
+	sprintf(str, "Food: %i", gamestate.food);
+	crew_view.label_list[MAX_MENU_LABELS - 1] = ui_create_text_label(
+		str,
+		25,
+		75
 	);
 
 	for (i = 0; i < MAX_CREW ; i++ )
@@ -79,8 +86,14 @@ void update_crew_member_hunger(int i)
 		(WINDOW_WIDTH >> 3) + 190 * (i),
 		(WINDOW_HEIGHT >> 3) << 2
 	);
-}
 
+	sprintf(str, "Food: %i", gamestate.food);
+	crew_view.label_list[MAX_MENU_LABELS - 1] = ui_create_text_label(
+		str,
+		25,
+		75
+	);
+}
 
 void feed_crew_member(int i) 
 {
