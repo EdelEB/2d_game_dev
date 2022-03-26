@@ -1,6 +1,6 @@
 #include "ui_stuff.h"
 
-void ui_font_stuff_init()
+void ui_font_info_init(void)
 {
 	font_info.title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 80);
 	font_info.header_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 35);
@@ -14,6 +14,8 @@ ui_label ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
 	SDL_Surface* surface;
 	ui_label	 label;
 
+	label._inuse = 1;
+
 	surface = TTF_RenderText_Solid(
 		font,
 		str,
@@ -25,6 +27,8 @@ ui_label ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
 	);
 	label.render_rect.x = x;
 	label.render_rect.y = y;
+	label.render_rect.w = 200;
+	label.render_rect.h = 200;
 	SDL_QueryTexture(
 		label.texture,
 		NULL,
@@ -35,7 +39,6 @@ ui_label ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
 
 	return label;
 }
-
 ui_label ui_create_title_label(char* str, int x, int y)
 {
 	return ui_create_label_helper(str, x, y, font_info.title_font);
@@ -49,29 +52,29 @@ ui_label ui_create_text_label(char* str, int x, int y)
 	return ui_create_label_helper(str, x, y, font_info.text_font);
 }
 
-ui_button ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)())
+ui_button ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void))
 {
 	ui_button button;
-	ui_label label;
-	SDL_Rect click_box;
 
-	label = ui_create_header_label(str, x, y);
-	button.text_label = label;
-
-	click_box.x = x;
-	click_box.y = y;
-	click_box.w = w;
-	click_box.h = h;
-	button.click_box = click_box;
-
+	button._inuse = 1;
+	button.text_label = ui_create_text_label(str, x+5, y);
+	button.click_box.x = x;
+	button.click_box.y = y;
+	button.click_box.w = w;
+	button.click_box.h = h;
 	button.on_click = on_click;
 
 	return button;
 
 }
 
-void ui_render_label(ui_label* l)
+void ui_label_render(ui_label* l)
 {
+	if (!l) {
+		slog("ui_label_render received NULL ui_label*");
+		return;
+	}
+
 	SDL_RenderCopy(
 		gf2d_graphics_get_renderer(),
 		l->texture,
@@ -80,26 +83,33 @@ void ui_render_label(ui_label* l)
 	);
 }
 
-void ui_render_button(ui_button* b)
+void ui_button_render(ui_button* b)
 {
 	if (!b)
 	{
-		slog("ui_render_button cannot render NULL ui_button*");
+		slog("ui_button_render cannot render NULL ui_button*");
 		return;
 	}
 
-	ui_render_label(&b->text_label);
+	ui_label_render(&b->text_label);
 
 	gf2d_draw_rect(b->click_box, vector4d(255, 255, 255, 255));
 }
 
-Uint8 ui_listen_button(ui_button* b, Uint32 mouse_state, int mx, int my)
+gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 {
 	if (!b)
 	{
-		slog("ui_listen_button received NULL ui_button*");
-		return 0;
+		slog("ui_button_listen received NULL ui_button*");
+		return NONE;
 	}
+	if (b->click_timer > 0)
+	{
+		b->click_timer--;
+		return NONE;
+	}
+
+	gamestate_id id;
 
 	if (mouse_state == 1 &&
 		mx > b->click_box.x &&
@@ -107,32 +117,33 @@ Uint8 ui_listen_button(ui_button* b, Uint32 mouse_state, int mx, int my)
 		my > b->click_box.y &&
 		my < b->click_box.y + b->click_box.h)
 	{
-		ui_click_button(b);
-		return 1;
-	}
-	return 0;
-}
+		id = ui_button_click(b);
+		b->click_timer = 35;
 
-Uint8 ui_listen_button_alone(ui_button* b) 
+		if (id) return id;
+	}
+	return NONE;
+}
+gamestate_id ui_button_listen_alone(ui_button* b) 
 {
 	int mx, my;
 	Uint32 mouse_state = SDL_GetMouseState(&mx, &my);
 
-	ui_listen_button(b, mouse_state, mx, my);
+	return ui_button_listen(b, mouse_state, mx, my);
 }
 
-void ui_click_button(ui_button* b)
+gamestate_id ui_button_click(ui_button* b)
 {
 	if (!b)
 	{
-		slog("ui_click_button passed NULL ui_button*");
-		return;
+		slog("ui_button_click passed NULL ui_button*");
+		return NONE;
 	}
 	else if (!b->on_click)
 	{
-		slog("ui_click_button passed ui_button* with no on_click function");
-		return;
+		slog("ui_button_click passed ui_button* with no on_click function");
+		return NONE;
 	}
-
-	b->on_click();
+	
+	return b->on_click(b);
 }

@@ -4,7 +4,7 @@
 #include "mini_game.h"
 #include "crew.h"
 
-MiniGame* mini_ration_init();
+MiniGame* mini_ration_init(void);
 
 void mini_ration_start(MiniGame* self);
  

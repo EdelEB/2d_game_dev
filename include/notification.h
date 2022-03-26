@@ -29,26 +29,24 @@ typedef struct NOTIFICATION{
 
 void note_manager_init(Uint32 max_notes);
 
-void note_manager_close();
+void note_manager_close(void);
 
-Notification* note_new();
-
-void note_free(Notification* n);
+Notification* note_new(void);
 
 void note_create_render_variables(Notification *n);
 
-void note_create_all_render_variables();
+void note_create_all_render_variables(void);
 
 Notification* get_note_by_id(gamestate_id id);
 
 void note_log(Notification* n);
 
-void note_log_all();
+void note_log_all(void);
 
 void note_draw(Notification* n);
 
 gamestate_id note_listen(Uint32 mouse_state);
 
-void add_all_notes();
+void add_all_notes(void);
 
 #endif

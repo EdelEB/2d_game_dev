@@ -44,26 +44,26 @@ void entity_manager_init(Uint32 max_entities);
 /**
  * @brief draws all active entities to the screen
  */
-void entity_manager_draw_all();
+void entity_manager_draw_all(void);
 
 /**
  * @brief runs any think function for all active entities
  */
-void entity_manager_think_all();
+void entity_manager_think_all(void);
 
 /**
  * @brief free all active entities
  * @note for use in level transitions.
  */
-void entity_manager_clear();
+void entity_manager_clear(void);
 
-void entity_manager_close();
+void entity_manager_close(void);
 
 /**
  * @brief get a new empty entity
  * @returns NULL on error, or a pointer to a blank entity
  */
-Entity* entity_new();
+Entity* entity_new(void);
 
 /**
  * @brief draws the given entity

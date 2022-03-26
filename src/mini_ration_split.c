@@ -17,7 +17,7 @@ SDL_Rect ration_rect;
 
 Uint32 cut_delay = 50;
 
-MiniGame* mini_ration_init()
+MiniGame* mini_ration_init(void)
 {
 	ration_split.title = "Ration Split";
 	ration_split.id = MINI_RATION_SPLIT;

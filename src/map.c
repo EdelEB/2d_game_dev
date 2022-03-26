@@ -1,7 +1,7 @@
 
 #include "map.h"
 
-void map_init()
+void map_init(void)
 {
 	SDL_Surface *surface;
 	SDL_Color color = { 255,255,255,255 };
@@ -61,7 +61,7 @@ gamestate_id map_listen(Uint32 mouse_state, int mx, int my)
 	return NONE;
 }
 
-void map_draw()
+void map_draw(void)
 {
 	gf2d_sprite_draw_image(map.image, vector2d(0,0));
 	gf2d_sprite_draw_image(map.ship_image, map.position);

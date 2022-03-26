@@ -45,11 +45,11 @@ typedef struct EVENT{
 void event_manager_init(Uint32 max_events);
 
 /* NOT WORKING AS INTENDED */
-void event_manager_load_all();
+void event_manager_load_all(void);
 
 void event_free(Event* e);
 
-void event_manager_close();
+void event_manager_close(void);
 
 /**
  * @brief looks through all currently initialized events and returns the one with the inputted id
@@ -84,6 +84,6 @@ gamestate_id event_listen(Event* e, Uint32 mouse_state, int* mx, int* my);
  * @brief this initializes all unique events. 
  * @note simple_json is giving me issues. This is my alternative. It's called code_vomit because I know it's terrible and bad practice.
  */
-void code_vomit_add_all_events();
+void code_vomit_add_all_events(void);
 
 #endif

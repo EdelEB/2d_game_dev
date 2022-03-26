@@ -21,11 +21,11 @@ struct MAP {
 	Vector2D	position;
 } map;
 
-void map_init();
+void map_init(void);
 
 void map_set_position_by_spot(Uint32 spot);
 
-void map_draw();
+void map_draw(void);
 
 gamestate_id map_listen(Uint32 mouse_state, int mx, int my);
 

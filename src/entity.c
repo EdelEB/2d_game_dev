@@ -26,7 +26,7 @@ void entity_manager_init(Uint32 max_entities)
 	slog("entity manager initialized");
 }
 
-void entity_manager_clear()
+void entity_manager_clear(void)
 {
 	int i;
 	for (i = 0; i < entity_manager.max_entities; i++)
@@ -38,7 +38,7 @@ void entity_manager_clear()
 	}
 }
 
-void entity_manager_close()
+void entity_manager_close(void)
 {
 	entity_manager_clear;
 
@@ -50,7 +50,7 @@ void entity_manager_close()
 	slog("entity manager closed");
 }
 
-Entity* entity_new()
+Entity* entity_new(void)
 {
 	int i;
 	for (i = 0; i < entity_manager.max_entities; i++)
@@ -95,6 +95,22 @@ void entity_think(Entity* entity)
 	return;
 }
 
+void entity_manager_think_all(void)
+{
+	int i;
+	if (!entity_manager.entity_list)
+	{
+		slog("No entity list for entity_think_all()");
+		return;
+	}
+
+	for (i = 0; i < entity_manager.max_entities; i++)
+	{
+		if (!entity_manager.entity_list[i]._inuse)continue;
+		entity_think(&entity_manager.entity_list[i]);
+	}
+}
+
 void entity_draw(Entity* ent)
 {
 	Vector2D draw_position;
@@ -123,23 +139,7 @@ void entity_draw(Entity* ent)
 	}
 }
 
-void entity_manager_think_all()
-{
-	int i;
-	if (!entity_manager.entity_list)
-	{
-		slog("No entity list for entity_think_all()");
-		return;
-	}
-
-	for (i = 0; i < entity_manager.max_entities; i++)
-	{
-		if (!entity_manager.entity_list[i]._inuse)continue;
-		entity_think(&entity_manager.entity_list[i]);
-	}
-}
-
-void entity_manager_draw_all()
+void entity_manager_draw_all(void)
 {
 	int i;
 	for (i = 0; i < entity_manager.max_entities; i++)

@@ -12,6 +12,8 @@
 #include "mini_mouse_hunt.h"
 #include "mini_ration_split.h"
 #include "map.h"
+#include "menu.h"
+#include "menu_crew_select.h"
 
 typedef enum {
 	NO_STATE,
@@ -24,8 +26,7 @@ typedef enum {
 /*
 * @brief prepares the director for the rest of its uses. Initializes all minigames and menus 
 */
-
-void director_init();
+void director_init(void);
 
 /*
 * @brief draws the screen corresponding to the state provided
@@ -42,5 +43,9 @@ void director_draw(gamestate_id id);
 * @return gamestate_id of next gamestate to be run, NONE otherwise 
 */
 gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my);
+
+
+state_type get_state_type(gamestate_id id);
+
 
 #endif

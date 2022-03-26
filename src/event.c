@@ -38,7 +38,7 @@ void event_manager_init(Uint32 max_events)
 	code_vomit_add_all_events();
 }
 
-void event_manager_close() 
+void event_manager_close(void)
 {
 	int i;
 	for (i = 0; i < event_manager.max_events; i++)
@@ -50,7 +50,7 @@ void event_manager_close()
 	}
 }
 
-Event* event_new()
+Event* event_new(void)
 {
 	int i;
 	for (i = 0; i < event_manager.max_events; i++)
@@ -68,7 +68,7 @@ void event_free(Event* e)
 	else { memset(e, 0, sizeof(Event)); }
 }
 
-void event_manager_load_all()
+void event_manager_load_all(void)
 {
 	SJson* json = sj_load("assets/json/test.json");
 
@@ -243,7 +243,7 @@ void event_create_render_variables(Event* e)
 }
 
 
-void event_create_all_render_variables() 
+void event_create_all_render_variables(void)
 {
 	int i;
 	for (i = 0; i < event_manager.max_events; i++)
@@ -257,7 +257,7 @@ void event_create_all_render_variables()
 
 // I know this is gross and there is a better way to do this with 
 // JSON but it isn't working right now and I am annoyed
-void code_vomit_add_all_events() 
+void code_vomit_add_all_events(void)
 {
 	Event* e;
 	EventOption* o;

@@ -6,9 +6,7 @@
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
 
-#include "mini_asteroid_dodge.h"
 #include "director.h"
-#include "crew.h"
 //#include "gamestate.h"
 
 const Uint8 DEBUG = 1;
@@ -49,10 +47,7 @@ int main(int argc, char * argv[])
         slog("TTF Initialization failed with ERROR:  %s", TTF_GetError()); 
     }
 
-    //tile_set_manager_init(16); // This game does not really need a tile manager
-    entity_manager_init(1024);
-    event_manager_init(20);
-    note_manager_init(50);
+    /*Initialize pretty much everything*/
     director_init();
     
     /* Set default background */
@@ -90,8 +85,8 @@ int main(int argc, char * argv[])
         /* Draw game elements */
         director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
 
-        /* Draw UI elements last */
-        
+        /* Draw UI elements last */        
+
         /* render current draw frame and skip to the next frame */
         gf2d_grahics_next_frame();
         

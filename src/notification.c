@@ -37,14 +37,14 @@ void note_manager_init(Uint32 max_notes)
 	note_create_all_render_variables();
 }
 
-void note_manager_close() 
+void note_manager_close(void)
 {
 	slog("this should close note_manger but it doesn't");
 }
 
-Notification* note_new()
+Notification* note_new(void)
 {
-	int i;
+	Uint32 i;
 	for (i = 0; i < note_manager.max_notes; i++)
 	{
 		if (note_manager.note_list[i]._inuse) continue;
@@ -57,7 +57,7 @@ Notification* note_new()
 
 Notification* get_note_by_id(gamestate_id id)
 {
-	int i;
+	Uint32 i;
 	for (i = 0; i < note_manager.max_notes; i++)
 	{
 		if (note_manager.note_list[i]._inuse && 
@@ -69,9 +69,9 @@ Notification* get_note_by_id(gamestate_id id)
 	return NULL;
 }
 
-void note_log_all()
+void note_log_all(void)
 {
-	int i;
+	Uint32 i;
 	for (i = 0; i < note_manager.max_notes; i++)
 	{
 		if (!note_manager.note_list[i]._inuse) { continue; }
@@ -186,10 +186,10 @@ void note_create_render_variables(Notification *n)
 	}
 }
 
-void note_create_all_render_variables()
+void note_create_all_render_variables(void)
 {
-	int i;
-	for (int i = 0; i < note_manager.max_notes; i++)
+	Uint32 i;
+	for (i = 0; i < note_manager.max_notes; i++)
 	{
 		if (note_manager.note_list[i]._inuse)
 		{
@@ -198,7 +198,7 @@ void note_create_all_render_variables()
 	}
 }
 
-void add_all_notes()
+void add_all_notes(void)
 {
 	Notification* n;
 	
