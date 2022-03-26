@@ -25,8 +25,8 @@ void feed_crew_member(int i);
 * @param i is the index of the crew_member in gamestate.crew
 * @returns a pointer to a function that runs feed_crew_member(i)
 */
-void* get_feed_crew_member(int i);
+void* get_feed_crew_member_func(int i);
 
-
+gamestate_id crew_view_to_map(void);
 
 #endif

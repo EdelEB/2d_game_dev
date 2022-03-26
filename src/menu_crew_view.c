@@ -66,11 +66,26 @@ Menu* menu_crew_view_init(void)
 				x_offset - 190 * i,
 				y_offset - 20,
 				"Feed",
-				get_feed_crew_member(i)
+				get_feed_crew_member_func(i)
 			);
 		}
 	}
+
+	crew_view.button_list[i] = ui_create_button(
+		WINDOW_WIDTH - 100,
+		75,
+		75,
+		40,
+		"Map",
+		crew_view_to_map
+	);
+
 	return &crew_view;
+}
+
+gamestate_id crew_view_to_map(void)
+{
+	return MAP;
 }
 
 void update_crew_member_hunger(int i)
@@ -126,7 +141,7 @@ void fcm3(void) {
 void fcm4(void) {
 	feed_crew_member(4);
 }
-void* get_feed_crew_member(int i) {
+void* get_feed_crew_member_func(int i) {
 	switch (i)
 	{
 	case 0: return fcm0;

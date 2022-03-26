@@ -28,7 +28,5 @@ crew_member crew_options[MAX_CREW_OPTIONS];
 //gamestate_id crew_lower_hunger();
 //gamestate_id crew_raise_hunger();
 
-//void display_crew_select();
-//void think_crew_select();
 void code_vomit_create_crew_member_options(void);
 #endif

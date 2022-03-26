@@ -16,9 +16,7 @@ struct MAP {
 	Sprite	   *image;
 	Sprite	   *ship_image;
 	Uint32		spot;
-	TTF_Font   *crew_button_font;
-	SDL_Texture*crew_button_texture;
-	SDL_Rect	crew_button_rect;
+	ui_button	crew_view_button;
 	Vector2D	position;
 } map;
 
@@ -27,6 +25,8 @@ void map_init(void);
 void map_set_position_by_spot(Uint32 spot);
 
 void map_draw(void);
+
+gamestate_id map_to_crew_view(void);
 
 gamestate_id map_listen(Uint32 mouse_state, int mx, int my);
 
