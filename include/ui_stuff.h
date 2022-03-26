@@ -12,6 +12,7 @@
 
 extern Uint8 DEBUG;
 extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
+#define CLICK_TIMER 20
 
 struct FONT_INFO{
 	TTF_Font	*title_font, *header_font, *text_font;
@@ -28,7 +29,7 @@ typedef struct UI_BUTTON{
 	Uint8		_inuse;
 	ui_label	text_label;
 	SDL_Rect	click_box;
-	int			click_timer;
+	Uint16		click_timer;
 	gamestate_id (*on_click)(struct UI_BUTTON* self);
 }ui_button;
 

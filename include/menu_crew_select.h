@@ -16,7 +16,7 @@ gamestate_id next_crew_member(void);
 
 
 /*
-* @brief adds current crew member displayed on screen to current_crew
+* @brief adds current crew member displayed on screen to gamestate.crew
 * @returns gamestate_id CREW_VIEW when max crew members is reached, NONE otherwise
 */
 gamestate_id select_crew_member(void);

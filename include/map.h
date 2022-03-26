@@ -9,6 +9,7 @@
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
 
+#include "ui_stuff.h"
 #include "gamestate.h"
 
 struct MAP {

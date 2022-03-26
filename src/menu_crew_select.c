@@ -73,7 +73,7 @@ gamestate_id select_crew_member(void)
 	slog("CREW MEMBER SELECTED");
 	slog(crew_options[crew_options_index].name);
 
-	current_crew[crew_additions] = crew_options[crew_options_index];
+	gamestate.crew[crew_additions] = crew_options[crew_options_index];
 	crew_options[crew_options_index]._inuse = 0;
 	crew_additions++;
 

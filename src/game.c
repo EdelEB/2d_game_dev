@@ -7,10 +7,11 @@
 #include "simple_logger.h"
 
 #include "director.h"
-//#include "gamestate.h"
 
 Uint8 DEBUG = 0;
+const int CLICK_COOLDOWN = 20;
 int debug_toggle_cooldown = 0;
+int mouse_click_cooldown = 0;
 
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
@@ -65,20 +66,30 @@ int main(int argc, char * argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         mouse_state = SDL_GetMouseState(&mx,&my);
-                                     
-        mf += 0.1;
-        if (mf >= 16.0)mf = 0;
-        
-        /*update things here*/
+        //if (mouse_state)
+        //{ 
+        //    if (mouse_click_cooldown > 0) {
+        //        mouse_click_cooldown--;
+        //        mouse_state = 0;
+        //    }
+        //    else {
+        //        mouse_click_cooldown = CLICK_COOLDOWN;
+        //    }
+        //} // Stops multiple clicks from happening
+        /*Toggle DEBUG*/
         if (keys[SDL_SCANCODE_P]) {
             if (debug_toggle_cooldown > 0) { debug_toggle_cooldown--; }
             else {
                 if (DEBUG) DEBUG = 0;
                 else DEBUG = 1;
-                debug_toggle_cooldown = 10;
+                debug_toggle_cooldown = CLICK_COOLDOWN;
             }
-        }
+        } 
 
+        mf += 0.1;
+        if (mf >= 16.0)mf = 0;
+        
+        /*update things here*/
         new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my);        
         
         if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 

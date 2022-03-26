@@ -21,7 +21,6 @@ typedef	struct CREW_MEMBER{
 	Uint8		   _inuse;			/**<flag used to determine if a slot is open in crew_manager*/
 }crew_member;
 
-crew_member current_crew[MAX_CREW];
 crew_member crew_options[MAX_CREW_OPTIONS];
 
 //gamestate_id crew_lower_morale();

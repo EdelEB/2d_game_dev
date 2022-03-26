@@ -63,6 +63,7 @@ ui_button ui_create_button(int x, int y, int w, int h, char* str, void (*on_clic
 	button.click_box.w = w;
 	button.click_box.h = h;
 	button.on_click = on_click;
+	button.click_timer = CLICK_TIMER;
 
 	return button;
 
@@ -120,7 +121,7 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 		my < b->click_box.y + b->click_box.h)
 	{
 		id = ui_button_click(b);
-		b->click_timer = 25;
+		b->click_timer = CLICK_TIMER;
 
 		if (id) return id;
 	}

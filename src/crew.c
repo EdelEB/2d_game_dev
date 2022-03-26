@@ -7,10 +7,10 @@
 //
 //	for (i = 0; i < MAX_CREW; i++)
 //	{
-//		if (current_crew[i].is_alive)
+//		if (gamestate.crew[i].is_alive)
 //		{
-//			if (current_crew[i].morale != 0) { current_crew[i].morale--; }
-//			if (current_crew[i].morale == 0) { is_breakdown = 1; }
+//			if (gamestate.crew[i].morale != 0) { gamestate.crew[i].morale--; }
+//			if (gamestate.crew[i].morale == 0) { is_breakdown = 1; }
 //		}
 //	}
 //	if (is_breakdown) { return EVENT_CREW_BREAKDOWN; }
@@ -23,9 +23,9 @@
 //	int i;
 //	for (i = 0; i < MAX_CREW; i++)
 //	{
-//		if (current_crew[i] && current_crew[i]->is_alive)
+//		if (gamestate.crew[i] && gamestate.crew[i]->is_alive)
 //		{
-//			if (current_crew[i]->morale != 10) { current_crew[i]->morale++; }
+//			if (gamestate.crew[i]->morale != 10) { gamestate.crew[i]->morale++; }
 //		}
 //	}
 //	return NONE;
@@ -38,10 +38,10 @@
 //
 //	for (i = 0; i < MAX_CREW; i++)
 //	{
-//		if (current_crew[i] && current_crew[i]->is_alive)
+//		if (gamestate.crew[i] && gamestate.crew[i]->is_alive)
 //		{
-//			if (current_crew[i]->hunger != 0) { current_crew[i]->hunger--; }
-//			if (current_crew[i]->hunger == 0) { is_starving = 1; }
+//			if (gamestate.crew[i]->hunger != 0) { gamestate.crew[i]->hunger--; }
+//			if (gamestate.crew[i]->hunger == 0) { is_starving = 1; }
 //		}
 //	}
 //	if (is_starving) { return EVENT_CREW_STARVING; }
@@ -54,9 +54,9 @@
 //	int i;
 //	for (i = 0; i < MAX_CREW; i++)
 //	{
-//		if (current_crew[i] && current_crew[i]->is_alive)
+//		if (gamestate.crew[i] && gamestate.crew[i]->is_alive)
 //		{
-//			if (current_crew[i]->hunger != 10) { current_crew[i]->hunger++; }
+//			if (gamestate.crew[i]->hunger != 10) { gamestate.crew[i]->hunger++; }
 //		}
 //	}
 //	return NONE;

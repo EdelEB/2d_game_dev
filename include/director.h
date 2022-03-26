@@ -1,7 +1,10 @@
 #ifndef __DIRECTOR_H__
 #define __DIRECTOR_H__
 
-#include <SDL.h>
+/*
+	director.c determines what needs to be executed based on the gamestate_id
+	It handles all types of states: minigames, menus, decision events, and notifications
+*/
 
 #include "gamestate.h"
 #include "entity.h"
@@ -44,7 +47,12 @@ void director_draw(gamestate_id id);
 */
 gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my);
 
-
+/*
+* @brief this the category of game id that a given id is part of
+* @note this is only intended for use in director.c
+* @param id is the gamestate_id that is going to be categorized
+* @return any of the state_type's
+*/
 state_type get_state_type(gamestate_id id);
 
 

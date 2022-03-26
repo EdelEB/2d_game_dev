@@ -6,11 +6,13 @@ struct MINI_HOLDER{
 }mini_holder;
 
 struct MENU_HOLDER {
-	Menu* crew_select, *crew_view;
+	Menu *crew_select, *crew_view;
 }menu_holder;
 
 void director_init(void)
 {
+	gamestate_new();
+
 	code_vomit_create_crew_member_options();
 
 	ui_font_info_init();
@@ -20,14 +22,13 @@ void director_init(void)
 	
 	map_init();
 	menu_holder.crew_select = menu_crew_select_init();
+	// I don't think this should be initialized until after the crew is loaded/selected
 	menu_holder.crew_view = menu_crew_view_init();
 	
 	entity_manager_init(1024);
 	mini_holder.asteroid_dodge = mini_asteroid_init();
 	mini_holder.mouse_hunt = mini_mouse_init();
 	mini_holder.ration_split = mini_ration_init();
-
-	
 }
 
 gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my)

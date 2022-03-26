@@ -16,47 +16,110 @@ Menu* menu_crew_view_init(void)
 		WINDOW_HEIGHT >> 4
 	);
 
-	for (i = 0, j=1; i < MAX_CREW && j < MAX_MENU_LABELS-4 ; i++, j+=5)
+	for (i = 0; i < MAX_CREW ; i++ )
 	{
-		cm = &current_crew[i];
+		cm = &gamestate.crew[i];
 		x_offset = (WINDOW_WIDTH >> 3) + 190 * (i);
 		y_offset = (WINDOW_HEIGHT >> 3);
+		j = 5 * i + 1; 
+		if(j < MAX_MENU_LABELS - 4)
+		{
+			crew_view.label_list[j] = ui_create_header_label(
+				cm->name,
+				x_offset,
+				y_offset << 1
+			);
 
-		crew_view.label_list[j] = ui_create_header_label(
-			cm->name,
-			x_offset,
-			y_offset << 1
-		);
+			crew_view.label_list[j + 1] = ui_create_text_label(
+				cm->title,
+				x_offset,
+				y_offset * 3
+			);
 
-		crew_view.label_list[j + 1] = ui_create_text_label(
-			cm->title,
-			x_offset,
-			y_offset * 3
-		);
+			update_crew_member_hunger(i);
 
-		sprintf(str, "Hunger: %i", cm->hunger);
-		crew_view.label_list[j + 2] = ui_create_text_label(
-			str,
-			x_offset,
-			y_offset<<2
-		);
+			sprintf(str, "Morale: %i", cm->morale);
+			crew_view.label_list[j + 3] = ui_create_text_label(
+				str,
+				x_offset,
+				y_offset * 5
+			);
 
-		sprintf(str, "Morale: %i", cm->morale);
-		crew_view.label_list[j + 3] = ui_create_text_label(
-			str,
-			x_offset,
-			y_offset*5
-		);
-		
-		if (cm->is_alive) { sprintf(str, "Alive"); }
-		else { sprintf(str, "Dead"); }
-		crew_view.label_list[j + 4] = ui_create_text_label(
-			str,
-			x_offset,
-			y_offset*6
-		);
+			if (cm->is_alive) { sprintf(str, "Alive"); }
+			else { sprintf(str, "Dead"); }
+			crew_view.label_list[j + 4] = ui_create_text_label(
+				str,
+				x_offset,
+				y_offset * 6
+			);
+
+			crew_view.button_list[i] = ui_create_button(
+				x_offset,
+				y_offset * 7,
+				x_offset - 190 * i,
+				y_offset - 20,
+				"Feed",
+				get_feed_crew_member(i)
+			);
+		}
 	}
 	return &crew_view;
 }
 
-void feed_crew(void) {}
+void update_crew_member_hunger(int i)
+{
+	int j;
+	char str[16];
+	crew_member* cm = &gamestate.crew[i];
+
+	j = 5 * i + 1;
+	sprintf(str, "Hunger: %i", cm->hunger);
+	crew_view.label_list[j + 2] = ui_create_text_label(
+		str,
+		(WINDOW_WIDTH >> 3) + 190 * (i),
+		(WINDOW_HEIGHT >> 3) << 2
+	);
+}
+
+
+void feed_crew_member(int i) 
+{
+	slog("FEEDING CREW MEMBER");
+	if (gamestate.food < 1)
+	{
+		slog("feed_crew_member cannot feed crew with no food");
+		return NONE;
+	}
+
+	gamestate.food--;
+	gamestate.crew[i].hunger++;
+	update_crew_member_hunger(i);
+	
+	return NONE;
+}
+
+void fcm0(void) {
+	feed_crew_member(0);
+}
+void fcm1(void) {
+	feed_crew_member(1);
+}
+void fcm2(void) {
+	feed_crew_member(2);
+}
+void fcm3(void) {
+	feed_crew_member(3);
+}
+void fcm4(void) {
+	feed_crew_member(4);
+}
+void* get_feed_crew_member(int i) {
+	switch (i)
+	{
+	case 0: return fcm0;
+	case 1: return fcm1;
+	case 2: return fcm2;
+	case 3: return fcm3;
+	case 4: return fcm4;
+	}
+}
