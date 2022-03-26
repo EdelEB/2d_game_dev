@@ -25,8 +25,8 @@ Menu* menu_crew_select_init(void)
 	char* crew_member_display_string;
 
 	crew_select.button_list[0] = ui_create_button(
-		WINDOW_WIDTH-100,
-		WINDOW_HEIGHT-50, 
+		WINDOW_WIDTH-200,
+		(WINDOW_HEIGHT >> 3) * 7,
 		100,
 		50,
 		"Next",

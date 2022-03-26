@@ -9,7 +9,9 @@
 #include "director.h"
 //#include "gamestate.h"
 
-const Uint8 DEBUG = 1;
+Uint8 DEBUG = 0;
+int debug_toggle_cooldown = 0;
+
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
 
@@ -68,6 +70,15 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
         
         /*update things here*/
+        if (keys[SDL_SCANCODE_P]) {
+            if (debug_toggle_cooldown > 0) { debug_toggle_cooldown--; }
+            else {
+                if (DEBUG) DEBUG = 0;
+                else DEBUG = 1;
+                debug_toggle_cooldown = 10;
+            }
+        }
+
         new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my);        
         
         if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 

@@ -10,7 +10,7 @@
 
 #include "enum_declarations.h"
 
-extern const Uint8 DEBUG;
+extern Uint8 DEBUG;
 extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
 
 struct FONT_INFO{

@@ -8,7 +8,7 @@
 #include "gfc_color.h"
 #include "gf2d_sprite.h"
 
-extern const Uint8 DEBUG;
+extern Uint8 DEBUG;
 extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
 
 typedef enum {

@@ -120,7 +120,7 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 		my < b->click_box.y + b->click_box.h)
 	{
 		id = ui_button_click(b);
-		b->click_timer = 35;
+		b->click_timer = 25;
 
 		if (id) return id;
 	}

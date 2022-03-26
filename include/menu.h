@@ -15,7 +15,7 @@
 
 
 #define MAX_MENU_BUTTONS 10
-#define MAX_MENU_LABELS 20
+#define MAX_MENU_LABELS 40
 #define MAX_MENUS 10
 
 typedef struct MENU {
