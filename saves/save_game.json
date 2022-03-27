@@ -1,7 +1,1 @@
-[
-    [ "John", "Pilot", "1", "9", "9", "1" ],
-    [ "Ken", "Doctor", "2", "9", "9", "1" ],
-    [ "Will", "Engineer", "3", "9", "9", "1" ],
-    [ "Tom", "Phsycologist", "4", "9", "9", "1" ],
-    [ "Rich", "Programmer", "5", "9", "9", "1" ]
-]
+[["Ken","Doctor","2","9","9","1","1"],["Will","Engineer","3","9","9","1","1"],["Tom","Phsycologist","4","9","9","1","1"],["Rich","Programmer","5","9","9","1","1"],["Carlos","Comedian","7","9","9","1","1"]]

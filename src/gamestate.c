@@ -9,6 +9,16 @@ void gamestate_new(void)
 void gamestate_load(char* filename) 
 {
 	SJson* arr = sj_load(SAVE_FILE);
+	int i, j;
+
+	/*sj_get
+	for (i = 0; i < MAX_CREW; i++) {
+		for (j = 0; j < 7; j++) {
+			gamestate.crew[i] = arr[i][j];
+		}
+	}
+	*/
+
 }
 
 void gamestate_save(char* filename) 
@@ -33,11 +43,29 @@ void gamestate_save(char* filename)
 		sj_array_append(arr, data);
 		data = sj_new_int(gamestate.crew[i].is_alive);
 		sj_array_append(arr, data);
+		data = sj_new_int(gamestate.crew[i]._inuse);
+		sj_array_append(arr, data);
 		
 		sj_array_append(ret, arr);
 	}	
 
 	sj_save(ret, SAVE_FILE);
+}
+
+Uint8 crew_check_clearance(event_clearance c)
+{
+	int i;
+
+	if (c == DEFAULT) { return 1; }
+
+	for (i = 0; i < MAX_CREW; i++) {
+		if (gamestate.crew[i].is_alive && gamestate.crew[i].clearance == c)
+		{
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 gamestate_id crew_lower_morale()

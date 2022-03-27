@@ -26,6 +26,9 @@ void gamestate_load(char* filename);
 
 void gamestate_save(char* filename);
 
+
+Uint8 crew_check_clearance(event_clearance c);
+
 gamestate_id crew_lower_morale();
 gamestate_id crew_raise_morale();
 gamestate_id crew_lower_hunger();

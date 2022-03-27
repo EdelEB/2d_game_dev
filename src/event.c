@@ -143,6 +143,7 @@ gamestate_id event_listen(Event* e, Uint32 mouse_state, int* mx, int* my)
 				{
 					slog("button %i pressed", i);
 					rest = REST_DELAY;
+					if (!crew_check_clearance(e->options[i].clearance)) { continue; }
 					return e->options[i].clicked;
 				}
 			}
@@ -176,6 +177,7 @@ void event_draw(Event* e)
 	{
 		if (e->options[i]._inuse)
 		{
+			if (!crew_check_clearance(e->options[i].clearance)) { continue; }
 			SDL_RenderCopy(gf2d_graphics_get_renderer(), e->options[i].texture, NULL, &e->options[i].render_rect);
 			gf2d_draw_rect(e->options[i].button_rect, rect_color);
 		}
