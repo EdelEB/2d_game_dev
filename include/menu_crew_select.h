@@ -3,7 +3,7 @@
 
 #include "menu.h"
 #include "crew.h"
-#include "menu_crew_view.h"
+#include "menu.h"
 
 // "struct MENU*" instead of "Menu*" is the only way this works. I don't know why
 struct MENU* menu_crew_select_init(void);
@@ -16,10 +16,10 @@ gamestate_id next_crew_member(void);
 
 
 /*
-* @brief adds current crew member displayed on screen to gamestate.crew
+* @brief adds current crew member displayed on screen to current_crew
 * @returns gamestate_id CREW_VIEW when max crew members is reached, NONE otherwise
 */
 gamestate_id select_crew_member(void);
 
 
-#endif=
+#endif

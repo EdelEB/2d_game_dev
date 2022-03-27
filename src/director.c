@@ -6,21 +6,19 @@ struct MINI_HOLDER{
 }mini_holder;
 
 struct MENU_HOLDER {
-	Menu *crew_select, *crew_view;
+	Menu *start, *crew_select, *crew_view;
 }menu_holder;
 
 void director_init(void)
 {
-	gamestate_new();
 
 	code_vomit_create_crew_member_options();
-
-	ui_font_info_init();
 
 	event_manager_init(20);
 	note_manager_init(50);
 	
 	map_init();
+	menu_holder.start = menu_start_init();
 	menu_holder.crew_select = menu_crew_select_init();
 	// I don't think this should be initialized until after the crew is loaded/selected
 	menu_holder.crew_view = menu_crew_view_init();
@@ -42,6 +40,8 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 			{
 				case MAP: 
 					return map_listen(mouse_state, *mx, *my); 
+				case MENU_START:
+					return menu_listen(menu_holder.start);
 				case CREW_SELECT:
 					return menu_listen(menu_holder.crew_select);
 				case CREW_VIEW:
@@ -108,6 +108,8 @@ void director_draw(gamestate_id id)
 			case MAP:
 				map_draw();
 				break;
+			case MENU_START:
+				return menu_draw(menu_holder.start);
 			case CREW_SELECT:
 				menu_draw(menu_holder.crew_select);
 				break;

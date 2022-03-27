@@ -51,6 +51,7 @@ int main(int argc, char * argv[])
     }
 
     /*Initialize pretty much everything*/
+    ui_font_info_init();
     director_init();
     
     /* Set default background */
@@ -58,7 +59,7 @@ int main(int argc, char * argv[])
     //bg_current = bg_default;
 
     /* Set game start state */
-    current_gamestate_id = CREW_SELECT;
+    current_gamestate_id = MENU_START;
 
     /*main game loop*/
     while(!done)

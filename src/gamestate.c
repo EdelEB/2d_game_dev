@@ -8,7 +8,10 @@ void gamestate_new(void)
 
 void gamestate_load(char* filename) {}
 
-void gamestate_save(char* filename) {}
+void gamestate_save(char* filename) 
+{
+
+}
 
 gamestate_id crew_lower_morale()
 {

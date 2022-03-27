@@ -10,6 +10,7 @@ typedef enum {
 	PROBLEM_STATE,
 
 	/*Menu States*/
+	MENU_START,
 	PAUSE,
 	CREW_SELECT,
 	CREW_VIEW,

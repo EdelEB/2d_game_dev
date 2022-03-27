@@ -17,6 +17,7 @@
 #include "map.h"
 #include "menu.h"
 #include "menu_crew_select.h"
+#include "menu_start.h"
 
 typedef enum {
 	NO_STATE,
