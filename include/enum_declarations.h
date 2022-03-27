@@ -36,6 +36,10 @@ typedef enum {
 	AI_FIXED,
 	RM_DEAL_WITH_IT,
 	RM_BLAME,
+	ML_BRAG,
+	ML_HYPE,
+	ML_STANDUP,
+	ML_SONG,
 
 	/* Decision States */
 	THRESHOLD_DECISION_START, // used to divide gamestates in game loop
@@ -46,6 +50,7 @@ typedef enum {
 	EVENT_RATIONS_MISSING,
 	EVENT_MOUSE_FOUND,
 	EVENT_AI_TAKEOVER,
+	EVENT_MORALE_LOW,
 	
 	/* Mini Game States */	
 	THRESHOLD_MINI,  // used to divide gamestates in game loop

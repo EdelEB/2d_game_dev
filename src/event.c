@@ -408,5 +408,37 @@ void code_vomit_add_all_events(void)
 		o->clicked = AI_FIXED;
 	}
 
+	/*EVENT_MORALE_LOW*/
+	{
+		e = event_new();
+		if (!e) {
+			slog("failed to create event in code vomit");
+			return;
+		}
+		e->id = EVENT_MORALE_LOW;
+		e->title = "Morale is Low";
+		e->prompt = "Crew members seem down in the dumps.";
+		o = &e->options[0];
+		o->_inuse = 1;
+		o->text = "Tell them a story about how great you are.";
+		o->clearance = DEFAULT;
+		o->clicked = ML_BRAG;
+		o = &e->options[1];
+		o->_inuse = 1;
+		o->text = "Remind them that going to Mars is a big deal.";
+		o->clearance = DEFAULT;
+		o->clicked = ML_HYPE;
+		o = &e->options[2];
+		o->_inuse = 1;
+		o->text = "Tell your comedian to do stand-up.";
+		o->clearance = COMEDIAN;
+		o->clicked = ML_STANDUP;
+		o = &e->options[3];
+		o->_inuse = 1;
+		o->text = "Tell your musician to play a song.";
+		o->clearance = MUSICIAN;
+		o->clicked = ML_SONG;
+	}
+
 	event_create_all_render_variables();
 }

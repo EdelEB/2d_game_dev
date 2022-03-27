@@ -114,6 +114,8 @@ gamestate_id map_travel(void)
 {
 	map.spot++;
 	map_set_position_by_spot(map.spot);
+	crew_lower_hunger();
+	crew_lower_morale();
 
 	switch (map.spot)
 	{
@@ -134,5 +136,6 @@ gamestate_id map_travel(void)
 
 gamestate_id map_to_crew_view(void)
 {
+	crew_view_update();
 	return CREW_VIEW;
 }

@@ -21,4 +21,9 @@ void gamestate_load(char* filename);
 
 void gamestate_save(char* filename);
 
+gamestate_id crew_lower_morale();
+gamestate_id crew_raise_morale();
+gamestate_id crew_lower_hunger();
+gamestate_id crew_raise_hunger();
+
 #endif // !__GAME_STATE_H__

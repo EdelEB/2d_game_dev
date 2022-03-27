@@ -456,4 +456,59 @@ void add_all_notes(void)
 		n->line_strings[3] = "Don't worry; we got'm";
 	}
 
+	/*ML_BRAG*/
+	{
+		n = note_new();
+		if (!n) {
+			slog("failed to create Notification in add_all_notes");
+			return;
+		}
+		n->id = ML_BRAG;
+		n->line_strings[0] = "You remind them that you are a perfect individual.";
+		n->line_strings[1] = "They look up and begin to smile. They had forgotten";
+		n->line_strings[2] = "about how glorious there leader was. Morale increased";
+	}
+
+	/*ML_HYPE*/
+	{
+		n = note_new();
+		if (!n) {
+			slog("failed to create Notification in add_all_notes");
+			return;
+		}
+		n->id = ML_HYPE;
+		n->line_strings[0] = "As you begin to discuss Mars and the spectacle of your";
+		n->line_strings[1] = "endeavour the crew eyes roll. They miss home and no ";
+		n->line_strings[2] = "longer care about the romantic Mars colonization that";
+		n->line_strings[3] = "they once fantasized about. Morale decreased.";
+	}
+
+	/*ML_STANDUP*/
+	{
+		n = note_new();
+		if (!n) {
+			slog("failed to create Notification in add_all_notes");
+			return;
+		}
+		n->id = ML_STANDUP;
+		n->line_strings[0] = "Elon Musk wants to send people to mars...";
+		n->line_strings[1] = "I think we can all agree that he is the most creative";
+		n->line_strings[2] = "serial killer of all time.";
+		n->line_strings[3] = "The crew laughs and morale improves.";
+	}
+
+	/*ML_SONG*/
+	{
+		n = note_new();
+		if (!n) {
+			slog("failed to create Notification in add_all_notes");
+			return;
+		}
+		n->id = ML_SONG;
+		n->line_strings[0] = "The musician grabs his guitar and plays a couple ";
+		n->line_strings[1] = "Greta Van Fleet songs because they are the best band.";
+		n->line_strings[2] = "The crew loves it and morale is improved.";
+		n->line_strings[3] = "";
+	}
+
 }

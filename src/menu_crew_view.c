@@ -43,7 +43,7 @@ Menu* menu_crew_view_init(void)
 				y_offset * 3
 			);
 
-			update_crew_member_hunger(i);
+			crew_view_update_member_hunger(i);
 
 			sprintf(str, "Morale: %d", cm->morale);
 			crew_view.label_list[j + 3] = ui_create_text_label(
@@ -88,15 +88,24 @@ gamestate_id crew_view_to_map(void)
 	return MAP;
 }
 
-void update_crew_member_hunger(int i)
+void crew_view_update()
 {
-	int j;
+	Uint8 i;
+	for (i = 0; i < MAX_CREW; i++)
+	{
+		crew_view_update_member_hunger(i);
+		crew_view_update_member_morale(i);
+		crew_view_update_member_alive(i);
+	}
+}
+
+void crew_view_update_member_hunger(int i)
+{
 	char str[16];
 	crew_member* cm = &gamestate.crew[i];
 
-	j = 5 * i + 1;
 	sprintf(str, "Hunger: %i", cm->hunger);
-	crew_view.label_list[j + 2] = ui_create_text_label(
+	crew_view.label_list[5*i + 3] = ui_create_text_label(
 		str,
 		(WINDOW_WIDTH >> 3) + 190 * (i),
 		(WINDOW_HEIGHT >> 3) << 2
@@ -107,6 +116,31 @@ void update_crew_member_hunger(int i)
 		str,
 		25,
 		75
+	);
+}
+
+void crew_view_update_member_morale(int i)
+{
+	char str[16];
+
+	sprintf(str, "Morale: %d", gamestate.crew[i].morale);
+	crew_view.label_list[5*i + 4] = ui_create_text_label(
+		str,
+		(WINDOW_WIDTH >> 3) + 190 * (i),
+		(WINDOW_HEIGHT >> 3) * 5
+	);
+}
+
+void crew_view_update_member_alive(int i)
+{
+	char str[16];
+
+	if (gamestate.crew[i].is_alive) { sprintf(str, "Alive"); }
+	else { sprintf(str, "Dead"); }
+	crew_view.label_list[5*i + 5] = ui_create_text_label(
+		str,
+		(WINDOW_WIDTH >> 3) + 190 * (i),
+		(WINDOW_HEIGHT >> 3) * 6
 	);
 }
 
@@ -121,7 +155,7 @@ void feed_crew_member(int i)
 
 	gamestate.food--;
 	gamestate.crew[i].hunger++;
-	update_crew_member_hunger(i);
+	crew_view_update_member_hunger(i);
 	
 	return NONE;
 }

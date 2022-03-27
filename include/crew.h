@@ -23,10 +23,5 @@ typedef	struct CREW_MEMBER{
 
 crew_member crew_options[MAX_CREW_OPTIONS];
 
-//gamestate_id crew_lower_morale();
-//gamestate_id crew_raise_morale();
-//gamestate_id crew_lower_hunger();
-//gamestate_id crew_raise_hunger();
-
 void code_vomit_create_crew_member_options(void);
 #endif

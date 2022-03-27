@@ -6,11 +6,16 @@
 
 struct MENU* menu_crew_view_init(void);
 
+
 /*
 * @brief updates the label for crew_member->hunger at gamestate.crew[i]
 * @note that this is only intended for use inside menu_crew_view.c
 */
-void update_crew_member_hunger(int i);
+void crew_view_update_member_hunger(int i);
+void crew_view_update_member_morale(int i);
+void crew_view_update_member_alive(int i);
+
+void crew_view_update();
 
 /*
 * @brief this used as the on_click function for the buttons displayed

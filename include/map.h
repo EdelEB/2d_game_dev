@@ -10,6 +10,7 @@
 #include "simple_logger.h"
 
 #include "ui_stuff.h"
+#include "menu_crew_view.h"
 #include "gamestate.h"
 
 //int traveling = 0;
