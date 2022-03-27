@@ -2,8 +2,13 @@
 #define __GAME_STATE_H__
 
 #include <SDL.h>
+
+#include "simple_json.h"
+
 #include "crew.h"
 #include "enum_declarations.h"
+
+#define SAVE_FILE "saves/save_game.json"
 
 struct GAMESTATE{
 	crew_member		crew[MAX_CREW];

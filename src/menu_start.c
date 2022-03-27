@@ -41,7 +41,7 @@ gamestate_id start_new_game(void)
 
 gamestate_id load_game(void)
 {
-	gamestate_load("save_game.json");
+	gamestate_load("saves/save_game.json");
 	return NONE;
 }
 

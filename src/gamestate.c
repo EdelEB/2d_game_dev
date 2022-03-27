@@ -6,11 +6,38 @@ void gamestate_new(void)
 	gamestate.map_spot = 0;
 }
 
-void gamestate_load(char* filename) {}
+void gamestate_load(char* filename) 
+{
+	SJson* arr = sj_load(SAVE_FILE);
+}
 
 void gamestate_save(char* filename) 
 {
+	int i;
+	SJson *arr, *ret = sj_array_new();
+	SJson* data;
 
+	for (i = 0; i < MAX_CREW; i++)
+	{
+		
+		arr = sj_array_new();
+		data = sj_new_str(gamestate.crew[i].name);
+		sj_array_append(arr, data);
+		data = sj_new_str(gamestate.crew[i].title);
+		sj_array_append(arr, data);
+		data = sj_new_int(gamestate.crew[i].clearance);
+		sj_array_append(arr, data);
+		data = sj_new_int(gamestate.crew[i].hunger);
+		sj_array_append(arr, data);
+		data = sj_new_int(gamestate.crew[i].morale);
+		sj_array_append(arr, data);
+		data = sj_new_int(gamestate.crew[i].is_alive);
+		sj_array_append(arr, data);
+		
+		sj_array_append(ret, arr);
+	}	
+
+	sj_save(ret, SAVE_FILE);
 }
 
 gamestate_id crew_lower_morale()

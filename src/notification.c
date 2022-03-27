@@ -134,6 +134,7 @@ gamestate_id note_listen(Uint32 mouse_state)
 	if (mouse_state == 1) 
 	{ 
 		rest = REST_DELAY;
+		gamestate_save(SAVE_FILE);
 		return MAP; 
 	}
 	return NONE;
