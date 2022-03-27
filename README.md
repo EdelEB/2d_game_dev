@@ -16,4 +16,6 @@ Ration Split Minigame: Using the mouse try to equally split the rectangle into 5
 
 Seeing Deliverables:
 
-This stage of the project does not have all the parts connected yet, and some of the ways things are done are subpar at best. In order to view specific events/mini_games/menus you will need to change a variable in "game.c" On line 63 current_gamestate_id can be changed to the game_state_id of your choosing. A full list of the gamestates available can be seen in "enum_declarations.h" Crew members classes are not easily visible in the code or in any of the gamestates currently, however their flags are listed in "enum_declarations.h" as well; they are simple flags that determine which options show in decision events, however since the crew selection is not working yet they cannot be seen in action. Currently simple_json is still giving me issues which mean the map and resources declared in gamestate.h are still inactive and unused. 
+This stage of the project does not have all the parts connected yet, and some of the ways things are done is disgusting. A demo is playable. You can start, pick a crew, and travel to experience the events & minigames. Not all events made are part of the traveling. You can also feed crew members. 
+
+In order to view specific events/mini_games/menus you will need to change a variable in "game.c". On line 62 current_gamestate_id can be changed to the game_state_id of your choosing. A full list of the gamestates available can be seen in "enum_declarations.h" 
