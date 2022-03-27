@@ -50,10 +50,38 @@ void map_init(void)
 		map_to_crew_view		
 	);
 
+	map.travel_button = ui_create_button(
+		WINDOW_WIDTH-120,
+		WINDOW_HEIGHT-120,
+		170,
+		40,
+		"Travel",
+		map_travel
+	);
+
 	// NOTE : This is where game data will be loaded
 	map.spot = 0;
 	map_set_position_by_spot(0);
 }
+
+gamestate_id map_listen(Uint32 mouse_state, int mx, int my)
+{
+	gamestate_id id;
+	id = ui_button_listen(&map.crew_view_button, mouse_state, mx, my);
+	if (id) { return id; }
+	id = ui_button_listen(&map.travel_button, mouse_state, mx, my);
+	return id;
+
+}
+
+void map_draw(void)
+{
+	gf2d_sprite_draw_image(map.image, vector2d(0,0));
+	gf2d_sprite_draw_image(map.ship_image, map.position);
+	
+	ui_button_render(&map.crew_view_button);
+	ui_button_render(&map.travel_button);
+}	
 
 void map_set_position_by_spot(Uint32 spot)
 {
@@ -63,23 +91,48 @@ void map_set_position_by_spot(Uint32 spot)
 			map.position.x = 20;
 			map.position.y = 630;
 			break;
+		case 1:
+			map.position.x = 304;
+			map.position.y = 510;
+			break;
+		case 2:
+			map.position.x = 545;
+			map.position.y = 366;
+			break;
+		case 3:
+			map.position.x = 764;
+			map.position.y = 230;
+			break;
+		case 4:
+			map.position.x = 954;
+			map.position.y = 130;
+			break;
 	}
+}
+
+gamestate_id map_travel(void) 
+{
+	map.spot++;
+	map_set_position_by_spot(map.spot);
+
+	switch (map.spot)
+	{
+	case 0:
+		break;
+	case 1:
+		return EVENT_ASTEROIDS_AHEAD;
+	case 2:
+		return EVENT_AI_TAKEOVER;
+	case 3:
+		return EVENT_RATIONS_MISSING;
+	case 4:
+		return EVENT_RATIONS_LOW;
+	}
+
+	return NONE;
 }
 
 gamestate_id map_to_crew_view(void)
 {
 	return CREW_VIEW;
 }
-
-gamestate_id map_listen(Uint32 mouse_state, int mx, int my)
-{
-	return ui_button_listen(&map.crew_view_button, mouse_state, mx, my);
-}
-
-void map_draw(void)
-{
-	gf2d_sprite_draw_image(map.image, vector2d(0,0));
-	gf2d_sprite_draw_image(map.ship_image, map.position);
-	
-	ui_button_render(&map.crew_view_button);
-}	

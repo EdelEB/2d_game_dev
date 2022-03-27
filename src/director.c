@@ -82,6 +82,7 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 				mini_holder.current_mini->run(mini_holder.current_mini);
 				if (mini_holder.current_mini->end_state)
 				{
+					mini_end(mini_holder.current_mini);
 					return mini_holder.current_mini->end_state;
 				}
 				return NONE;

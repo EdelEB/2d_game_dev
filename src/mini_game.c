@@ -65,7 +65,7 @@ void mini_end(MiniGame* self)
 	
 	for (i = 0; i < MAX_MINI_ENTITIES; i++)
 	{
-		if (self->entities[i]->_inuse)
+		if (self->entities[i])
 		{
 			entity_free(self->entities[i]);
 		}

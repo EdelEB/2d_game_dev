@@ -12,6 +12,7 @@
 #include "tools.h"
 #include "entity.h"
 #include "enum_declarations.h"
+#include "ui_stuff.h"
 
 
 extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;

@@ -9,13 +9,11 @@ typedef struct MY_LINE
 	Vector2D	pt2;
 }my_line;
 
-my_line line_list[MAX_CREW-1];
-
-Uint8 cut_count = 0;
-
 SDL_Rect ration_rect;
-
+my_line line_list[MAX_CREW];
+Uint8 cuts_remaining;
 Uint32 cut_delay = 50;
+ui_label cuts_label = { 0 };
 
 MiniGame* mini_ration_init(void)
 {
@@ -38,7 +36,7 @@ void add_line(Vector2D p1, Vector2D p2)
 {
 	int i;
 
-	for (i = 0; i < (MAX_CREW - 1); i++)
+	for (i = 0; i < (MAX_CREW); i++)
 	{
 		if (line_list[i]._inuse) continue;
 
@@ -47,7 +45,7 @@ void add_line(Vector2D p1, Vector2D p2)
 		temp_line.pt2 = p2;
 		temp_line._inuse = 1;
 		line_list[i] = temp_line;
-		cut_count++;
+		cuts_remaining--;
 		return;
 	}
 
@@ -85,31 +83,40 @@ void mini_ration_draw()
 
 	gf2d_draw_rect(ration_rect, color);
 	
-	for (i = 0; i < (MAX_CREW - 1); i++)
+	for (i = 0; i < (MAX_CREW+1 - 1); i++)
 	{
 		if (line_list[i]._inuse)
 		{
 			gf2d_draw_line(line_list[i].pt1, line_list[i].pt2, color);
 		}
 	}
+
+	//This is gross and will be fixed later
+	char* str[20];
+	sprintf(str, "Cuts Remaining: %d", cuts_remaining);
+	cuts_label = ui_create_text_label(
+		str,
+		WINDOW_WIDTH - 275,
+		50
+	);
+	ui_label_render(&cuts_label);
 }
 
 gamestate_id determine_ration_result()
 {
 	int i, j;
+	float biggest = 0, smallest = 1500, tempf;
 	my_line temp;
 	
 	slog("PreSort:");
-	for (i = 0; i < MAX_CREW - 1; i++)
+	for (i = 0; i < MAX_CREW; i++)
 	{
-		
-		slog("Line %i : %f", i, line_list[i].pt1.x);
+		slog("Line %d : %f", i, line_list[i].pt1.x);
 	}
-
 	/* bubble sort */
-	for(i = 0 ; i < MAX_CREW-2 ; i++)
+	for(i = 0 ; i < MAX_CREW-1 ; i++)
 	{ 
-		for (j = i+1; j < MAX_CREW - 1; j++)
+		for (j = i+1; j < MAX_CREW; j++)
 		{
 			if (line_list[i].pt1.x > line_list[j].pt1.x)
 			{
@@ -119,13 +126,37 @@ gamestate_id determine_ration_result()
 			}
 		}
 	}
-
 	slog("PostSort");
-	for (i = 0; i < MAX_CREW - 1; i++)
+	for (i = 0; i < MAX_CREW; i++)
 	{
-		slog("Line %i : %f", i, line_list[i].pt1.x);
+		slog("Line %d : %f", i, line_list[i].pt1.x);
+	}
+	
+	for (i = 0; i < MAX_CREW+1; i++) {
+		/*first slice*/
+		if (i == 0){
+			tempf = line_list[i].pt1.x - ration_rect.x;
+		}
+		/*last slice*/
+		else if (i == MAX_CREW) {
+			tempf = ration_rect.x + ration_rect.w - line_list[i - 1].pt1.x;
+		}
+		/*intermitant slices*/
+		else{
+			tempf = line_list[i].pt1.x - line_list[i - 1].pt1.x;
+		}
+
+		slog("temp(%.0f) biggest(%.0f) smallest(%.0f)", tempf, biggest, smallest);
+
+		if (tempf >= biggest) { biggest = tempf; }
+		if (tempf <= smallest) { smallest = tempf; }
 	}
 
+	/*Win Condition is based on the difference in size between the biggest and smallest piece*/
+	slog("biggest(%.0f) - smallest(%.0f) = %.0f", biggest, smallest, biggest - smallest);
+	if (biggest - smallest < 70){
+		return SUCCESS_RATION_SPLIT;
+	}
 	return FAIL_RATION_SPLIT;
 }
 
@@ -138,7 +169,9 @@ void mini_ration_start(MiniGame* self)
 		return;
 	}
 
-	for (i = 0; i < (MAX_CREW - 1); i++)
+	cuts_remaining = MAX_CREW;
+
+	for (i = 0; i < MAX_CREW; i++)
 	{
 		line_list[i]._inuse = 0;
 	}
@@ -154,8 +187,7 @@ void mini_ration_run(MiniGame* self)
 		return;
 	}
 
-	if (cut_count == MAX_CREW - 1) {
-		slog("Cut Count: %i", cut_count);
+	if (cuts_remaining < 1) {
 		self->end_state = determine_ration_result();
 	}
 

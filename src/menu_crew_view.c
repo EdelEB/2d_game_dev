@@ -16,7 +16,7 @@ Menu* menu_crew_view_init(void)
 		WINDOW_HEIGHT >> 4
 	);
 
-	sprintf(str, "Food: %i", gamestate.food);
+	sprintf(str, "Food: %d", gamestate.food);
 	crew_view.label_list[MAX_MENU_LABELS - 1] = ui_create_text_label(
 		str,
 		25,
@@ -45,7 +45,7 @@ Menu* menu_crew_view_init(void)
 
 			update_crew_member_hunger(i);
 
-			sprintf(str, "Morale: %i", cm->morale);
+			sprintf(str, "Morale: %d", cm->morale);
 			crew_view.label_list[j + 3] = ui_create_text_label(
 				str,
 				x_offset,
