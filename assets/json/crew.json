@@ -1,0 +1,18 @@
+{
+    "crew": [
+
+        {
+            "name": "bob",
+            "title": 0,
+            "hunger": 10
+        },
+
+        {
+            "name": "bob",
+            "title": 0,
+            "hunger": 10
+        }
+    ],
+
+    "events": []
+}
