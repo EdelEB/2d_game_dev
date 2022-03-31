@@ -1,9 +1,0 @@
-{
-    "test": "val",
-    "array": 
-    [
-        {
-            "inner_test": "val"
-        }
-    ]
-}

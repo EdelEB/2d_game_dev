@@ -57,7 +57,7 @@ ui_button ui_create_button(int x, int y, int w, int h, char* str, void (*on_clic
 	ui_button button;
 
 	button._inuse = 1;
-	button.text_label = ui_create_text_label(str, x+5, y);
+	button.text_label = ui_create_text_label(str, x+10, y+10);
 	button.click_box.x = x;
 	button.click_box.y = y;
 	button.click_box.w = w;
@@ -93,10 +93,8 @@ void ui_button_render(ui_button* b)
 		slog("ui_button_render cannot render NULL ui_button*");
 		return;
 	}
-
-	ui_label_render(&b->text_label);
-
 	gf2d_draw_rect(b->click_box, vector4d(255, 255, 255, 255));
+	ui_label_render(&b->text_label);
 }
 
 gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
@@ -149,4 +147,18 @@ gamestate_id ui_button_click(ui_button* b)
 	}
 	
 	return b->on_click(b);
+}
+
+ui_sprite ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count)
+{
+	ui_sprite s;
+
+	s.sprite = sprite;
+	vector2d_copy(s.position, position);
+	vector2d_copy(s.scale, scale);
+	vector2d_copy(s.scale_center, scale_center);
+	vector3d_copy(s.rotation, rotation);
+	s.frame_count = frame_count;
+
+	return s;
 }

@@ -7,6 +7,7 @@
 #include "simple_logger.h"
 #include "gf2d_graphics.h"
 #include "gf2d_draw.h"
+#include "gf2d_sprite.h"
 
 #include "enum_declarations.h"
 
@@ -14,29 +15,42 @@
 extern Uint8 DEBUG;
 extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
 
+/*This allows all fonts to only be loaded once*/
 struct FONT_INFO{
 	TTF_Font	*title_font, *header_font, *text_font;
 	SDL_Color	font_color;
 }font_info;
 
-typedef struct UI_LABEL {
+typedef struct UI_SPRITE {
 	Uint8			_inuse;
-	SDL_Texture*	texture;
-	SDL_Rect		render_rect;
+	Sprite*			sprite;
+	Vector2D		position, scale, scale_center;
+	Vector3D		rotation;
+	Uint32			frame, frame_count;
+}ui_sprite;
+
+typedef struct UI_LABEL {
+	Uint8			_inuse;			/**< 1 : being used, 0 : not being used*/
+	SDL_Texture*	texture;		/**< texture created using SDL_ttf and is essential to rendering*/
+	SDL_Rect		render_rect;	/**< this rect encapsulates the text in the texture and is necessary for rendering*/
 }ui_label;
 
 typedef struct UI_BUTTON{
-	Uint8		_inuse;
-	ui_label	text_label;
-	SDL_Rect	click_box;
-	Uint16		click_timer;
-	gamestate_id (*on_click)(struct UI_BUTTON* self);
+	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
+	ui_label	text_label;			/**< this is the a label holding the text seen within the button*/
+	SDL_Rect	click_box;			/**< this box defines where the button bounds are (what counts as clicking the button)*/
+	Uint16		click_timer;		/**< when click_timer > 0 the button cannot be clicked. ui_button_listen() decrements it*/
+	gamestate_id (*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
+
+
 
 /*
 * @brief this initializes all information regarding fonts and colors used to create labels
 */
 void ui_font_info_init(void);
+
+ui_sprite ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count);
 
 /*
 * @brief create a ui_label object which can be used to print text to the screen

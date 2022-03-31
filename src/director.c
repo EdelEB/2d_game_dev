@@ -1,7 +1,11 @@
 #include "director.h"
 
 struct MINI_HOLDER{
-	MiniGame *current_mini, *asteroid_dodge, *ration_split, *mouse_hunt;
+	MiniGame 
+		*current_mini, 
+		*asteroid_dodge, 
+		*ration_split, 
+		*mouse_hunt;
 	SDL_Thread *mini_thread;
 }mini_holder;
 

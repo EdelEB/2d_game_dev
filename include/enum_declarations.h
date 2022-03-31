@@ -1,9 +1,6 @@
 #ifndef __ENUM_DECLARATIONS_H__
 #define __ENUM_DECLARATIONS_H__
 
-
-
-
 typedef enum {
 
 	NONE,

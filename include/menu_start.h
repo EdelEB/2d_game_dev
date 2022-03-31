@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "gamestate.h"
 #include "ui_stuff.h"
+#include "menu_crew_view.h"
 
 struct MENU* menu_start_init(void);
 

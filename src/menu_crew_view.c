@@ -104,14 +104,14 @@ void crew_view_update_member_hunger(int i)
 	char str[16];
 	crew_member* cm = &gamestate.crew[i];
 
-	sprintf(str, "Hunger: %i", cm->hunger);
+	sprintf(str, "Hunger: %d", cm->hunger);
 	crew_view.label_list[5*i + 3] = ui_create_text_label(
 		str,
 		(WINDOW_WIDTH >> 3) + 190 * (i),
 		(WINDOW_HEIGHT >> 3) << 2
 	);
 
-	sprintf(str, "Food: %i", gamestate.food);
+	sprintf(str, "Food: %d", gamestate.food);
 	crew_view.label_list[MAX_MENU_LABELS - 1] = ui_create_text_label(
 		str,
 		25,
@@ -150,6 +150,11 @@ void feed_crew_member(int i)
 	if (gamestate.food < 1)
 	{
 		slog("feed_crew_member cannot feed crew with no food");
+		return NONE;
+	}
+	else if (!gamestate.crew[i].is_alive)
+	{
+		slog("feed_crew_member cannot feed dead crew member");
 		return NONE;
 	}
 

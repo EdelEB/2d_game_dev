@@ -67,7 +67,7 @@ int main(int argc, char * argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         mouse_state = SDL_GetMouseState(&mx,&my);
-        if (DEBUG)
+        if (DEBUG && mouse_state == 1)
         { 
             if (mouse_click_cooldown > 0) {
                 mouse_click_cooldown--;

@@ -11,10 +11,13 @@
 #define SAVE_FILE "saves/save_game.json"
 
 struct GAMESTATE{
-	crew_member		crew[MAX_CREW];
 	Uint32			food;
 	Uint32			map_spot; 
 	gamestate_id	completed_events[40];
+	crew_member		crew[MAX_CREW];	// DO NOT CHANGE ORDER OF DECLERATIONS
+									//I don't know why, but when this is the first attribute, 
+									// when its loaded from json, when crew[MAX_CREW-1].is_alive 
+									// and crew[MAX_CREW-1]._inuse are changed  attribute food is affected
 }gamestate;
 
 /*
@@ -22,10 +25,13 @@ struct GAMESTATE{
 */
 void gamestate_new(void);
 
+/*
+* @brief Sets gamestate values to those found in fiel
+* @param filename is the name of the file being loaded
+*/
 void gamestate_load(char* filename);
 
 void gamestate_save(char* filename);
-
 
 Uint8 crew_check_clearance(event_clearance c);
 
