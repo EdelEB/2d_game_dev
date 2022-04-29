@@ -68,22 +68,6 @@ ui_label ui_create_text_label(char* str, int x, int y)
 	return ui_create_label_helper(str, x, y, font_info.text_font);
 }
 
-ui_button ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void))
-{
-	ui_button button;
-
-	button._inuse = 1;
-	button.text_label = ui_create_text_label(str, x+10, y+10);
-	button.click_box.x = x;
-	button.click_box.y = y;
-	button.click_box.w = w;
-	button.click_box.h = h;
-	button.on_click = on_click;
-
-	return button;
-
-}
-
 void ui_label_render(ui_label* l)
 {
 	if (!l) {
@@ -99,6 +83,23 @@ void ui_label_render(ui_label* l)
 	);
 
 	if (DEBUG){ gf2d_draw_rect(l->render_rect, vector4d(55, 255, 255, 255)); }
+}
+
+
+ui_button ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void))
+{
+	ui_button button;
+
+	button._inuse = 1;
+	button.text_label = ui_create_text_label(str, x + 10, y + 10);
+	button.click_box.x = x;
+	button.click_box.y = y;
+	button.click_box.w = w;
+	button.click_box.h = h;
+	button.on_click = on_click;
+
+	return button;
+
 }
 
 void ui_button_render(ui_button* b)
@@ -198,3 +199,21 @@ ui_sprite ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Ve
 
 	return s;
 }
+
+
+ui_draggable ui_create_draggable(Vector2D position, Vector2D size)
+{
+	ui_draggable d;
+
+	d._inuse = 1;
+	d.is_held = 0;
+	vector2d_copy(d.position, position);
+	vector2d_copy(d.prev_position, position);
+	d.click_box.x = position.x;
+	d.click_box.y = position.y;
+	d.click_box.w = size.x;
+	d.click_box.h = size.y;
+
+	return d;
+}
+void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my);

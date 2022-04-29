@@ -1,18 +1,17 @@
 #include "menu_start.h"
 
-Menu menu_start = { 0 };
-
 Menu* menu_start_init()
 {
-	menu_start.id = MENU_START;
+	Menu* menu_start = menu_new();
+	menu_start->id = MENU_START;
 
-	menu_start.label_list[0] = ui_create_title_label(
+	menu_start->label_list[0] = ui_create_title_label(
 		"The Martian Trail",
 		25,
 		25
 	);
 
-	menu_start.button_list[0] = ui_create_button(
+	menu_start->button_list[0] = ui_create_button(
 		(WINDOW_WIDTH >> 1) - 100,
 		(WINDOW_HEIGHT >> 1) - 20,
 		200,
@@ -21,7 +20,7 @@ Menu* menu_start_init()
 		start_new_game
 	);
 
-	menu_start.button_list[1] = ui_create_button(
+	menu_start->button_list[1] = ui_create_button(
 		(WINDOW_WIDTH >> 1) - 100,
 		(WINDOW_HEIGHT >> 1) + 60,
 		200,

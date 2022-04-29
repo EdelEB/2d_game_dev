@@ -1,15 +1,17 @@
 #include "menu_crew_select.h"
 
-Menu menu_crew_select = { 0 };
 Uint32 crew_options_index = 0;  // current index in crew_options
 Uint16 crew_additions = 0;
 
 Menu* menu_crew_select_init(void)
 {
-	menu_crew_select.id = CREW_SELECT;
+	Menu* menu_crew_select = menu_new();
+	if (!menu_crew_select) { slog("Could not allocate Menu* for menu_crew_select"); }
+
+	menu_crew_select->id = CREW_SELECT;
 	char* crew_member_display_string;
 
-	menu_crew_select.button_list[0] = ui_create_button(
+	menu_crew_select->button_list[0] = ui_create_button(
 		WINDOW_WIDTH-200,
 		(WINDOW_HEIGHT >> 3) * 7,
 		100,
@@ -17,7 +19,7 @@ Menu* menu_crew_select_init(void)
 		"Next",
 		next_crew_member);
 
-	menu_crew_select.button_list[1] = ui_create_button(
+	menu_crew_select->button_list[1] = ui_create_button(
 		(WINDOW_WIDTH >> 1) - 50,
 		(WINDOW_HEIGHT >> 3) * 7,
 		100,
@@ -26,7 +28,7 @@ Menu* menu_crew_select_init(void)
 		select_crew_member
 	);
 
-	menu_crew_select.label_list[0] = ui_create_title_label(
+	menu_crew_select->label_list[0] = ui_create_title_label(
 		"Select Your Crew",
 		(WINDOW_WIDTH >> 1) - 300,
 		(WINDOW_HEIGHT >> 4)
@@ -75,12 +77,14 @@ gamestate_id select_crew_member(void)
 
 void update_name_and_title(void)
 {
-	menu_crew_select.label_list[1] = ui_create_header_label(
+	Menu* crew_select = menu_get_by_id(CREW_SELECT);
+
+	crew_select->label_list[1] = ui_create_header_label(
 		crew_options[crew_options_index].name,
 		(WINDOW_WIDTH >> 1) - 100,
 		(WINDOW_HEIGHT >> 1)
 	);
-	menu_crew_select.label_list[2] = ui_create_header_label(
+	crew_select->label_list[2] = ui_create_header_label(
 		crew_options[crew_options_index].title,
 		(WINDOW_WIDTH >> 1) - 100,
 		(WINDOW_HEIGHT >> 1) + 50

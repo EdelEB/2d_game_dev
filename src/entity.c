@@ -1,7 +1,6 @@
 #include "entity.h"
 
-typedef struct
-{
+typedef struct{
 	Uint32 max_entities;		/**<max number of entities in game*/
 	Entity* entity_list;		/**<array of all entities*/
 }EntityManager;

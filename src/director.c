@@ -9,10 +9,6 @@ struct MINI_HOLDER{
 	SDL_Thread *mini_thread;
 }mini_holder;
 
-struct MENU_HOLDER {
-	Menu *start, *crew_select, *crew_view;
-}menu_holder;
-
 void director_init(void)
 {
 
@@ -22,10 +18,12 @@ void director_init(void)
 	note_manager_init(50);
 	
 	map_init();
-	menu_holder.start = menu_start_init();
-	menu_holder.crew_select = menu_crew_select_init();
-	// I don't think this should be initialized until after the crew is loaded/selected
-	menu_holder.crew_view = menu_crew_view_init();
+
+	menu_manager_init(1024);
+	menu_start_init();
+	menu_crew_select_init();
+	// menu_crew_view is not initialized here because the crew needs to be selected first
+	// therefore, it is initialized after load game is click in menu_start or after menu_crew_select is complete
 	
 	entity_manager_init(1024);
 	mini_holder.asteroid_dodge = mini_asteroid_init();
@@ -44,12 +42,8 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 			{
 				case MAP: 
 					return map_listen(mouse_state, *mx, *my); 
-				case MENU_START:
-					return menu_listen(menu_holder.start, mouse_state, mx, my);
-				case CREW_SELECT:
-					return menu_listen(menu_holder.crew_select, mouse_state, mx, my);
-				case CREW_VIEW:
-					return menu_listen(menu_holder.crew_view, mouse_state, mx, my);
+				default:
+					return menu_listen(menu_get_by_id(id), mouse_state, mx, my);
 			}
 			slog("director_think miss 1");
 			break;
@@ -112,14 +106,8 @@ void director_draw(gamestate_id id)
 			case MAP:
 				map_draw();
 				break;
-			case MENU_START:
-				return menu_draw(menu_holder.start);
-			case CREW_SELECT:
-				menu_draw(menu_holder.crew_select);
-				break;
-			case CREW_VIEW:
-				menu_draw(menu_holder.crew_view);
-				break;
+			default:
+				return menu_draw(menu_get_by_id(id));
 		}
 		break;
 	case EVENT:

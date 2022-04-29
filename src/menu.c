@@ -1,5 +1,60 @@
 #include "menu.h"
 
+typedef struct{
+	Uint32 max_menus;	/**<max number of menus in game*/
+	Menu* menu_list;	/**<array of all menus*/
+}MenuManager;
+
+MenuManager menu_manager = { 0 };
+
+void menu_manager_init(Uint32 max_menus)
+{
+	if (max_menus == 0)
+	{
+		slog("Cannot allocate memory for zero menus. Stop wasting my time");
+		return;
+	}
+	if (menu_manager.menu_list)
+	{
+		slog("Entity manager already initialized dumb dumb");
+	}
+	menu_manager.max_menus = max_menus;
+	menu_manager.menu_list = gfc_allocate_array(sizeof(Menu), max_menus);
+
+	atexit(menu_manager_close);
+	slog("menu manager initialized");
+}
+
+void menu_manager_close() {}
+
+Menu* menu_new(void)
+{
+	int i;
+	for (i = 0; i < menu_manager.max_menus; i++)
+	{
+		if (menu_manager.menu_list[i]._inuse) continue;
+
+		menu_manager.menu_list[i]._inuse = 1;
+		return &menu_manager.menu_list[i];
+	}
+	return NULL;  // you need a bigger max_menus and bigger menu_list; this shouldn't be a problem right now though
+}
+
+Menu* menu_get_by_id(gamestate_id id)
+{
+	int i;
+	for (i = 0; i < menu_manager.max_menus; i++) 
+	{
+		if (menu_manager.menu_list[i]._inuse &&
+			menu_manager.menu_list[i].id == id) {
+			return &menu_manager.menu_list[i];
+		}
+	}
+
+	slog("Error: menu_get_by_id() failed");
+	return NULL;
+}
+
 gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my)
 {
 	gamestate_id id;

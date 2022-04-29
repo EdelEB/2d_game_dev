@@ -26,7 +26,8 @@ struct FONT_INFO{
 }font_info;
 
 struct SOUND_FX {
-	Sound		*button_click, *gamestate_change;
+	Sound	*button_click;
+	Sound	*gamestate_change;
 }sound_fx;
 
 typedef struct UI_SPRITE {
@@ -41,17 +42,26 @@ typedef struct UI_LABEL {
 	Uint8			_inuse;			/**< 1 : being used, 0 : not being used*/
 	SDL_Texture*	texture;		/**< texture created using SDL_ttf and is essential to rendering*/
 	SDL_Rect		render_rect;	/**< this rect encapsulates the text in the texture and is necessary for rendering*/
+	ui_sprite		sprite;			/**< this is the label image*/
 }ui_label;
 
 typedef struct UI_BUTTON{
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
 	ui_label	text_label;			/**< this is the a label holding the text seen within the button*/
 	SDL_Rect	click_box;			/**< this box defines where the button bounds are (what counts as clicking the button)*/
+	ui_sprite	sprite_default;		/**< the image displayed while a button is idle*/
+	ui_sprite	sprite_hover;		/**< the image displayed while a button is hovered over*/
+	ui_sprite	sprite_pressed;		/**< the image displayed while a button is pressed*/
 	gamestate_id (*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
 
+/* UI_DRAGGABLE's are intended to be added to other ui components and allow them to be moved*/
 typedef struct UI_DRAGGABLE {
-	int x;
+	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
+	Uint8		is_held;			/**< 1 : mouse is pressed and on draggable, 0 : otherwize*/
+	Vector2D	position;			/**< this is the position the draggable is currently being rendered at*/
+	Vector2D	prev_position;		/**< this is the position the draggable was at prior to being held*/
+	SDL_Rect	click_box;			/**< this box defines where the draggable's bounds are*/
 }ui_draggable;
 
 /*
@@ -108,7 +118,6 @@ ui_button ui_create_button(int x, int y, int w, int h, char* str, void (*on_clic
 */
 void ui_button_render(ui_button* b);
 
-
 /*
 * @brief listens for when the button is clicked and calls the on_click function when it is
 * @param b is the ui_button that is listening
@@ -118,11 +127,11 @@ void ui_button_render(ui_button* b);
 * @returns gamestate_id if it changes gamestate NONE otherwise
 */
 gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my);
+
 /*
 * @brief this is intended to be used only during development when mouse input is not immediatley available where it is called
 */
 gamestate_id ui_button_listen_alone(ui_button* b);
-
 
 /*
 * @brief calls the passed button's on_click function
@@ -130,5 +139,8 @@ gamestate_id ui_button_listen_alone(ui_button* b);
 * @returns the gamestate_id return by b->on_click(b)
 */
 gamestate_id ui_button_click(ui_button* b);
+
+ui_draggable ui_create_draggable(Vector2D position, Vector2D size);
+void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my);
 
 #endif

@@ -20,6 +20,7 @@
 #define MAX_MENUS 10
 
 typedef struct MENU {
+	Uint8		   _inuse;
 	gamestate_id	id;
 
 	ui_sprite		sprite_list[MAX_MENU_SPRITES];	/**< this is an array of all the ui_sprite's present in the menu*/
@@ -28,6 +29,11 @@ typedef struct MENU {
 }Menu;
 
 gamestate_id menu_listen(Menu *m, Uint8 mouse_state, int* mx, int* my);
+
+void menu_manager_init(Uint32 max_menus);
+void menu_manager_close(void);
+Menu* menu_new(void);
+Menu* menu_get_by_id(gamestate_id id);
 
 void menu_draw(Menu *m);
 

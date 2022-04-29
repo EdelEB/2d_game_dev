@@ -73,13 +73,14 @@ int main(int argc, char * argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         mouse_state = SDL_GetMouseState(&mx,&my);
-        if (DEBUG && mouse_state == 1)
+        if (DEBUG && mouse_state != 0)
         { 
             if (mouse_click_cooldown > 0) {
                 mouse_click_cooldown--;
                 mouse_state = 0;
             }
             else {
+                slog("mouse_state: %d", mouse_state);
                 slog("mouse_clicked(%d, %d)", mx, my);
                 mouse_click_cooldown = CLICK_COOLDOWN;
             }
@@ -96,12 +97,6 @@ int main(int argc, char * argv[])
 
         mf += 0.1;
         if (mf >= 16.0)mf = 0;
-        
-        /*This should only hit after a state change. (Although when DEBUG is on this will be weird)*/
-        if (mouse_click_cooldown > 0) {
-            mouse_state = 0;
-            mouse_click_cooldown--;
-        }
 
         /*update things here*/
         new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my);        
@@ -110,7 +105,6 @@ int main(int argc, char * argv[])
         {
             slog("STATE CHANGE %d -> %d", current_gamestate_id, new_gamestate_id);
             current_gamestate_id = new_gamestate_id;
-            mouse_click_cooldown = CLICK_COOLDOWN; // makes sure there is no double click when a new state opens
         }
 
         /* clear drawing buffer */

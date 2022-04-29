@@ -1,23 +1,22 @@
 #include "menu_crew_view.h"
 
-Menu crew_view = { 0 };
-
 Menu* menu_crew_view_init(void)
 {
+	Menu* crew_view = menu_new();
 	int i, j, x_offset, y_offset;
 	crew_member* cm;
 	char str[16];
 
-	crew_view.id = CREW_VIEW;
+	crew_view->id = CREW_VIEW;
 
-	crew_view.label_list[0] = ui_create_title_label(
+	crew_view->label_list[0] = ui_create_title_label(
 		"Crew View",
 		(WINDOW_WIDTH >> 1) - 250,
 		WINDOW_HEIGHT >> 4
 	);
 
 	sprintf(str, "Food: %d", gamestate.food);
-	crew_view.label_list[MAX_MENU_LABELS - 1] = ui_create_text_label(
+	crew_view->label_list[MAX_MENU_LABELS - 1] = ui_create_text_label(
 		str,
 		25,
 		75
@@ -31,13 +30,13 @@ Menu* menu_crew_view_init(void)
 		j = 5 * i + 1; 
 		if(j < MAX_MENU_LABELS - 4)
 		{
-			crew_view.label_list[j] = ui_create_header_label(
+			crew_view->label_list[j] = ui_create_header_label(
 				cm->name,
 				x_offset,
 				y_offset << 1
 			);
 
-			crew_view.label_list[j + 1] = ui_create_text_label(
+			crew_view->label_list[j + 1] = ui_create_text_label(
 				cm->title,
 				x_offset,
 				y_offset * 3
@@ -46,7 +45,7 @@ Menu* menu_crew_view_init(void)
 			crew_view_update_member_hunger(i);
 
 			sprintf(str, "Morale: %d", cm->morale);
-			crew_view.label_list[j + 3] = ui_create_text_label(
+			crew_view->label_list[j + 3] = ui_create_text_label(
 				str,
 				x_offset,
 				y_offset * 5
@@ -54,13 +53,13 @@ Menu* menu_crew_view_init(void)
 
 			if (cm->is_alive) { sprintf(str, "Alive"); }
 			else { sprintf(str, "Dead"); }
-			crew_view.label_list[j + 4] = ui_create_text_label(
+			crew_view->label_list[j + 4] = ui_create_text_label(
 				str,
 				x_offset,
 				y_offset * 6
 			);
 
-			crew_view.button_list[i] = ui_create_button(
+			crew_view->button_list[i] = ui_create_button(
 				x_offset,
 				y_offset * 7,
 				x_offset - 190 * i,
@@ -71,7 +70,7 @@ Menu* menu_crew_view_init(void)
 		}
 	}
 
-	crew_view.button_list[i] = ui_create_button(
+	crew_view->button_list[i] = ui_create_button(
 		WINDOW_WIDTH - 100,
 		75,
 		75,
@@ -103,16 +102,17 @@ void crew_view_update_member_hunger(int i)
 {
 	char str[16];
 	crew_member* cm = &gamestate.crew[i];
+	Menu* crew_view = menu_get_by_id(CREW_VIEW);
 
 	sprintf(str, "Hunger: %d", cm->hunger);
-	crew_view.label_list[5*i + 3] = ui_create_text_label(
+	crew_view->label_list[5*i + 3] = ui_create_text_label(
 		str,
 		(WINDOW_WIDTH >> 3) + 190 * (i),
 		(WINDOW_HEIGHT >> 3) << 2
 	);
 
 	sprintf(str, "Food: %d", gamestate.food);
-	crew_view.label_list[MAX_MENU_LABELS - 1] = ui_create_text_label(
+	crew_view->label_list[MAX_MENU_LABELS - 1] = ui_create_text_label(
 		str,
 		25,
 		75
@@ -124,7 +124,7 @@ void crew_view_update_member_morale(int i)
 	char str[16];
 
 	sprintf(str, "Morale: %d", gamestate.crew[i].morale);
-	crew_view.label_list[5*i + 4] = ui_create_text_label(
+	menu_get_by_id(CREW_VIEW)->label_list[5*i + 4] = ui_create_text_label(
 		str,
 		(WINDOW_WIDTH >> 3) + 190 * (i),
 		(WINDOW_HEIGHT >> 3) * 5
@@ -137,7 +137,7 @@ void crew_view_update_member_alive(int i)
 
 	if (gamestate.crew[i].is_alive) { sprintf(str, "Alive"); }
 	else { sprintf(str, "Dead"); }
-	crew_view.label_list[5*i + 5] = ui_create_text_label(
+	menu_get_by_id(CREW_VIEW)->label_list[5*i + 5] = ui_create_text_label(
 		str,
 		(WINDOW_WIDTH >> 3) + 190 * (i),
 		(WINDOW_HEIGHT >> 3) * 6
