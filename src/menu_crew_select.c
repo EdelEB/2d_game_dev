@@ -4,7 +4,6 @@ Menu menu_crew_select = { 0 };
 Uint32 crew_options_index = 0;  // current index in crew_options
 Uint16 crew_additions = 0;
 
-
 Menu* menu_crew_select_init(void)
 {
 	menu_crew_select.id = CREW_SELECT;
@@ -63,7 +62,7 @@ gamestate_id select_crew_member(void)
 	crew_options[crew_options_index]._inuse = 0;
 	crew_additions++;
 
-	if (crew_additions == MAX_CREW)	
+	if (crew_additions >= MAX_CREW)	
 	{ 
 		menu_crew_view_init();
 		return CREW_VIEW; 

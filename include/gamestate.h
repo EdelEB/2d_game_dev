@@ -4,6 +4,7 @@
 #include <SDL.h>
 
 #include "simple_json.h"
+#include "gfc_text.h"
 
 #include "crew.h"
 #include "enum_declarations.h"

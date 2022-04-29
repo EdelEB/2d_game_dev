@@ -7,43 +7,36 @@
 #include "gf2d_graphics.h"
 #include "simple_logger.h"
 
-#include "gamestate.h"
+#include "gamestate.h" 
 #include "ui_stuff.h"
+//#include "enum_declarations.h"
 
 #define MAX_LINES 4
 extern const Uint32 WINDOW_HEIGHT;
 extern const Uint32 WINDOW_WIDTH;
 
-typedef struct NOTIFICATION {
+typedef struct EVENT_SIMPLE {
 	Uint8		   _inuse;
 	gamestate_id	id;
-	char* title;
-	char* line_strings[MAX_LINES];
+	
+	ui_label		labels[MAX_LINES];
 
-	SDL_Texture* title_texture;
+}Event_Simple;
 
-	SDL_Texture* line_textures[MAX_LINES];
-	SDL_Rect		title_rect;
-	SDL_Rect		line_rects[MAX_LINES];
+void event_simple_manager_init(Uint32 max_event_simples);
 
-}Notification;
+void event_simple_manager_close(void);
 
-void note_manager_init(Uint32 max_notes);
+Event_Simple* event_simple_new(void);
 
-void note_manager_close(void);
+Event_Simple* get_event_simple_by_id(gamestate_id id);
 
-Notification* note_new(void);
+void event_simple_draw(Event_Simple* es);
 
-void note_create_render_variables(Notification* n);
+gamestate_id event_simple_listen(Uint32 mouse_state);
 
-void note_create_all_render_variables(void);
+void load_events_simple(char* filename);
 
-Notification* get_note_by_id(gamestate_id id);
-
-void note_draw(Notification* n);
-
-gamestate_id note_listen(Uint32 mouse_state);
-
-void add_all_notes(void);
+//void add_all_event_simples(void);
 
 #endif

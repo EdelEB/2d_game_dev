@@ -5,6 +5,7 @@
 #include "gf2d_draw.h"
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
+#include "gfc_audio.h"
 
 #include "director.h"
 
@@ -22,7 +23,8 @@ int main(int argc, char * argv[])
     Uint8 done = 0;
     const Uint8 * keys;
     float mf = 0;
-    
+    Uint8 was_mouse_down = 0;
+
     Sprite *bg_current, *bg_default;
 
     int mx,my;
@@ -51,7 +53,8 @@ int main(int argc, char * argv[])
     }
 
     /*Initialize pretty much everything*/
-    ui_font_info_init();
+    ui_stuff_init();
+    gfc_audio_init(10, 5, 5, 3, 1, 0);
     director_init();
     
     /* Set default background */
@@ -61,6 +64,9 @@ int main(int argc, char * argv[])
     /* Set game start state */
     current_gamestate_id = MENU_START;
 
+    Sound* music_grand = gfc_sound_load("assets/sound/music_grand.mp3", 1, 1);
+    gfc_sound_play(music_grand, 1, 0.1, -1, -1);
+    
     /*main game loop*/
     while(!done)
     {
@@ -101,7 +107,7 @@ int main(int argc, char * argv[])
         new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my);        
         
         if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 
-        { 
+        {
             slog("STATE CHANGE %d -> %d", current_gamestate_id, new_gamestate_id);
             current_gamestate_id = new_gamestate_id;
             mouse_click_cooldown = CLICK_COOLDOWN; // makes sure there is no double click when a new state opens
@@ -126,7 +132,10 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
 
+    /*Close tools*/
+    gfc_sound_clear_all();
     TTF_Quit();
+
     slog("---==== END ====---");
     return 0;
 }

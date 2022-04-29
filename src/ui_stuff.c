@@ -1,5 +1,11 @@
 #include "ui_stuff.h"
 
+void ui_stuff_init(void)
+{
+	ui_font_info_init();
+	ui_sound_fx_init();
+}
+
 void ui_font_info_init(void)
 {
 	font_info.title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 80);
@@ -7,6 +13,14 @@ void ui_font_info_init(void)
 	font_info.text_font = TTF_OpenFont("assets/fonts/Swansea.ttf", 30);
 	SDL_Color temp = { 255,255,255,255 }; // Why is this necessary you ask? I don't know. I get an error if I do it directly without the temporary variable
 	font_info.font_color = temp;
+}
+
+void ui_sound_fx_init(void) 
+{
+	sound_fx.button_click = gfc_sound_load("assets/sound/sound_click2.wav", 1, 2);
+	if (sound_fx.button_click == NULL)slog("FUUUK");
+	sound_fx.gamestate_change = gfc_sound_load("assets/sound/sound_click.wav", 1, 2);
+	if (sound_fx.gamestate_change == NULL)slog("Fuk2");
 }
 
 ui_label ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
@@ -135,6 +149,8 @@ gamestate_id ui_button_listen_alone(ui_button* b)
 
 gamestate_id ui_button_click(ui_button* b)
 {
+	gamestate_id ret;
+
 	if (!b)
 	{
 		slog("ui_button_click passed NULL ui_button*");
@@ -146,7 +162,13 @@ gamestate_id ui_button_click(ui_button* b)
 		return NONE;
 	}
 	
-	return b->on_click(b);
+	gfc_sound_play(sound_fx.button_click, 0, 0.3, -1, -1);
+	
+	ret = b->on_click(b);
+	if (ret != NONE) {
+		gfc_sound_play(sound_fx.gamestate_change, 0, 0.3, -1, -1);
+	}
+	return ret;
 }
 
 ui_sprite ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count)

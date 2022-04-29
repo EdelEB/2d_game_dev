@@ -36,7 +36,7 @@ void code_vomit_create_crew_member_options(void)
 	{
 		crew_options[i]._inuse = 1;
 		crew_options[i].is_alive = 1;
-		crew_options[i].name = crew_names[i];
+		crew_options[i].name =  crew_names[i];
 		crew_options[i].clearance = i+1;
 		crew_options[i].hunger = 10;
 		crew_options[i].morale = 10;
