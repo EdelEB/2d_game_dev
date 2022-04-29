@@ -12,7 +12,7 @@
 
 #include "enum_declarations.h"
 
-#define CLICK_TIMER 20
+
 #define WORD_LEN 16
 #define BLOCK_LEN 128
 #define PAGE_LEN 512
@@ -47,9 +47,12 @@ typedef struct UI_BUTTON{
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
 	ui_label	text_label;			/**< this is the a label holding the text seen within the button*/
 	SDL_Rect	click_box;			/**< this box defines where the button bounds are (what counts as clicking the button)*/
-	Uint16		click_timer;		/**< when click_timer > 0 the button cannot be clicked. ui_button_listen() decrements it*/
 	gamestate_id (*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
+
+typedef struct UI_DRAGGABLE {
+	int x;
+}ui_draggable;
 
 /*
 * @brief this initializes all information regarding fonts and colors used to create labels
@@ -115,6 +118,9 @@ void ui_button_render(ui_button* b);
 * @returns gamestate_id if it changes gamestate NONE otherwise
 */
 gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my);
+/*
+* @brief this is intended to be used only during development when mouse input is not immediatley available where it is called
+*/
 gamestate_id ui_button_listen_alone(ui_button* b);
 
 

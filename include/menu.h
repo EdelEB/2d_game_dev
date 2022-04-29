@@ -27,7 +27,7 @@ typedef struct MENU {
 	ui_button		button_list[MAX_MENU_BUTTONS];	/**< this is an array of all the ui_button's present in the menu*/
 }Menu;
 
-gamestate_id menu_listen(Menu *m);
+gamestate_id menu_listen(Menu *m, Uint8 mouse_state, int* mx, int* my);
 
 void menu_draw(Menu *m);
 

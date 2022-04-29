@@ -1,20 +1,20 @@
 #include "menu.h"
 
-gamestate_id menu_listen(Menu* m)
+gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my)
 {
+	gamestate_id id;
+	int i;
+	
 	if (!m)
 	{
 		slog("menu_listen cannot listen with NULL Menu*");
 		return NONE;
 	}
 
-	gamestate_id id;
-	int i;
-
 	for (i = 0; i < MAX_MENU_BUTTONS; i++)
 	{
 		if (!m->button_list[i]._inuse) continue;
-		id = ui_button_listen_alone(&m->button_list[i]);
+		id = ui_button_listen(&m->button_list[i], mouse_state, *mx, *my);
 		if (id) return id;
 	}
 	return NONE;

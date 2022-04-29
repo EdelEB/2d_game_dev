@@ -1,5 +1,7 @@
 #include "ui_stuff.h"
 
+Uint8 was_mouse_pressed = 0;
+
 void ui_stuff_init(void)
 {
 	ui_font_info_init();
@@ -77,7 +79,6 @@ ui_button ui_create_button(int x, int y, int w, int h, char* str, void (*on_clic
 	button.click_box.w = w;
 	button.click_box.h = h;
 	button.on_click = on_click;
-	button.click_timer = CLICK_TIMER;
 
 	return button;
 
@@ -113,30 +114,43 @@ void ui_button_render(ui_button* b)
 
 gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 {
+	gamestate_id id;
+	Uint8 was_clicked = 0;
+
 	if (!b)
 	{
 		slog("ui_button_listen received NULL ui_button*");
 		return NONE;
 	}
-	if (b->click_timer > 0)
-	{
-		b->click_timer--;
-		return NONE;
-	}
 
-	gamestate_id id;
+	if (was_mouse_pressed == 1 && mouse_state == 0) { was_clicked = 1; }
 
-	if (mouse_state == 1 &&
-		mx > b->click_box.x &&
+	/* Is mouse over button b */
+	if (mx > b->click_box.x &&
 		mx < b->click_box.x + b->click_box.w &&
 		my > b->click_box.y &&
-		my < b->click_box.y + b->click_box.h)
-	{
-		id = ui_button_click(b);
-		b->click_timer = CLICK_TIMER;
+		my < b->click_box.y + b->click_box.h) {
 
-		if (id) return id;
+		if (mouse_state == 1) {
+			was_mouse_pressed = 1;
+			// TODO : Set button pressed sprite
+		}
+		else if (was_clicked) 
+		{
+			id = ui_button_click(b);
+			was_mouse_pressed = 0;
+
+			if (id) return id;
+		}
+		// TODO : Set button hover sprite
 	}
+	else 
+	{
+		// TODO : Set button default sprite
+	}
+
+	if (!was_clicked && mouse_state == 0) { was_mouse_pressed = 0; }
+	
 	return NONE;
 }
 gamestate_id ui_button_listen_alone(ui_button* b) 

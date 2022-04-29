@@ -41,6 +41,7 @@ gamestate_id start_new_game(void)
 
 gamestate_id load_game(void)
 {
+	slog("load clicked");
 	gamestate_load(SAVE_FILE);
 	menu_crew_view_init();
 	return CREW_VIEW;

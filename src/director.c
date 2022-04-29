@@ -45,11 +45,11 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 				case MAP: 
 					return map_listen(mouse_state, *mx, *my); 
 				case MENU_START:
-					return menu_listen(menu_holder.start);
+					return menu_listen(menu_holder.start, mouse_state, mx, my);
 				case CREW_SELECT:
-					return menu_listen(menu_holder.crew_select);
+					return menu_listen(menu_holder.crew_select, mouse_state, mx, my);
 				case CREW_VIEW:
-					return menu_listen(menu_holder.crew_view);		
+					return menu_listen(menu_holder.crew_view, mouse_state, mx, my);
 			}
 			slog("director_think miss 1");
 			break;
