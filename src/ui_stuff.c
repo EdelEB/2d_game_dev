@@ -2,10 +2,88 @@
 
 Uint8 was_mouse_pressed = 0;
 
+typedef struct UI_MANAGER {
+	Uint32 max_components;
+	ui_label* label_list;
+	ui_button* button_list;
+	ui_sprite* sprite_list;
+	ui_draggable* draggable_list;
+}UI_Manager;
+
+UI_Manager ui_manager = { 0 };
+
+void ui_manager_init(Uint32 max_components) 
+{
+	if (max_components == 0)
+	{
+		slog("ui_manager_init cannot allocate 0 max_components");
+		return;
+	}
+	ui_manager.max_components = max_components;
+	ui_manager.label_list = gfc_allocate_array(sizeof(ui_label), max_components);
+	ui_manager.button_list = gfc_allocate_array(sizeof(ui_button), max_components);
+	ui_manager.sprite_list = gfc_allocate_array(sizeof(ui_sprite), max_components);
+	ui_manager.draggable_list = gfc_allocate_array(sizeof(ui_draggable), max_components);
+}
+
 void ui_stuff_init(void)
 {
+	ui_manager_init(512);
 	ui_font_info_init();
 	ui_sound_fx_init();
+}
+
+void ui_font_info_close(void)
+{
+	TTF_CloseFont(font_info.title_font);
+	TTF_CloseFont(font_info.header_font);
+	TTF_CloseFont(font_info.text_font);
+	free(&font_info.font_color);
+}
+
+void ui_sound_fx_close(void)
+{
+	gfc_sound_free(sound_fx.button_click);
+	gfc_sound_free(sound_fx.gamestate_change);
+}
+
+void ui_manager_clear(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
+	{
+		if (ui_manager.label_list[i]._inuse) { 
+			ui_label_free(&ui_manager.label_list[i]); 
+		}
+		if (ui_manager.button_list[i]._inuse) {
+			ui_button_free(&ui_manager.button_list[i]);
+		}
+		if (ui_manager.sprite_list[i]._inuse) {
+			ui_sprite_free(&ui_manager.sprite_list[i]);
+		}
+		if (ui_manager.draggable_list[i]._inuse) {
+			ui_draggable_free(&ui_manager.draggable_list[i]);
+		}
+	}
+}
+
+void ui_manager_close(void)
+{
+	ui_manager_clear();
+
+	if (ui_manager.label_list) free(ui_manager.label_list);
+	if (ui_manager.button_list) free(ui_manager.button_list);
+	if (ui_manager.sprite_list) free(ui_manager.sprite_list);
+	if (ui_manager.draggable_list) free(ui_manager.draggable_list);
+	
+	slog("ui_manager closed");
+}
+
+void ui_stuff_close(void)
+{
+	ui_font_info_close();
+	ui_sound_fx_close();
+	ui_manager_close();
 }
 
 void ui_font_info_init(void)
@@ -134,7 +212,8 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 
 		if (mouse_state == 1) {
 			was_mouse_pressed = 1;
-			// TODO : Set button pressed sprite
+			
+			// TODO : set sprite pressed
 		}
 		else if (was_clicked) 
 		{
@@ -143,11 +222,12 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 
 			if (id) return id;
 		}
-		// TODO : Set button hover sprite
+		
+		// TODO : set sprite hover
 	}
 	else 
 	{
-		// TODO : Set button default sprite
+		// TODO : set sprite default
 	}
 
 	if (!was_clicked && mouse_state == 0) { was_mouse_pressed = 0; }
@@ -190,6 +270,7 @@ ui_sprite ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Ve
 {
 	ui_sprite s;
 
+	s._inuse = 1;
 	s.sprite = sprite;
 	vector2d_copy(s.position, position);
 	vector2d_copy(s.scale, scale);
@@ -200,6 +281,14 @@ ui_sprite ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Ve
 	return s;
 }
 
+void ui_sprite_render(ui_sprite* s)
+{
+	if (!s) { slog("ui_sprite_render cannot render NULL ui_sprite*"); return; }
+
+	if (s->frame_count == 1) {
+		gf2d_sprite_draw_image(s->sprite, s->position);
+	}
+}
 
 ui_draggable ui_create_draggable(Vector2D position, Vector2D size)
 {
@@ -216,6 +305,7 @@ ui_draggable ui_create_draggable(Vector2D position, Vector2D size)
 
 	return d;
 }
+
 void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my)
 {
 	if (mx > d->click_box.x &&
@@ -255,4 +345,33 @@ void ui_draggable_render(ui_draggable* d)
 	}
 	gf2d_draw_rect(d->click_box, vector4d(255, 255, 255, 255));
 	//ui_label_render(&d->text_label);
+}
+
+
+void ui_label_free(ui_label* l)
+{
+	if (!l) { return; }
+	ui_sprite_free(&l->sprite);
+	memset(l, 0, sizeof(ui_label));
+}
+void ui_button_free(ui_button* b)
+{
+	if (!b) return;
+	ui_label_free(&b->text_label);
+	ui_sprite_free(&b->sprite_default);
+	ui_sprite_free(&b->sprite_hover);
+	ui_sprite_free(&b->sprite_pressed);
+	memset(b, 0, sizeof(ui_button));
+}
+void ui_sprite_free(ui_sprite* s)
+{
+	if (!s) return;
+	gf2d_sprite_free(s->sprite);
+	memset(s, 0, sizeof(ui_sprite));
+}
+
+void ui_draggable_free(ui_draggable* d)
+{
+	if (!d) return;
+	memset(d, 0, sizeof(ui_draggable));
 }

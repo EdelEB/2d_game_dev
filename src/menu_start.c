@@ -24,6 +24,26 @@ Menu* menu_start_init()
 		"New Game",
 		start_new_game
 	);
+	/*menu_start->button_list[0].sprite_default =
+		ui_create_sprite(
+			gf2d_sprite_load_image("assets/images/ui/button_green"),
+			vector2d(menu_start->button_list[0].click_box.x, menu_start->button_list[0].click_box.y),
+			vector2d(1,1),
+			vector2d(1, 1),
+			vector3d(0,0,0),
+			1
+		);
+	menu_start->button_list[0].sprite_current = &menu_start->button_list[0].sprite_default;
+
+	menu_start->button_list[0].sprite_default =
+		ui_create_sprite(
+			gf2d_sprite_load_image("assets/images/ui/button_purple"),
+			vector2d(menu_start->button_list[0].click_box.x, menu_start->button_list[0].click_box.y),
+			vector2d(1, 1),
+			vector2d(1, 1),
+			vector3d(0, 0, 0),
+			1
+		);*/
 
 	menu_start->button_list[1] = ui_create_button(
 		(WINDOW_WIDTH >> 1) - 100,

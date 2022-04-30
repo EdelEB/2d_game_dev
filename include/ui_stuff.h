@@ -52,6 +52,7 @@ typedef struct UI_BUTTON{
 	ui_sprite	sprite_default;		/**< the image displayed while a button is idle*/
 	ui_sprite	sprite_hover;		/**< the image displayed while a button is hovered over*/
 	ui_sprite	sprite_pressed;		/**< the image displayed while a button is pressed*/
+	ui_sprite  *sprite_current;		/**< the image currently being rendered*/
 	gamestate_id (*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
 
@@ -76,11 +77,38 @@ void ui_font_info_init(void);
 void ui_sound_fx_init(void);
 
 /*
+* @brief initializes the ui_component manager which handles ui_labels, ui_buttons, ui_sprites, ui_draggables, etc.
+* @param max_components is the maximum number of each individual ui component available
+*/
+void ui_manager_init(Uint32 max_components);
+
+/*
 * @brief runs the other init functions
 */
 void ui_stuff_init(void);
 
+void ui_font_info_close(void);
+void ui_sound_fx_close(void);
+void ui_manager_close(void);
+void ui_stuff_close(void);
+
+/*
+* @brief creates a sprite object that can be used in tandum with other ui components or alone
+* @param sprite pointer to the image being drawn
+* @param position (x, y) of the sprite in the window
+* @param scale determines sizing of sprite from top left corner
+* @param scale_center determines sizing from center of sprite
+* @param rotation determines orientation of the imagae
+* @param frame_count is the number of images to be cycled through in order to animate it
+* @return new ui_sprite object
+*/
 ui_sprite ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count);
+
+/*
+* @brief draws ui_sprite to the screen
+* @param s is a pointer to the ui_sprite being drawn
+*/
+void ui_sprite_render(ui_sprite* s);
 
 /*
 * @brief create a ui_label object which can be used to print text to the screen
@@ -144,5 +172,12 @@ gamestate_id ui_button_click(ui_button* b);
 ui_draggable ui_create_draggable(Vector2D position, Vector2D size);
 void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my);
 void ui_draggable_render(ui_draggable* d);
+
+
+
+void ui_label_free(ui_label* l);
+void ui_button_free(ui_button* b);
+void ui_sprite_free(ui_sprite* s);
+void ui_draggable_free(ui_draggable* d);
 
 #endif

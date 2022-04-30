@@ -127,6 +127,7 @@ int main(int argc, char * argv[])
     }
 
     /*Close tools*/
+    ui_stuff_close();
     gfc_sound_clear_all();
     TTF_Quit();
 

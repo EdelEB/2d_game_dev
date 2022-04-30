@@ -118,8 +118,8 @@ void menu_free(Menu* m)
 	int i;
 	for (i = 0; i < MAX_MENU_SPRITES; i++)
 	{
-		if(m->sprite_list[i]._inuse){
-			gf2d_sprite_free(m->sprite_list[i].sprite);
+		if(&m->sprite_list[i]){
+			gf2d_sprite_free(&m->sprite_list[i]);
 		}
 	}
 	

@@ -23,7 +23,7 @@ typedef struct MENU {
 	Uint8		   _inuse;
 	gamestate_id	id;
 
-	ui_sprite		sprite_list[MAX_MENU_SPRITES];	/**< this is an array of all the ui_sprite's present in the menu*/
+	Sprite*			sprite_list[MAX_MENU_SPRITES];	/**< this is an array of all the sprite's present in the menu*/
 	ui_label		label_list[MAX_MENU_LABELS];	/**< this is an array of all the ui_label's present in the menu*/
 	ui_button		button_list[MAX_MENU_BUTTONS];	/**< this is an array of all the ui_button's present in the menu*/
 	ui_draggable	draggable_list[MAX_MENU_BUTTONS];

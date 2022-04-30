@@ -5,7 +5,7 @@
 #include "ent_ship.h"
 #include "ent_asteroid.h"
 
-MiniGame* mini_asteroid_init();
+MiniGame* mini_asteroid_init(void);
 
 void mini_asteroid_start(MiniGame* self);
 
@@ -13,6 +13,6 @@ void mini_asteroid_run(MiniGame* self);
 
 void mini_asteroid_end (MiniGame* self);
 
-void randomize_asteroids();
+void randomize_asteroids(void);
 
 #endif
