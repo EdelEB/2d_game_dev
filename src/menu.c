@@ -72,6 +72,12 @@ gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my)
 		id = ui_button_listen(&m->button_list[i], mouse_state, *mx, *my);
 		if (id) return id;
 	}
+	for (i = 0; i < MAX_MENU_BUTTONS; i++)
+	{
+		if (!m->draggable_list[i]._inuse) continue;
+		ui_draggable_listen(&m->draggable_list[i], mouse_state, *mx, *my);
+	}
+
 	return NONE;
 }
 
@@ -93,6 +99,11 @@ void menu_draw(Menu* m)
 	{
 		if (!m->label_list[i]._inuse) continue;
 		ui_label_render(&m->label_list[i]);
+	}
+	for (i = 0; i < MAX_MENU_BUTTONS; i++)
+	{
+		if (!m->draggable_list[i]._inuse) continue;
+		ui_draggable_render(&m->draggable_list[i]);
 	}
 }
 

@@ -216,4 +216,43 @@ ui_draggable ui_create_draggable(Vector2D position, Vector2D size)
 
 	return d;
 }
-void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my);
+void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my)
+{
+	if (mx > d->click_box.x &&
+		mx < d->click_box.x + d->click_box.w &&
+		my > d->click_box.y &&
+		my < d->click_box.y + d->click_box.h) {
+
+		if (mouse_state == 1 && was_mouse_pressed == 0) 
+		{
+			was_mouse_pressed = 1;
+
+			d->is_held = 1;
+			vector2d_copy(d->mouse_anchor, vector2d(mx,my));
+		}
+		else if (mouse_state == 0 && was_mouse_pressed == 1)
+		{
+			d->is_held = 0;
+			was_mouse_pressed = 0;
+			vector2d_copy(d->prev_position, d->position);
+		}
+		else if(d->is_held)
+		{
+			d->position.x	= d->prev_position.x - (d->mouse_anchor.x - mx);
+			d->position.y	= d->prev_position.y - (d->mouse_anchor.y - my);
+			d->click_box.x	= d->prev_position.x - (d->mouse_anchor.x - mx);
+			d->click_box.y	= d->prev_position.y - (d->mouse_anchor.y - my);
+		}
+	}
+}
+
+void ui_draggable_render(ui_draggable* d)
+{
+	if (!d)
+	{
+		slog("ui_draggable_render cannot render NULL ui_draggable*");
+		return;
+	}
+	gf2d_draw_rect(d->click_box, vector4d(255, 255, 255, 255));
+	//ui_label_render(&d->text_label);
+}

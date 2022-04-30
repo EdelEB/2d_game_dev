@@ -26,6 +26,7 @@ typedef struct MENU {
 	ui_sprite		sprite_list[MAX_MENU_SPRITES];	/**< this is an array of all the ui_sprite's present in the menu*/
 	ui_label		label_list[MAX_MENU_LABELS];	/**< this is an array of all the ui_label's present in the menu*/
 	ui_button		button_list[MAX_MENU_BUTTONS];	/**< this is an array of all the ui_button's present in the menu*/
+	ui_draggable	draggable_list[MAX_MENU_BUTTONS];
 }Menu;
 
 gamestate_id menu_listen(Menu *m, Uint8 mouse_state, int* mx, int* my);

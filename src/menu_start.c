@@ -5,6 +5,11 @@ Menu* menu_start_init()
 	Menu* menu_start = menu_new();
 	menu_start->id = MENU_START;
 
+	menu_start->draggable_list[0] = ui_create_draggable(
+		vector2d(100, 100),
+		vector2d(100, 100)
+	);
+
 	menu_start->label_list[0] = ui_create_title_label(
 		"The Martian Trail",
 		25,

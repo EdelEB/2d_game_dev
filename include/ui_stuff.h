@@ -59,6 +59,7 @@ typedef struct UI_BUTTON{
 typedef struct UI_DRAGGABLE {
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
 	Uint8		is_held;			/**< 1 : mouse is pressed and on draggable, 0 : otherwize*/
+	Vector2D	mouse_anchor;		/**< this is the position the mouse was in when it clicked on the draggable*/
 	Vector2D	position;			/**< this is the position the draggable is currently being rendered at*/
 	Vector2D	prev_position;		/**< this is the position the draggable was at prior to being held*/
 	SDL_Rect	click_box;			/**< this box defines where the draggable's bounds are*/
@@ -142,5 +143,6 @@ gamestate_id ui_button_click(ui_button* b);
 
 ui_draggable ui_create_draggable(Vector2D position, Vector2D size);
 void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my);
+void ui_draggable_render(ui_draggable* d);
 
 #endif
