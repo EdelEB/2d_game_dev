@@ -57,7 +57,7 @@ Menu* menu_get_by_id(gamestate_id id)
 
 gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my)
 {
-	gamestate_id id;
+	gamestate_id id = 0;
 	int i;
 	
 	if (!m)
@@ -68,14 +68,15 @@ gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my)
 
 	for (i = 0; i < MAX_MENU_BUTTONS; i++)
 	{
-		if (!m->button_list[i]._inuse) continue;
-		id = ui_button_listen(&m->button_list[i], mouse_state, *mx, *my);
-		if (id) return id;
+		if (m->button_list[i] && m->button_list[i]->_inuse)
+			id = ui_button_listen(m->button_list[i], mouse_state, *mx, *my);
+		if (id) 
+			return id;
 	}
 	for (i = 0; i < MAX_MENU_BUTTONS; i++)
 	{
-		if (!m->draggable_list[i]._inuse) continue;
-		ui_draggable_listen(&m->draggable_list[i], mouse_state, *mx, *my);
+		if (m->draggable_list[i] && m->draggable_list[i]->_inuse)
+			ui_draggable_listen(m->draggable_list[i], mouse_state, *mx, *my);
 	}
 
 	return NONE;
@@ -92,18 +93,18 @@ void menu_draw(Menu* m)
 	int i;
 	for (i = 0; i < MAX_MENU_BUTTONS; i++)
 	{
-		if (!m->button_list[i]._inuse) continue;
-		ui_button_render(&m->button_list[i]);
+		if (m->button_list[i] && m->button_list[i]->_inuse)
+			ui_button_render(m->button_list[i]);
 	}
 	for (i = 0; i < MAX_MENU_LABELS; i++)
 	{
-		if (!m->label_list[i]._inuse) continue;
-		ui_label_render(&m->label_list[i]);
+		if (m->label_list[i] && m->label_list[i]->_inuse)
+			ui_label_render(m->label_list[i]);
 	}
 	for (i = 0; i < MAX_MENU_BUTTONS; i++)
 	{
-		if (!m->draggable_list[i]._inuse) continue;
-		ui_draggable_render(&m->draggable_list[i]);
+		if (m->draggable_list[i] && m->draggable_list[i]->_inuse)
+			ui_draggable_render(m->draggable_list[i]);
 	}
 }
 
@@ -118,8 +119,8 @@ void menu_free(Menu* m)
 	int i;
 	for (i = 0; i < MAX_MENU_SPRITES; i++)
 	{
-		if(&m->sprite_list[i]){
-			gf2d_sprite_free(&m->sprite_list[i]);
+		if(m->sprite_list[i]){
+			gf2d_sprite_free(m->sprite_list[i]);
 		}
 	}
 	
@@ -136,9 +137,6 @@ void menu_free(Menu* m)
 	}*/
 }
 
-//
-//Menu* menu_new();
-//
 //Menu menu_load(char* filename)
 //{
 //	Menu ret;

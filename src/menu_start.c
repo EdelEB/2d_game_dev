@@ -33,7 +33,7 @@ Menu* menu_start_init()
 			vector3d(0,0,0),
 			1
 		);
-	menu_start->button_list[0].sprite_current = &menu_start->button_list[0].sprite_default;
+	menu_start->button_list[0].sprite_current = menu_start->button_list[0].sprite_default;
 
 	menu_start->button_list[0].sprite_default =
 		ui_create_sprite(
@@ -54,7 +54,7 @@ Menu* menu_start_init()
 		load_game
 	);
 
-	return &menu_start;
+	return menu_start;
 }
 
 gamestate_id start_new_game(void)

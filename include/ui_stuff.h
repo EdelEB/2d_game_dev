@@ -42,16 +42,16 @@ typedef struct UI_LABEL {
 	Uint8			_inuse;			/**< 1 : being used, 0 : not being used*/
 	SDL_Texture*	texture;		/**< texture created using SDL_ttf and is essential to rendering*/
 	SDL_Rect		render_rect;	/**< this rect encapsulates the text in the texture and is necessary for rendering*/
-	ui_sprite		sprite;			/**< this is the label image*/
+	ui_sprite	   *sprite;			/**< this is the label image*/
 }ui_label;
 
 typedef struct UI_BUTTON{
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
-	ui_label	text_label;			/**< this is the a label holding the text seen within the button*/
+	ui_label   *text_label;			/**< this is the a label holding the text seen within the button*/
 	SDL_Rect	click_box;			/**< this box defines where the button bounds are (what counts as clicking the button)*/
-	ui_sprite	sprite_default;		/**< the image displayed while a button is idle*/
-	ui_sprite	sprite_hover;		/**< the image displayed while a button is hovered over*/
-	ui_sprite	sprite_pressed;		/**< the image displayed while a button is pressed*/
+	ui_sprite  *sprite_default;		/**< the image displayed while a button is idle*/
+	ui_sprite  *sprite_hover;		/**< the image displayed while a button is hovered over*/
+	ui_sprite  *sprite_pressed;		/**< the image displayed while a button is pressed*/
 	ui_sprite  *sprite_current;		/**< the image currently being rendered*/
 	gamestate_id (*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
@@ -102,7 +102,7 @@ void ui_stuff_close(void);
 * @param frame_count is the number of images to be cycled through in order to animate it
 * @return new ui_sprite object
 */
-ui_sprite ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count);
+ui_sprite* ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count);
 
 /*
 * @brief draws ui_sprite to the screen
@@ -118,10 +118,10 @@ void ui_sprite_render(ui_sprite* s);
 * @param font is the type of font that is printed. The creates pass this to the helper so that the programmer does not need to create of find the font
 * @return ui_label structure
 */
-ui_label ui_create_label_helper(char* str, int x, int y, TTF_Font* font);
-ui_label ui_create_title_label(char* str, int x, int y);
-ui_label ui_create_header_label(char* str, int x, int y);
-ui_label ui_create_text_label(char* str, int x, int y);
+ui_label* ui_create_label_helper(char* str, int x, int y, TTF_Font* font);
+ui_label* ui_create_title_label(char* str, int x, int y);
+ui_label* ui_create_header_label(char* str, int x, int y);
+ui_label* ui_create_text_label(char* str, int x, int y);
 
 /*
 * @brief draws a passed in ui_label to the screen
@@ -137,9 +137,9 @@ void ui_label_render(ui_label* l);
 * @param h is the height of the button's click box
 * @param str is the text that is inside the button
 * @param on_click is the function that is called when the button is clicked
-* @return ui_button struct
+* @return ui_button pointer
 */ 
-ui_button ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void) );
+ui_button* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void) );
 
 /*
 * @brief draws a passed in ui_button to the screen
@@ -169,11 +169,34 @@ gamestate_id ui_button_listen_alone(ui_button* b);
 */
 gamestate_id ui_button_click(ui_button* b);
 
-ui_draggable ui_create_draggable(Vector2D position, Vector2D size);
+/*
+* @brief creates a new ui_draggable and returns a pointer to it
+* @param position (x,y) of draggable on screen (for top left corner of click_box)
+* @param size (width, height) of draggable click box
+* @return ui_draggable* to the new ui_draggable created
+*/
+ui_draggable* ui_create_draggable(Vector2D position, Vector2D size);
+
+/*
+* @brief checks to see if the user has clicked on ui_draggable and if they have moved it, then updates accordingly
+* @param d ui_draggable* being checked/updated
+* @param mouse_state 0 : up, 1 : left down, 4 : right down
+* @param mx mouse x coordinate
+* @param my mouse y coordinate
+*/
 void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my);
+
+/*
+* @brief draws ui_draggable* d to the screen
+* @param d ui_draggable* being drawn
+*/
 void ui_draggable_render(ui_draggable* d);
 
 
+ui_label* ui_label_new(void);
+ui_button* ui_button_new(void);
+ui_sprite* ui_sprite_new(void);
+ui_draggable* ui_draggable_new(void);
 
 void ui_label_free(ui_label* l);
 void ui_button_free(ui_button* b);

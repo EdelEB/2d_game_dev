@@ -20,7 +20,7 @@ struct MAP {
 	Sprite	   *image;
 	Sprite	   *ship_image;
 	Uint32		spot;
-	ui_button	crew_view_button, travel_button;
+	ui_button	*crew_view_button, *travel_button;
 	Vector2D	position;
 } map;
 

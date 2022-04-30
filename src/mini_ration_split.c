@@ -13,7 +13,7 @@ SDL_Rect ration_rect;
 my_line line_list[MAX_CREW];
 Uint8 cuts_remaining;
 Uint32 cut_delay = 50;
-ui_label cuts_label = { 0 };
+ui_label* cuts_label = { 0 };
 
 MiniGame* mini_ration_init(void)
 {
@@ -91,15 +91,17 @@ void mini_ration_draw()
 		}
 	}
 
-	//This is gross and will be fixed later
+	//TODO : This is gross and will be fixed later
 	char* str[20];
 	sprintf(str, "Cuts Remaining: %d", cuts_remaining);
+	
+	ui_label_free(cuts_label);
 	cuts_label = ui_create_text_label(
 		str,
 		WINDOW_WIDTH - 275,
 		50
 	);
-	ui_label_render(&cuts_label);
+	ui_label_render(cuts_label);
 }
 
 gamestate_id determine_ration_result()
