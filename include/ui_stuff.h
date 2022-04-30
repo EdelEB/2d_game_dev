@@ -49,6 +49,7 @@ typedef struct UI_BUTTON{
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
 	ui_label   *text_label;			/**< this is the a label holding the text seen within the button*/
 	SDL_Rect	click_box;			/**< this box defines where the button bounds are (what counts as clicking the button)*/
+	Uint8		hide_click_box;		/**< 0 : render click_box, 1 : do not render click_box*/
 	ui_sprite  *sprite_default;		/**< the image displayed while a button is idle*/
 	ui_sprite  *sprite_hover;		/**< the image displayed while a button is hovered over*/
 	ui_sprite  *sprite_pressed;		/**< the image displayed while a button is pressed*/

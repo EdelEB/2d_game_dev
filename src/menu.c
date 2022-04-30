@@ -25,7 +25,14 @@ void menu_manager_init(Uint32 max_menus)
 	slog("menu manager initialized");
 }
 
-void menu_manager_close() {}
+void menu_manager_close() 
+{
+	int i;
+	for (i = 0; i < menu_manager.max_menus; i++) { menu_free(&menu_manager.menu_list[i]); }
+
+	memset(&menu_manager, 0, sizeof(Menu) * menu_manager.max_menus);
+	slog("Menu Manager closed");
+}
 
 Menu* menu_new(void)
 {
@@ -38,6 +45,24 @@ Menu* menu_new(void)
 		return &menu_manager.menu_list[i];
 	}
 	return NULL;  // you need a bigger max_menus and bigger menu_list; this shouldn't be a problem right now though
+}
+
+void menu_free(Menu* m)
+{
+	if (!m)
+	{
+		slog("menu_free cannot free NULL Menu*");
+		return;
+	}
+
+	int i;
+
+	for (i = 0; i < MAX_MENU_LABELS; i++) { ui_label_free(m->label_list[i]); }
+	for (i = 0; i < MAX_MENU_BUTTONS; i++) { ui_button_free(m->button_list[i]); }
+	for (i = 0; i < MAX_MENU_SPRITES; i++) { ui_sprite_free(m->sprite_list[i]); }
+	for (i = 0; i < MAX_MENU_BUTTONS; i++) { ui_draggable_free(m->draggable_list[i]); }
+
+	memset(m, 0, sizeof(Menu));
 }
 
 Menu* menu_get_by_id(gamestate_id id)
@@ -108,34 +133,7 @@ void menu_draw(Menu* m)
 	}
 }
 
-void menu_free(Menu* m)
-{
-	if (!m)
-	{
-		slog("menu_free cannot free NULL Menu*");
-		return;
-	}
 
-	int i;
-	for (i = 0; i < MAX_MENU_SPRITES; i++)
-	{
-		if(m->sprite_list[i]){
-			gf2d_sprite_free(m->sprite_list[i]);
-		}
-	}
-	
-	memset(m, 0, sizeof(Menu));
-
-	// FOR WHEN I START USING POINTERS
-	/*for (i = 0; i < MAX_MENU_BUTTONS; i++)
-	{
-		free(m->button_list[i]);
-	}
-	for (i = 0; i < MAX_MENU_LABELS; i++)
-	{
-		free(m->label_list[i]);
-	}*/
-}
 
 //Menu menu_load(char* filename)
 //{

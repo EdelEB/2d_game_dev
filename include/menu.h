@@ -12,7 +12,6 @@
 
 #include "gamestate.h"
 #include "ui_stuff.h"
-#include "menu_crew_select.h"
 
 #define MAX_MENU_SPRITES 10
 #define MAX_MENU_BUTTONS 10

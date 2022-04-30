@@ -1,6 +1,6 @@
 #include "ui_stuff.h"
 
-Uint8 was_mouse_pressed = 0;
+extern Uint8 global_was_mouse_down;
 
 typedef struct UI_MANAGER {
 	Uint32 max_components;
@@ -154,6 +154,10 @@ void ui_label_render(ui_label* l)
 		return;
 	}
 
+	if (l->sprite) {
+		ui_sprite_render(l->sprite);
+	}
+
 	SDL_RenderCopy(
 		gf2d_graphics_get_renderer(),
 		l->texture,
@@ -191,14 +195,17 @@ void ui_button_render(ui_button* b)
 		slog("ui_button_render cannot render NULL ui_button*");
 		return;
 	}
-	gf2d_draw_rect(b->click_box, vector4d(255, 255, 255, 255));
+	
+	if (!b->hide_click_box) { gf2d_draw_rect(b->click_box, vector4d(255, 255, 255, 255)); }
+	
+	if (b->sprite_current) { ui_sprite_render(b->sprite_current); }
+	
 	ui_label_render(b->text_label);
 }
 
 gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 {
 	gamestate_id id;
-	Uint8 was_clicked = 0;
 
 	if (!b)
 	{
@@ -206,36 +213,32 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 		return NONE;
 	}
 
-	if (was_mouse_pressed == 1 && mouse_state == 0) { was_clicked = 1; }
-
 	/* Is mouse over button b */
 	if (mx > b->click_box.x &&
 		mx < b->click_box.x + b->click_box.w &&
 		my > b->click_box.y &&
 		my < b->click_box.y + b->click_box.h) {
 
-		if (mouse_state == 1) {
-			was_mouse_pressed = 1;
-			
-			// TODO : set sprite pressed
-		}
-		else if (was_clicked) 
+		if (mouse_state == 1) 
 		{
-			id = ui_button_click(b);
-			was_mouse_pressed = 0;
+			b->sprite_current = b->sprite_pressed;
+		}
+		else if (global_was_mouse_down == 1)
+		{
+			global_was_mouse_down = 0;
 
+			id = ui_button_click(b);
 			if (id) return id;
 		}
-		
-		// TODO : set sprite hover
+		else 
+		{
+			b->sprite_current = b->sprite_hover;
+		}
 	}
 	else 
 	{
-		// TODO : set sprite default
+		b->sprite_current = b->sprite_default;
 	}
-
-	if (!was_clicked && mouse_state == 0) { was_mouse_pressed = 0; }
-	
 	return NONE;
 }
 gamestate_id ui_button_listen_alone(ui_button* b) 
@@ -293,7 +296,16 @@ void ui_sprite_render(ui_sprite* s)
 	if (!s) { slog("ui_sprite_render cannot render NULL ui_sprite*"); return; }
 
 	if (s->frame_count == 1) {
-		gf2d_sprite_draw_image(s->sprite, s->position);
+		gf2d_sprite_draw(
+			s->sprite, 
+			s->position, 
+			&s->scale, 
+			&s->scale_center, 
+			&s->rotation,
+			NULL,
+			NULL,
+			0
+			);
 	}
 }
 
@@ -323,17 +335,17 @@ void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my)
 		my > d->click_box.y &&
 		my < d->click_box.y + d->click_box.h) {
 
-		if (mouse_state == 1 && was_mouse_pressed == 0) 
+		if (mouse_state == 1 && global_was_mouse_down == 0) 
 		{
-			was_mouse_pressed = 1;
+			global_was_mouse_down = 1;
 
 			d->is_held = 1;
 			vector2d_copy(d->mouse_anchor, vector2d(mx,my));
 		}
-		else if (mouse_state == 0 && was_mouse_pressed == 1)
+		else if (mouse_state == 0 && global_was_mouse_down == 1)
 		{
 			d->is_held = 0;
-			was_mouse_pressed = 0;
+			global_was_mouse_down = 0;
 			vector2d_copy(d->prev_position, d->position);
 		}
 		else if(d->is_held)

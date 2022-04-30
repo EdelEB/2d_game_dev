@@ -13,6 +13,7 @@ Uint8 DEBUG = 0;
 const int CLICK_COOLDOWN = 20;
 int debug_toggle_cooldown = 0;
 int mouse_click_cooldown = 0;
+Uint8 global_was_mouse_down;
 
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
@@ -23,7 +24,6 @@ int main(int argc, char * argv[])
     Uint8 done = 0;
     const Uint8 * keys;
     float mf = 0;
-    Uint8 was_mouse_down = 0;
 
     Sprite *bg_current, *bg_default;
 
@@ -73,6 +73,7 @@ int main(int argc, char * argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         mouse_state = SDL_GetMouseState(&mx,&my);
+        
         if (DEBUG && mouse_state != 0)
         { 
             if (mouse_click_cooldown > 0) {
@@ -85,6 +86,7 @@ int main(int argc, char * argv[])
                 mouse_click_cooldown = CLICK_COOLDOWN;
             }
         } 
+
         /*Toggle DEBUG*/
         if (keys[SDL_SCANCODE_P]) {
             if (debug_toggle_cooldown > 0) { debug_toggle_cooldown--; }
@@ -99,7 +101,9 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
 
         /*update things here*/
-        new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my);        
+        new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my);  
+        if (mouse_state == 1) global_was_mouse_down = 1;
+        else if (mouse_state == 0 ) global_was_mouse_down = 0;
         
         if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 
         {
