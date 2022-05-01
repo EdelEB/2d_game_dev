@@ -101,7 +101,7 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
 
         /*update things here*/
-        new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my);  
+        new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
         if (mouse_state == 1) global_was_mouse_down = 1;
         else if (mouse_state == 0 ) global_was_mouse_down = 0;
         

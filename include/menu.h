@@ -13,6 +13,7 @@
 #include "gamestate.h"
 #include "ui_stuff.h"
 
+#define MAX_MENU_TEXT_INPUTS 3
 #define MAX_MENU_SPRITES 10
 #define MAX_MENU_BUTTONS 10
 #define MAX_MENU_LABELS 40
@@ -26,9 +27,10 @@ typedef struct MENU {
 	ui_label*		label_list[MAX_MENU_LABELS];	/**< this is an array of all the ui_label's present in the menu*/
 	ui_button*		button_list[MAX_MENU_BUTTONS];	/**< this is an array of all the ui_button's present in the menu*/
 	ui_draggable*	draggable_list[MAX_MENU_BUTTONS];
+	ui_text_input*	text_input_list[MAX_MENU_TEXT_INPUTS];
 }Menu;
 
-gamestate_id menu_listen(Menu *m, Uint8 mouse_state, int* mx, int* my);
+gamestate_id menu_listen(Menu *m, Uint8 mouse_state, int* mx, int* my, Uint8* keys);
 
 void menu_manager_init(Uint32 max_menus);
 void menu_manager_close(void);

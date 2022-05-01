@@ -200,7 +200,7 @@ void event_create_render_variables(Event* e)
 	);
 	e->title_rect.x = WINDOW_WIDTH >> 2;
 	e->title_rect.y = WINDOW_HEIGHT >> 4;
-	SDL_QueryTexture(e->title_texture, NULL, NULL, &e->title_rect.w, &e->title_rect.h); // I don't understand what this does but it doesn't render the text unless I do it
+	SDL_QueryTexture(e->title_texture, NULL, NULL, &e->title_rect.w, &e->title_rect.h); // I don't understand what this does but it doesn't render the text_label unless I do it
 
 	/*Prompt*/
 	surface = TTF_RenderText_Solid(
@@ -214,7 +214,7 @@ void event_create_render_variables(Event* e)
 	);
 	e->prompt_rect.x = WINDOW_WIDTH >> 4;
 	e->prompt_rect.y = WINDOW_HEIGHT >> 2; 
-	SDL_QueryTexture(e->prompt_texture, NULL, NULL, &e->prompt_rect.w, &e->prompt_rect.h); // I don't understand what this does but it doesn't render the text unless I do it
+	SDL_QueryTexture(e->prompt_texture, NULL, NULL, &e->prompt_rect.w, &e->prompt_rect.h); // I don't understand what this does but it doesn't render the text_label unless I do it
 
 	/*Options*/
 	for (int i = 0; i < MAX_OPTIONS; i++)
@@ -233,7 +233,7 @@ void event_create_render_variables(Event* e)
 			e->options[i].render_rect.x = WINDOW_WIDTH >> 4;
 			e->options[i].render_rect.y = (WINDOW_HEIGHT >> 3) * (i+3);
 			//e->options[i].render_rect.w = WINDOW_WIDTH >> 2 + WINDOW_WIDTH >> 2 + WINDOW_WIDTH >> 2 + 100;
-			//e->options[i].render_rect.h = WINDOW_HEIGHT >> 3; //why aren't these needed? aren't they just NULL then. What do these even do when printing out text
+			//e->options[i].render_rect.h = WINDOW_HEIGHT >> 3; //why aren't these needed? aren't they just NULL then. What do these even do when printing out text_label
 			SDL_QueryTexture(e->options[i].texture, NULL, NULL, &e->options[i].render_rect.w, &e->options[i].render_rect.h); // you probably shouldn't mess with this
 		
 			e->options[i].button_rect.x = e->options[i].render_rect.x - 20;

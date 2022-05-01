@@ -1,1 +1,56 @@
-{"crew":[{"name":"John","title":"Pilot","clearance":"1","hunger":"6","morale":"6","is_alive":"1","_inuse":"1"},{"name":"Ken","title":"Doctor","clearance":"2","hunger":"10","morale":"6","is_alive":"1","_inuse":"1"},{"name":"Tom","title":"Phsycologist","clearance":"4","hunger":"9","morale":"6","is_alive":"1","_inuse":"1"},{"name":"Will","title":"Engineer","clearance":"3","hunger":"7","morale":"6","is_alive":"1","_inuse":"1"},{"name":"Rich","title":"Programmer","clearance":"5","hunger":"6","morale":"6","is_alive":"1","_inuse":"1"}],"food":"32"}
+{
+    "crew": [
+        
+        {
+            "name": "John",
+            "name": "EDEL",
+            "title": "Pilot",
+            "clearance": "1",
+            "hunger": "9",
+            "morale": "9",
+            "is_alive": "1",
+            "_inuse": "1"
+        },
+        {
+            "name": "Ken",
+            "name": "EDEL",
+            "title": "Doctor",
+            "clearance": "2",
+            "hunger": "9",
+            "morale": "9",
+            "is_alive": "1",
+            "_inuse": "1"
+        },
+        {
+            "name": "Will",
+            "name": "EDEL",
+            "title": "Engineer",
+            "clearance": "3",
+            "hunger": "13",
+            "morale": "9",
+            "is_alive": "1",
+            "_inuse": "1"
+        },
+        {
+            "name": "Tom",
+            "name": "EDEL",
+            "title": "Phsycologist",
+            "clearance": "4",
+            "hunger": "9",
+            "morale": "9",
+            "is_alive": "1",
+            "_inuse": "1"
+        },
+        {
+            "name": "Rich",
+            "name": "EDEL",
+            "title": "Programmer",
+            "clearance": "5",
+            "hunger": "9",
+            "morale": "9",
+            "is_alive": "1",
+            "_inuse": "1"
+        }
+    ],
+    "food": "36"
+}

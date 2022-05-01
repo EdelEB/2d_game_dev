@@ -40,14 +40,15 @@ typedef struct UI_SPRITE {
 
 typedef struct UI_LABEL {
 	Uint8			_inuse;			/**< 1 : being used, 0 : not being used*/
+	char*			str;			/**< the string being displayed*/
 	SDL_Texture*	texture;		/**< texture created using SDL_ttf and is essential to rendering*/
-	SDL_Rect		render_rect;	/**< this rect encapsulates the text in the texture and is necessary for rendering*/
+	SDL_Rect		render_rect;	/**< this rect encapsulates the text_label in the texture and is necessary for rendering*/
 	ui_sprite	   *sprite;			/**< this is the label image*/
 }ui_label;
 
 typedef struct UI_BUTTON{
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
-	ui_label   *text_label;			/**< this is the a label holding the text seen within the button*/
+	ui_label   *text_label;			/**< this is the a label holding the text_label seen within the button*/
 	SDL_Rect	click_box;			/**< this box defines where the button bounds are (what counts as clicking the button)*/
 	Uint8		hide_click_box;		/**< 0 : render click_box, 1 : do not render click_box*/
 	ui_sprite  *sprite_default;		/**< the image displayed while a button is idle*/
@@ -56,6 +57,15 @@ typedef struct UI_BUTTON{
 	ui_sprite  *sprite_current;		/**< the image currently being rendered*/
 	gamestate_id (*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
+
+typedef struct UI_TEXT_INPUT {
+	Uint8		_inuse;
+	Vector2D	position;
+	Uint8		is_active;		/**< 1 : when user can type, 0 : otherwize*/
+	SDL_Rect	click_box;		/**< bounds of the text_label box, when clicked input box becomes active*/
+	ui_label   *text_label;		/**< text_label inside the text_label box*/
+	ui_button  *button_enter;	/**< Enter button next to the text_label box*/
+}ui_text_input;
 
 /* UI_DRAGGABLE's are intended to be added to other ui components and allow them to be moved*/
 typedef struct UI_DRAGGABLE {
@@ -112,10 +122,10 @@ ui_sprite* ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, V
 void ui_sprite_render(ui_sprite* s);
 
 /*
-* @brief create a ui_label object which can be used to print text to the screen
-* @param str is the text that will be displayed
-* @param x is the x coordinate of the upper left corner of the text 
-* @param y is the y coordinate of the upper left corner of the text
+* @brief create a ui_label object which can be used to print text_label to the screen
+* @param str is the text_label that will be displayed
+* @param x is the x coordinate of the upper left corner of the text_label 
+* @param y is the y coordinate of the upper left corner of the text_label
 * @param font is the type of font that is printed. The creates pass this to the helper so that the programmer does not need to create of find the font
 * @return ui_label structure
 */
@@ -123,6 +133,13 @@ ui_label* ui_create_label_helper(char* str, int x, int y, TTF_Font* font);
 ui_label* ui_create_title_label(char* str, int x, int y);
 ui_label* ui_create_header_label(char* str, int x, int y);
 ui_label* ui_create_text_label(char* str, int x, int y);
+
+/*
+* @brief updates a label to have a new_str
+* @param l is the ui_label being modified
+* @param new_str is the new ui_label->str attribute being set for l
+*/
+void ui_label_update(ui_label* l, char * new_str);
 
 /*
 * @brief draws a passed in ui_label to the screen
@@ -136,7 +153,7 @@ void ui_label_render(ui_label* l);
 * @param y is the y coordinate of the top left corner of the button's click_box
 * @param w is the width of the button's click box
 * @param h is the height of the button's click box
-* @param str is the text that is inside the button
+* @param str is the text_label that is inside the button
 * @param on_click is the function that is called when the button is clicked
 * @return ui_button pointer
 */ 
@@ -194,14 +211,23 @@ void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my);
 void ui_draggable_render(ui_draggable* d);
 
 
+ui_text_input* ui_create_text_input(Vector2D position, void (*on_enter)(void));
+
+gamestate_id ui_text_input_listen(ui_text_input* t);
+
+void ui_text_input_render(ui_text_input* t);
+
+
 ui_label* ui_label_new(void);
 ui_button* ui_button_new(void);
 ui_sprite* ui_sprite_new(void);
 ui_draggable* ui_draggable_new(void);
+ui_text_input* ui_text_input_new(void);
 
 void ui_label_free(ui_label* l);
 void ui_button_free(ui_button* b);
 void ui_sprite_free(ui_sprite* s);
 void ui_draggable_free(ui_draggable* d);
+void ui_text_input_free(ui_text_input* t);
 
 #endif

@@ -39,7 +39,7 @@ typedef struct EVENT{
 }Event;
 
 /**
- * @brief creates a manager which holds an array of events as well as some rendering info (text fonts and color)
+ * @brief creates a manager which holds an array of events as well as some rendering info (text_label fonts and color)
  * @param max_events is the maximum number of events that the manager is capable of holding at one time
  */
 void event_manager_init(Uint32 max_events);
@@ -65,7 +65,7 @@ Event* get_event_by_id(gamestate_id id);
 void event_log(Event* e);
 
 /**
- * @brief draws all event text(title, prompt, options) to the screen and button outlines
+ * @brief draws all event text_label(title, prompt, options) to the screen and button outlines
  * @param e is a Event* that provides the strings to be printed
  */
 void event_draw(Event* e);

@@ -44,9 +44,10 @@ void director_draw(gamestate_id id);
 * @param mouse_state is 1 when the mouse is clicked and 0 when not
 * @param mx is the mouse's location on the x axis
 * @param my is the mouse's location on the y axis
+* @param keys handles keyboard input
 * @return gamestate_id of next gamestate to be run, NONE otherwise 
 */
-gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my);
+gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my, Uint8* keys);
 
 /*
 * @brief this the category of game id that a given id is part of

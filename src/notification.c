@@ -157,7 +157,7 @@ void note_create_render_variables(Notification *n)
 	);
 	n->title_rect.x = WINDOW_WIDTH >> 2;
 	n->title_rect.y = WINDOW_HEIGHT >> 4;
-	SDL_QueryTexture(n->title_texture, NULL, NULL, &n->title_rect.w, &n->title_rect.h); // I don't understand what this does but it doesn't render the text unless I do it
+	SDL_QueryTexture(n->title_texture, NULL, NULL, &n->title_rect.w, &n->title_rect.h); // I don't understand what this does but it doesn't render the text_label unless I do it
 	
 	/* Lines */
 	for (int i = 0; i < MAX_LINES; i++)

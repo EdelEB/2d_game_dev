@@ -31,7 +31,7 @@ void director_init(void)
 	mini_holder.ration_split = mini_ration_init();
 }
 
-gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my)
+gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *my, Uint8* keys)
 {
 	Menu* current_menu;
 
@@ -43,7 +43,7 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 				case MAP: 
 					return map_listen(mouse_state, *mx, *my); 
 				default:
-					return menu_listen(menu_get_by_id(id), mouse_state, mx, my);
+					return menu_listen(menu_get_by_id(id), mouse_state, mx, my, keys);
 			}
 			slog("director_think miss 1");
 			break;

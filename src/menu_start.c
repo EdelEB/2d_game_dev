@@ -5,11 +5,6 @@ Menu* menu_start_init()
 	Menu* menu_start = menu_new();
 	menu_start->id = MENU_START;
 
-	menu_start->draggable_list[0] = ui_create_draggable(
-		vector2d(100, 100),
-		vector2d(100, 100)
-	);
-
 	menu_start->label_list[0] = ui_create_title_label(
 		"The Martian Trail",
 		WINDOW_WIDTH>>2,
@@ -72,6 +67,14 @@ Menu* menu_start_init()
 		"Load Game",
 		load_game
 	);
+
+
+
+	menu_start->text_input_list[0] = ui_create_text_input(
+		vector2d(200, 200),
+		start_new_game
+	);
+
 
 	return menu_start;
 }

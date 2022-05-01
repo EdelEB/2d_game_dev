@@ -34,7 +34,6 @@ void gamestate_load(char* filename)
 		//strncpy(gamestate.crew[i].title, sj_get_string_value(data), WORD_LEN); // this needs to be implemented to free(json)
 		gamestate.crew[i].title = sj_get_string_value(data);
 
-
 		data = sj_object_get_value(object, "clearance");
 		sj_string_as_integer(data->v.string, &gamestate.crew[i].clearance);
 

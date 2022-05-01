@@ -80,7 +80,7 @@ Menu* menu_get_by_id(gamestate_id id)
 	return NULL;
 }
 
-gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my)
+gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my, Uint8* keys)
 {
 	gamestate_id id = 0;
 	int i;
@@ -95,14 +95,20 @@ gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my)
 	{
 		if (m->button_list[i] && m->button_list[i]->_inuse)
 			id = ui_button_listen(m->button_list[i], mouse_state, *mx, *my);
-		if (id) 
-			return id;
+		if (id) return id;
 	}
 	for (i = 0; i < MAX_MENU_BUTTONS; i++)
 	{
 		if (m->draggable_list[i] && m->draggable_list[i]->_inuse)
 			ui_draggable_listen(m->draggable_list[i], mouse_state, *mx, *my);
 	}
+	for (i = 0; i < MAX_MENU_TEXT_INPUTS; i++)
+	{
+		if (m->text_input_list[i] && m->text_input_list[i]->_inuse)
+			id = ui_text_input_listen(m->text_input_list[i], mouse_state, *mx, *my, keys);
+		if (id) return id;
+	}
+
 
 	return NONE;
 }
@@ -130,6 +136,12 @@ void menu_draw(Menu* m)
 	{
 		if (m->draggable_list[i] && m->draggable_list[i]->_inuse)
 			ui_draggable_render(m->draggable_list[i]);
+	}
+	for (i = 0; i < MAX_MENU_TEXT_INPUTS; i++)
+	{
+		if (m->text_input_list[i]) {
+			ui_text_input_render(m->text_input_list[i]);
+		}
 	}
 }
 
@@ -179,7 +191,7 @@ void menu_draw(Menu* m)
 //		case 3: font = font_info.header_font; break;
 //		}
 //		menu->label_list[i] = ui_create_label_helper(
-//			sj_get_string_value(sj_object_get_value(comp, "text")),
+//			sj_get_string_value(sj_object_get_value(comp, "text_label")),
 //			sj_get_integer_value(sj_object_get_value(comp, "position_x"), NULL),
 //			sj_get_integer_value(sj_object_get_value(comp, "position_y"), NULL),
 //			font
@@ -196,7 +208,7 @@ void menu_draw(Menu* m)
 //			sj_get_integer_value(sj_object_get_value(comp, "position_y"), NULL),
 //			sj_get_integer_value(sj_object_get_value(comp, "dimensions_w"), NULL),
 //			sj_get_integer_value(sj_object_get_value(comp, "dimensions_h"), NULL),
-//			sj_get_string_value(sj_object_get_value(comp, "text")),
+//			sj_get_string_value(sj_object_get_value(comp, "text_label")),
 //			sj_get_string_value(sj_object_get_value(comp, "func"))
 //		);
 //	}

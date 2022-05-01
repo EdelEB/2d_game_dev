@@ -8,6 +8,7 @@ typedef struct UI_MANAGER {
 	ui_button* button_list;
 	ui_sprite* sprite_list;
 	ui_draggable* draggable_list;
+	ui_text_input* text_input_list;
 }UI_Manager;
 
 UI_Manager ui_manager = { 0 };
@@ -24,6 +25,7 @@ void ui_manager_init(Uint32 max_components)
 	ui_manager.button_list = gfc_allocate_array(sizeof(ui_button), max_components);
 	ui_manager.sprite_list = gfc_allocate_array(sizeof(ui_sprite), max_components);
 	ui_manager.draggable_list = gfc_allocate_array(sizeof(ui_draggable), max_components);
+	ui_manager.text_input_list = gfc_allocate_array(sizeof(ui_text_input), max_components);
 }
 void ui_font_info_init(void)
 {
@@ -76,6 +78,9 @@ void ui_manager_clear(void)
 		if (ui_manager.draggable_list[i]._inuse) {
 			ui_draggable_free(&ui_manager.draggable_list[i]);
 		}
+		if (ui_manager.text_input_list[i]._inuse) {
+			ui_text_input_free(&ui_manager.text_input_list[i]);
+		}
 	}
 }
 void ui_manager_close(void)
@@ -86,6 +91,7 @@ void ui_manager_close(void)
 	if (ui_manager.button_list) free(ui_manager.button_list);
 	if (ui_manager.sprite_list) free(ui_manager.sprite_list);
 	if (ui_manager.draggable_list) free(ui_manager.draggable_list);
+	if (ui_manager.text_input_list) free(ui_manager.text_input_list);
 	
 	slog("ui_manager closed");
 }
@@ -100,11 +106,13 @@ void ui_stuff_close(void)
 ui_label* ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
 {
 	SDL_Surface* surface;
-	ui_label*	 label = ui_label_new();
+	ui_label* label = ui_label_new();
 	if (!label) {
 		slog("ui_create_label_helper failed to retrieve ui_label pointer");
 		return;
 	}
+
+	label->str = str;
 
 	surface = TTF_RenderText_Solid(
 		font,
@@ -145,6 +153,35 @@ ui_label* ui_create_header_label(char* str, int x, int y)
 ui_label* ui_create_text_label(char* str, int x, int y)
 {
 	return ui_create_label_helper(str, x, y, font_info.text_font);
+}
+
+void ui_label_update(ui_label* l, char* new_str)
+{
+	SDL_Surface* surface;
+
+	if (!l ) return;
+
+	surface = TTF_RenderText_Solid(
+		font_info.text_font,
+		new_str,
+		font_info.font_color
+	);
+	if (!surface) {
+		slog("ui_create_label_helper failed to create SDL_Surface with TTF_RenderText_Solid");
+		return NULL;
+	}
+
+	l->texture = SDL_CreateTextureFromSurface(
+		gf2d_graphics_get_renderer(),
+		surface
+	);
+	SDL_QueryTexture(
+		l->texture,
+		NULL,
+		NULL,
+		&l->render_rect.w,
+		&l->render_rect.h
+	);
 }
 
 void ui_label_render(ui_label* l)
@@ -369,6 +406,155 @@ void ui_draggable_render(ui_draggable* d)
 	//ui_label_render(&d->text_label);
 }
 
+
+ui_text_input* ui_create_text_input(Vector2D position,void (*on_enter)(void))
+{
+	ui_text_input* t = ui_text_input_new();
+	if (!t) { 
+		slog("ui_create_text_input could not retrieve ui_text_input pointer"); 
+		return; 
+	}
+	
+	t->text_label = ui_create_text_label("w",position.x, position.y);
+	vector2d_copy(t->position, position);
+	t->click_box.x = position.x;
+	t->click_box.y = position.y;
+	t->click_box.w = WINDOW_WIDTH - 400;
+	t->click_box.h = 40;
+	t->button_enter = ui_create_button(
+		t->click_box.x + t->click_box.w,
+		t->click_box.y,
+		150,
+		40,
+		"Enter",
+		on_enter
+		);
+
+	return t;
+}
+
+gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, int my, Uint8* keys)
+{
+	gamestate_id id;
+	char str[128];
+
+	if (!t) return; 
+	
+	if (global_was_mouse_down == 1 && mouse_state == 0)
+	{
+		if (mx > t->click_box.x &&
+			mx < t->click_box.x + t->click_box.w &&
+			my > t->click_box.y &&
+			my < t->click_box.y + t->click_box.h)
+		{
+			global_was_mouse_down = 0;
+			t->is_active = 1;
+		}
+		else /*clicked outside the box*/
+		{
+			t->is_active = 0;
+		}
+	}
+
+	if (keys[SDL_SCANCODE_O])
+	{
+		ui_label_update(t->text_label, "hmmmm");
+	}
+	/*
+	if(keys[SDL_SCANCODE_RSHIFT] || keys[SDL_SCANCODE_LSHIFT])
+	{
+		if (keys[SDL_SCANCODE_Q]) { sprintf(str, t->text_label->str, 'Q'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_W]) { sprintf(str, t->text_label->str, 'W'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_E]) { sprintf(str, t->text_label->str, 'E'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_R]) { sprintf(str, t->text_label->str, 'R'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_T]) { sprintf(str, t->text_label->str, 'T'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_Y]) { sprintf(str, t->text_label->str, 'Y'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_U]) { sprintf(str, t->text_label->str, 'U'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_I]) { sprintf(str, t->text_label->str, 'I'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_O]) { sprintf(str, t->text_label->str, 'O'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_P]) { sprintf(str, t->text_label->str, 'P'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_A]) { sprintf(str, t->text_label->str, 'A'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_S]) { sprintf(str, t->text_label->str, 'S'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_D]) { sprintf(str, t->text_label->str, 'D'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_F]) { sprintf(str, t->text_label->str, 'F'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_G]) { sprintf(str, t->text_label->str, 'G'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_H]) { sprintf(str, t->text_label->str, 'H'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_J]) { sprintf(str, t->text_label->str, 'J'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_K]) { sprintf(str, t->text_label->str, 'K'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_L]) { sprintf(str, t->text_label->str, 'L'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_Z]) { sprintf(str, t->text_label->str, 'Z'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_X]) { sprintf(str, t->text_label->str, 'X'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_C]) { sprintf(str, t->text_label->str, 'C'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_V]) { sprintf(str, t->text_label->str, 'V'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_B]) { sprintf(str, t->text_label->str, 'B'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_N]) { sprintf(str, t->text_label->str, 'N'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_M]) { sprintf(str, t->text_label->str, 'M'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_MINUS]) { sprintf(str, t->text_label->str, '_'); ui_label_update(t->text_label, str); }
+	}
+	else
+	{
+		if (keys[SDL_SCANCODE_Q]) { sprintf(str, t->text_label->str, 'q'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_W]) { sprintf(str, t->text_label->str, 'w'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_E]) { sprintf(str, t->text_label->str, 'e'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_R]) { sprintf(str, t->text_label->str, 'r'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_T]) { sprintf(str, t->text_label->str, 't'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_Y]) { sprintf(str, t->text_label->str, 'y'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_U]) { sprintf(str, t->text_label->str, 'u'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_I]) { sprintf(str, t->text_label->str, 'i'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_O]) { sprintf(str, t->text_label->str, 'o'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_P]) { sprintf(str, t->text_label->str, 'p'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_A]) { sprintf(str, t->text_label->str, 'a'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_S]) { sprintf(str, t->text_label->str, 's'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_D]) { sprintf(str, t->text_label->str, 'd'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_F]) { sprintf(str, t->text_label->str, 'f'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_G]) { sprintf(str, t->text_label->str, 'g'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_H]) { sprintf(str, t->text_label->str, 'h'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_J]) { sprintf(str, t->text_label->str, 'j'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_K]) { sprintf(str, t->text_label->str, 'k'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_L]) { sprintf(str, t->text_label->str, 'l'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_Z]) { sprintf(str, t->text_label->str, 'z'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_X]) { sprintf(str, t->text_label->str, 'x'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_C]) { sprintf(str, t->text_label->str, 'c'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_V]) { sprintf(str, t->text_label->str, 'v'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_B]) { sprintf(str, t->text_label->str, 'b'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_N]) { sprintf(str, t->text_label->str, 'n'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_M]) { sprintf(str, t->text_label->str, 'm'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_0]) { sprintf(str, t->text_label->str, '0'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_1]) { sprintf(str, t->text_label->str, '1'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_2]) { sprintf(str, t->text_label->str, '2'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_3]) { sprintf(str, t->text_label->str, '3'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_4]) { sprintf(str, t->text_label->str, '4'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_5]) { sprintf(str, t->text_label->str, '5'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_6]) { sprintf(str, t->text_label->str, '6'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_7]) { sprintf(str, t->text_label->str, '7'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_8]) { sprintf(str, t->text_label->str, '8'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_9]) { sprintf(str, t->text_label->str, '9'); ui_label_update(t->text_label, str); }
+		else if (keys[SDL_SCANCODE_DELETE]) {}
+		else if (keys[SDL_SCANCODE_SPACE]) {}
+	}
+	*/
+	return ui_button_listen(t->button_enter, mouse_state, mx, my);
+}
+
+void ui_text_input_render(ui_text_input* t) 
+{
+	if (!t)
+	{
+		slog("ui_text_input_render recieved NULL ui_text_input pointer");
+		return;
+	}
+
+	if (t->is_active) {
+		gf2d_draw_rect(t->click_box, vector4d(0, 255, 255, 255));
+	}
+	else {
+		gf2d_draw_rect(t->click_box, vector4d(255, 255, 255, 255));
+	}
+	
+	ui_button_render(t->button_enter);
+	ui_label_render(t->text_label);
+}
+
 ui_label* ui_label_new(void)
 {
 	int i;
@@ -413,6 +599,17 @@ ui_draggable* ui_draggable_new(void)
 	}
 	return NULL;
 }
+ui_text_input* ui_text_input_new(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
+	{
+		if (ui_manager.text_input_list[i]._inuse) continue;
+		ui_manager.text_input_list[i]._inuse = 1;
+		return &ui_manager.text_input_list[i];
+	}
+	return NULL;
+}
 
 void ui_label_free(ui_label* l)
 {
@@ -439,4 +636,12 @@ void ui_draggable_free(ui_draggable* d)
 {
 	if (!d) return;
 	memset(d, 0, sizeof(ui_draggable));
+}
+void ui_text_input_free(ui_text_input* t)
+{
+	if (!t) return;
+
+	ui_button_free(t->button_enter);
+	ui_label_free(t->text_label);
+	memset(t, 0, sizeof(ui_text_input));
 }
