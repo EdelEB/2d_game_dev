@@ -15,7 +15,7 @@ struct GAMESTATE{
 	Uint32			food;
 	Uint32			map_spot; 
 	gamestate_id	completed_events[40];
-	crew_member		crew[MAX_CREW];	// DO NOT CHANGE ORDER OF DECLERATIONS
+	crew_member		crew[MAX_CREW]; // DO NOT CHANGE ORDER OF DECLARATIONS
 									//I don't know why, but when this is the first attribute, 
 									// when its loaded from json, when crew[MAX_CREW-1].is_alive 
 									// and crew[MAX_CREW-1]._inuse are changed  attribute food is affected
@@ -27,7 +27,7 @@ struct GAMESTATE{
 void gamestate_new(void);
 
 /*
-* @brief Sets gamestate values to those found in fiel
+* @brief Sets gamestate values to those found in file
 * @param filename is the name of the file being loaded
 */
 void gamestate_load(char* filename);

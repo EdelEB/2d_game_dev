@@ -60,14 +60,15 @@ void gamestate_load(char* filename)
 
 void gamestate_save(char* filename) 
 {
-	slog("SAVE ATTEMPT");
-
 	int i;
-	SJson *json = sj_object_new(), 
-		*arr = sj_array_new(),
-		*object,
-		*data;
+	SJson	*json = sj_object_new(), 
+			*arr = sj_array_new(),
+			*object,
+			*data;
 
+	slog("SAVE ATTEMPT");
+	
+	
 	for (i = 0; i < MAX_CREW; i++)
 	{
 		object = sj_object_new();

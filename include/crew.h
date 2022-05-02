@@ -25,5 +25,5 @@ typedef	struct CREW_MEMBER{
 
 crew_member crew_options[MAX_CREW_OPTIONS];
 
-void code_vomit_create_crew_member_options(void);
+void init_crew_member_options(void);
 #endif

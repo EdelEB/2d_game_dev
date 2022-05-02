@@ -27,7 +27,7 @@ char* get_crew_title(event_clearance c)
 	}
 }
 
-void code_vomit_create_crew_member_options(void)
+void init_crew_member_options(void)
 {
 	int i;
 	char* crew_names[8] = {"John", "Ken", "Will", "Tom", "Rich", "Ralph", "Carlos", "Bart"};

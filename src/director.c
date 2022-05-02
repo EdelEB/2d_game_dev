@@ -12,7 +12,7 @@ struct MINI_HOLDER{
 void director_init(void)
 {
 
-	code_vomit_create_crew_member_options();
+	init_crew_member_options();
 
 	event_manager_init(20);
 	note_manager_init(50);

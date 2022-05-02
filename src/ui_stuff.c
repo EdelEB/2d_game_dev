@@ -1,7 +1,5 @@
 #include "ui_stuff.h"
 
-extern Uint8 global_was_mouse_down;
-
 typedef struct UI_MANAGER {
 	Uint32 max_components;
 	ui_label* label_list;
@@ -121,24 +119,26 @@ ui_label* ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
 	);
 	if (!surface) {
 		slog("ui_create_label_helper failed to create SDL_Surface with TTF_RenderText_Solid");
-		return NULL;
+		label->texture = NULL;
+	}
+	else {
+		label->texture = SDL_CreateTextureFromSurface(
+			gf2d_graphics_get_renderer(),
+			surface
+		);
+		SDL_QueryTexture(
+			label->texture,
+			NULL,
+			NULL,
+			&label->render_rect.w,
+			&label->render_rect.h
+		);
 	}
 
-	label->texture = SDL_CreateTextureFromSurface(
-		gf2d_graphics_get_renderer(),
-		surface
-	);
 	label->render_rect.x = x;
 	label->render_rect.y = y;
-	label->render_rect.w = 200;
-	label->render_rect.h = 200;
-	SDL_QueryTexture(
-		label->texture,
-		NULL,
-		NULL,
-		&label->render_rect.w,
-		&label->render_rect.h
-	); 
+	//label->render_rect.w = 200;
+	//label->render_rect.h = 200;
 
 	return label;
 }
@@ -190,19 +190,22 @@ void ui_label_render(ui_label* l)
 		slog("ui_label_render received NULL ui_label*");
 		return;
 	}
-
+	
 	if (l->sprite) {
 		ui_sprite_render(l->sprite);
 	}
 
-	SDL_RenderCopy(
-		gf2d_graphics_get_renderer(),
-		l->texture,
-		NULL,
-		&l->render_rect
-	);
+	if (l->texture) {
+		SDL_RenderCopy(
+			gf2d_graphics_get_renderer(),
+			l->texture,
+			NULL,
+			&l->render_rect
+		);
+	}
 
 	if (DEBUG){ gf2d_draw_rect(l->render_rect, vector4d(55, 255, 255, 255)); }
+	
 }
 
 
@@ -415,7 +418,8 @@ ui_text_input* ui_create_text_input(Vector2D position,void (*on_enter)(void))
 		return; 
 	}
 	
-	t->text_label = ui_create_text_label("w",position.x, position.y);
+	t->index = 0;
+	t->text_label = ui_create_text_label(" ",position.x, position.y);
 	vector2d_copy(t->position, position);
 	t->click_box.x = position.x;
 	t->click_box.y = position.y;
@@ -436,7 +440,7 @@ ui_text_input* ui_create_text_input(Vector2D position,void (*on_enter)(void))
 gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, int my, Uint8* keys)
 {
 	gamestate_id id;
-	char str[128];
+	char c = '%';
 
 	if (!t) return; 
 	
@@ -456,83 +460,110 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 		}
 	}
 
-	if (keys[SDL_SCANCODE_O])
-	{
-		ui_label_update(t->text_label, "hmmmm");
+	if (t->is_active) {
+
+		if (type_cooldown > 0) {
+			type_cooldown--;
+			return NONE;
+		}
+
+		if (keys[SDL_SCANCODE_RSHIFT] || keys[SDL_SCANCODE_LSHIFT])
+		{
+			if (keys[SDL_SCANCODE_Q]) { c = 'Q'; }
+			else if (keys[SDL_SCANCODE_W]) { c = 'W'; }
+			else if (keys[SDL_SCANCODE_E]) { c = 'E'; }
+			else if (keys[SDL_SCANCODE_R]) { c = 'R'; }
+			else if (keys[SDL_SCANCODE_T]) { c = 'T'; }
+			else if (keys[SDL_SCANCODE_Y]) { c = 'Y'; }
+			else if (keys[SDL_SCANCODE_U]) { c = 'U'; }
+			else if (keys[SDL_SCANCODE_I]) { c = 'I'; }
+			else if (keys[SDL_SCANCODE_O]) { c = 'O'; }
+			else if (keys[SDL_SCANCODE_P]) { c = 'P'; }
+			else if (keys[SDL_SCANCODE_A]) { c = 'A'; }
+			else if (keys[SDL_SCANCODE_S]) { c = 'S'; }
+			else if (keys[SDL_SCANCODE_D]) { c = 'D'; }
+			else if (keys[SDL_SCANCODE_F]) { c = 'F'; }
+			else if (keys[SDL_SCANCODE_G]) { c = 'G'; }
+			else if (keys[SDL_SCANCODE_H]) { c = 'H'; }
+			else if (keys[SDL_SCANCODE_J]) { c = 'J'; }
+			else if (keys[SDL_SCANCODE_K]) { c = 'K'; }
+			else if (keys[SDL_SCANCODE_L]) { c = 'L'; }
+			else if (keys[SDL_SCANCODE_Z]) { c = 'Z'; }
+			else if (keys[SDL_SCANCODE_X]) { c = 'X'; }
+			else if (keys[SDL_SCANCODE_C]) { c = 'C'; }
+			else if (keys[SDL_SCANCODE_V]) { c = 'V'; }
+			else if (keys[SDL_SCANCODE_B]) { c = 'B'; }
+			else if (keys[SDL_SCANCODE_N]) { c = 'N'; }
+			else if (keys[SDL_SCANCODE_M]) { c = 'M'; }
+			else if (keys[SDL_SCANCODE_MINUS]) { c = '_'; }
+		}
+		else
+		{
+			if (keys[SDL_SCANCODE_Q]) { c = 'q'; }
+			else if (keys[SDL_SCANCODE_W]) { c = 'w'; }
+			else if (keys[SDL_SCANCODE_E]) { c = 'e'; }
+			else if (keys[SDL_SCANCODE_R]) { c = 'r'; }
+			else if (keys[SDL_SCANCODE_T]) { c = 't'; }
+			else if (keys[SDL_SCANCODE_Y]) { c = 'y'; }
+			else if (keys[SDL_SCANCODE_U]) { c = 'u'; }
+			else if (keys[SDL_SCANCODE_I]) { c = 'i'; }
+			else if (keys[SDL_SCANCODE_O]) { c = 'o'; }
+			else if (keys[SDL_SCANCODE_P]) { c = 'p'; }
+			else if (keys[SDL_SCANCODE_A]) { c = 'a'; }
+			else if (keys[SDL_SCANCODE_S]) { c = 's'; }
+			else if (keys[SDL_SCANCODE_D]) { c = 'd'; }
+			else if (keys[SDL_SCANCODE_F]) { c = 'f'; }
+			else if (keys[SDL_SCANCODE_G]) { c = 'g'; }
+			else if (keys[SDL_SCANCODE_H]) { c = 'h'; }
+			else if (keys[SDL_SCANCODE_J]) { c = 'j'; }
+			else if (keys[SDL_SCANCODE_K]) { c = 'k'; }
+			else if (keys[SDL_SCANCODE_L]) { c = 'l'; }
+			else if (keys[SDL_SCANCODE_Z]) { c = 'z'; }
+			else if (keys[SDL_SCANCODE_X]) { c = 'x'; }
+			else if (keys[SDL_SCANCODE_C]) { c = 'c'; }
+			else if (keys[SDL_SCANCODE_V]) { c = 'v'; }
+			else if (keys[SDL_SCANCODE_B]) { c = 'b'; }
+			else if (keys[SDL_SCANCODE_N]) { c = 'n'; }
+			else if (keys[SDL_SCANCODE_M]) { c = 'm'; }
+			else if (keys[SDL_SCANCODE_0]) { c = '0'; }
+			else if (keys[SDL_SCANCODE_1]) { c = '1'; }
+			else if (keys[SDL_SCANCODE_2]) { c = '2'; }
+			else if (keys[SDL_SCANCODE_3]) { c = '3'; }
+			else if (keys[SDL_SCANCODE_4]) { c = '4'; }
+			else if (keys[SDL_SCANCODE_5]) { c = '5'; }
+			else if (keys[SDL_SCANCODE_6]) { c = '6'; }
+			else if (keys[SDL_SCANCODE_7]) { c = '7'; }
+			else if (keys[SDL_SCANCODE_8]) { c = '8'; }
+			else if (keys[SDL_SCANCODE_9]) { c = '9'; }
+			else if (keys[SDL_SCANCODE_SPACE]) { c = ' '; }
+			else if (keys[SDL_SCANCODE_BACKSPACE]) {
+				if (t->index == 0) {
+					t->str[t->index] = ' ';
+				}
+				else{
+					t->index--;
+					if (t->index == 0) t->str[t->index] = ' ';
+					else t->str[t->index] = '\0';
+				}
+				ui_label_update(t->text_label, t->str);
+				type_cooldown = TYPE_COOLDOWN;
+			}
+		}
 	}
-	/*
-	if(keys[SDL_SCANCODE_RSHIFT] || keys[SDL_SCANCODE_LSHIFT])
+	
+	if (c != '%') // Don't mess with this. % == -124 for some reason
 	{
-		if (keys[SDL_SCANCODE_Q]) { sprintf(str, t->text_label->str, 'Q'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_W]) { sprintf(str, t->text_label->str, 'W'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_E]) { sprintf(str, t->text_label->str, 'E'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_R]) { sprintf(str, t->text_label->str, 'R'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_T]) { sprintf(str, t->text_label->str, 'T'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_Y]) { sprintf(str, t->text_label->str, 'Y'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_U]) { sprintf(str, t->text_label->str, 'U'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_I]) { sprintf(str, t->text_label->str, 'I'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_O]) { sprintf(str, t->text_label->str, 'O'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_P]) { sprintf(str, t->text_label->str, 'P'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_A]) { sprintf(str, t->text_label->str, 'A'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_S]) { sprintf(str, t->text_label->str, 'S'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_D]) { sprintf(str, t->text_label->str, 'D'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_F]) { sprintf(str, t->text_label->str, 'F'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_G]) { sprintf(str, t->text_label->str, 'G'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_H]) { sprintf(str, t->text_label->str, 'H'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_J]) { sprintf(str, t->text_label->str, 'J'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_K]) { sprintf(str, t->text_label->str, 'K'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_L]) { sprintf(str, t->text_label->str, 'L'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_Z]) { sprintf(str, t->text_label->str, 'Z'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_X]) { sprintf(str, t->text_label->str, 'X'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_C]) { sprintf(str, t->text_label->str, 'C'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_V]) { sprintf(str, t->text_label->str, 'V'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_B]) { sprintf(str, t->text_label->str, 'B'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_N]) { sprintf(str, t->text_label->str, 'N'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_M]) { sprintf(str, t->text_label->str, 'M'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_MINUS]) { sprintf(str, t->text_label->str, '_'); ui_label_update(t->text_label, str); }
+		t->str[t->index] = c;
+		ui_label_update(t->text_label, t->str);
+		
+		t->index++;
+		if (t->index >= SENTENCE_LEN) {
+			t->index = SENTENCE_LEN - 1;
+		}
+
+		type_cooldown = TYPE_COOLDOWN;
 	}
-	else
-	{
-		if (keys[SDL_SCANCODE_Q]) { sprintf(str, t->text_label->str, 'q'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_W]) { sprintf(str, t->text_label->str, 'w'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_E]) { sprintf(str, t->text_label->str, 'e'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_R]) { sprintf(str, t->text_label->str, 'r'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_T]) { sprintf(str, t->text_label->str, 't'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_Y]) { sprintf(str, t->text_label->str, 'y'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_U]) { sprintf(str, t->text_label->str, 'u'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_I]) { sprintf(str, t->text_label->str, 'i'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_O]) { sprintf(str, t->text_label->str, 'o'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_P]) { sprintf(str, t->text_label->str, 'p'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_A]) { sprintf(str, t->text_label->str, 'a'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_S]) { sprintf(str, t->text_label->str, 's'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_D]) { sprintf(str, t->text_label->str, 'd'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_F]) { sprintf(str, t->text_label->str, 'f'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_G]) { sprintf(str, t->text_label->str, 'g'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_H]) { sprintf(str, t->text_label->str, 'h'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_J]) { sprintf(str, t->text_label->str, 'j'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_K]) { sprintf(str, t->text_label->str, 'k'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_L]) { sprintf(str, t->text_label->str, 'l'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_Z]) { sprintf(str, t->text_label->str, 'z'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_X]) { sprintf(str, t->text_label->str, 'x'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_C]) { sprintf(str, t->text_label->str, 'c'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_V]) { sprintf(str, t->text_label->str, 'v'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_B]) { sprintf(str, t->text_label->str, 'b'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_N]) { sprintf(str, t->text_label->str, 'n'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_M]) { sprintf(str, t->text_label->str, 'm'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_0]) { sprintf(str, t->text_label->str, '0'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_1]) { sprintf(str, t->text_label->str, '1'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_2]) { sprintf(str, t->text_label->str, '2'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_3]) { sprintf(str, t->text_label->str, '3'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_4]) { sprintf(str, t->text_label->str, '4'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_5]) { sprintf(str, t->text_label->str, '5'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_6]) { sprintf(str, t->text_label->str, '6'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_7]) { sprintf(str, t->text_label->str, '7'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_8]) { sprintf(str, t->text_label->str, '8'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_9]) { sprintf(str, t->text_label->str, '9'); ui_label_update(t->text_label, str); }
-		else if (keys[SDL_SCANCODE_DELETE]) {}
-		else if (keys[SDL_SCANCODE_SPACE]) {}
-	}
-	*/
+
 	return ui_button_listen(t->button_enter, mouse_state, mx, my);
 }
 
@@ -546,6 +577,11 @@ void ui_text_input_render(ui_text_input* t)
 
 	if (t->is_active) {
 		gf2d_draw_rect(t->click_box, vector4d(0, 255, 255, 255));
+		gf2d_draw_line(
+			vector2d(t->text_label->render_rect.x + t->text_label->render_rect.w, t->text_label->render_rect.y),
+			vector2d(t->text_label->render_rect.x + t->text_label->render_rect.w, t->text_label->render_rect.y + t->text_label->render_rect.h),
+			vector4d(255, 255, 255, 255)
+		);
 	}
 	else {
 		gf2d_draw_rect(t->click_box, vector4d(255, 255, 255, 255));

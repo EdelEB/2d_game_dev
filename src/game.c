@@ -74,7 +74,8 @@ int main(int argc, char * argv[])
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         mouse_state = SDL_GetMouseState(&mx,&my);
         
-        if (DEBUG && mouse_state != 0)
+        /*Display Mouse Coordinates*/
+        if (DEBUG && mouse_state == 1)
         { 
             if (mouse_click_cooldown > 0) {
                 mouse_click_cooldown--;
@@ -86,16 +87,16 @@ int main(int argc, char * argv[])
                 mouse_click_cooldown = CLICK_COOLDOWN;
             }
         } 
-
+        
         /*Toggle DEBUG*/
-        if (keys[SDL_SCANCODE_P]) {
-            if (debug_toggle_cooldown > 0) { debug_toggle_cooldown--; }
-            else {
+        if (debug_toggle_cooldown > 0) { debug_toggle_cooldown--; }
+        else {
+            if (keys[SDL_SCANCODE_GRAVE]) {
                 if (DEBUG) DEBUG = 0;
                 else DEBUG = 1;
                 debug_toggle_cooldown = CLICK_COOLDOWN;
             }
-        } 
+        }
 
         mf += 0.1;
         if (mf >= 16.0)mf = 0;

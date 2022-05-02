@@ -14,10 +14,14 @@
 
 
 #define WORD_LEN 16
+#define SENTENCE_LEN 64
 #define BLOCK_LEN 128
 #define PAGE_LEN 512
+#define TYPE_COOLDOWN 11
 extern Uint8 DEBUG;
 extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
+extern Uint8 global_was_mouse_down;
+Uint16 type_cooldown;
 
 /*This allows all fonts to only be loaded once*/
 struct FONT_INFO{
@@ -60,11 +64,13 @@ typedef struct UI_BUTTON{
 
 typedef struct UI_TEXT_INPUT {
 	Uint8		_inuse;
-	Vector2D	position;
-	Uint8		is_active;		/**< 1 : when user can type, 0 : otherwize*/
-	SDL_Rect	click_box;		/**< bounds of the text_label box, when clicked input box becomes active*/
-	ui_label   *text_label;		/**< text_label inside the text_label box*/
-	ui_button  *button_enter;	/**< Enter button next to the text_label box*/
+	Uint32		index;				/**< the index of the current str[i] that can typed into*/
+	char		str[SENTENCE_LEN];	/**< string that is displayed in the box*/
+	Vector2D	position;			/**< position of the text box */
+	Uint8		is_active;			/**< 1 : when user can type, 0 : otherwize*/
+	SDL_Rect	click_box;			/**< bounds of the text_label box, when clicked input box becomes active*/
+	ui_label   *text_label;			/**< text_label inside the text_label box*/
+	ui_button  *button_enter;		/**< Enter button next to the text_label box*/
 }ui_text_input;
 
 /* UI_DRAGGABLE's are intended to be added to other ui components and allow them to be moved*/
