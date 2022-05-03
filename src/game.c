@@ -13,7 +13,8 @@ Uint8 DEBUG = 0;
 const int CLICK_COOLDOWN = 20;
 int debug_toggle_cooldown = 0;
 int mouse_click_cooldown = 0;
-Uint8 global_was_mouse_down;
+Uint8 global_was_mouse_down;    // This is the previous state of the mouse
+Uint8* global_prev_keys;        // This is the previous set of keys that were pressed
 
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
@@ -22,7 +23,7 @@ int main(int argc, char * argv[])
 {
     /*variable declarations*/
     Uint8 done = 0;
-    const Uint8 * keys;
+    Uint8 * keys;
     float mf = 0;
 
     Sprite *bg_current, *bg_default;
@@ -56,7 +57,8 @@ int main(int argc, char * argv[])
     ui_stuff_init();
     gfc_audio_init(10, 5, 5, 3, 1, 0);
     director_init();
-    
+    global_prev_keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+
     /* Set default background */
     //bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_map.png");
     //bg_current = bg_default;
@@ -91,6 +93,7 @@ int main(int argc, char * argv[])
         /*Toggle DEBUG*/
         if (debug_toggle_cooldown > 0) { debug_toggle_cooldown--; }
         else {
+            // SDL_SCANCODE_GRAVE is the tilde key
             if (keys[SDL_SCANCODE_GRAVE]) {
                 if (DEBUG) DEBUG = 0;
                 else DEBUG = 1;
@@ -129,6 +132,8 @@ int main(int argc, char * argv[])
         /*exit condition*/
         if (keys[SDL_SCANCODE_ESCAPE])done = 1;
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
+
+        global_prev_keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
     }
 
     /*Close tools*/

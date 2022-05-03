@@ -1,5 +1,14 @@
 #include "menu_start.h"
 
+gamestate_id test_text_input(void)
+{
+	Menu* menu = menu_get_by_id(MENU_START);
+	ui_text_input* t = menu->text_input_list[0];
+
+	slog("%s", t->str);
+	return NONE;
+}
+
 Menu* menu_start_init()
 {
 	Menu* menu_start = menu_new();
@@ -72,7 +81,7 @@ Menu* menu_start_init()
 
 	menu_start->text_input_list[0] = ui_create_text_input(
 		vector2d(200, 200),
-		start_new_game
+		test_text_input
 	);
 
 

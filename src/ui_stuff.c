@@ -419,7 +419,7 @@ ui_text_input* ui_create_text_input(Vector2D position,void (*on_enter)(void))
 	}
 	
 	t->index = 0;
-	t->text_label = ui_create_text_label(" ",position.x, position.y);
+	t->text_label = ui_create_text_label(" ",position.x+5, position.y+7);
 	vector2d_copy(t->position, position);
 	t->click_box.x = position.x;
 	t->click_box.y = position.y;
@@ -551,7 +551,7 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 		}
 	}
 	
-	if (c != '%') // Don't mess with this. % == -124 for some reason
+	if (c != '%') 
 	{
 		t->str[t->index] = c;
 		ui_label_update(t->text_label, t->str);
