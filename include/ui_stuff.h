@@ -24,12 +24,15 @@ extern Uint8 global_was_mouse_down;
 extern Uint8* global_prev_keys;
 Uint16 type_cooldown;
 
-/*This allows all fonts to only be loaded once*/
+/*FONT_INFO holds all fonts that intend to be used*/
+/*This allows all fonts to loaded once*/
 struct FONT_INFO{
 	TTF_Font	*title_font, *header_font, *text_font;
 	SDL_Color	font_color;
 }font_info;
 
+/*SOUND_FX holds all the Sounds that intend to be used*/
+/*This allows all sounds to be loaded once*/
 struct SOUND_FX {
 	Sound	*button_click;
 	Sound	*gamestate_change;
@@ -63,17 +66,7 @@ typedef struct UI_BUTTON{
 	gamestate_id (*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
 
-typedef struct UI_TEXT_INPUT {
-	Uint8		_inuse;
-	Uint32		index;				/**< the index of the current str[i] that can typed into*/
-	char		str[SENTENCE_LEN];	/**< string that is displayed in the box*/
-	Vector2D	position;			/**< position of the text box */
-	Uint8		is_active;			/**< 1 : when user can type, 0 : otherwize*/
-	SDL_Rect	click_box;			/**< bounds of the text_label box, when clicked input box becomes active*/
-	ui_label   *text_label;			/**< text_label inside the text_label box*/
-	ui_button  *button_enter;		/**< Enter button next to the text_label box*/
-}ui_text_input;
-
+/* UI_DRAGGABLE is an object that can be clicked on and moved around the screen */
 /* UI_DRAGGABLE's are intended to be added to other ui components and allow them to be moved*/
 typedef struct UI_DRAGGABLE {
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
@@ -83,6 +76,18 @@ typedef struct UI_DRAGGABLE {
 	Vector2D	prev_position;		/**< this is the position the draggable was at prior to being held*/
 	SDL_Rect	click_box;			/**< this box defines where the draggable's bounds are*/
 }ui_draggable;
+
+/* UI_TEXT_INPUT consists of a text box that the user can type into and an enter button*/
+typedef struct UI_TEXT_INPUT {
+	Uint8		_inuse;
+	Uint32		index;				/**< the index of the current str[i] that can typed into*/
+	char		str[SENTENCE_LEN];	/**< string that is displayed in the box*/
+	Vector2D	position;			/**< position of the text box */
+	Uint8		is_active;			/**< 1 : when user can type, 0 : otherwize*/
+	SDL_Rect	click_box;			/**< bounds of the text_label box, when clicked input box becomes active*/
+	ui_label* text_label;			/**< text_label inside the text_label box*/
+	ui_button* button_enter;		/**< Enter button next to the text_label box*/
+}ui_text_input;
 
 /*
 * @brief this initializes all information regarding fonts and colors used to create labels
@@ -110,28 +115,12 @@ void ui_sound_fx_close(void);
 void ui_manager_close(void);
 void ui_stuff_close(void);
 
-/*
-* @brief creates a sprite object that can be used in tandum with other ui components or alone
-* @param sprite pointer to the image being drawn
-* @param position (x, y) of the sprite in the window
-* @param scale determines sizing of sprite from top left corner
-* @param scale_center determines sizing from center of sprite
-* @param rotation determines orientation of the imagae
-* @param frame_count is the number of images to be cycled through in order to animate it
-* @return new ui_sprite object
-*/
-ui_sprite* ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count);
 
-/*
-* @brief draws ui_sprite to the screen
-* @param s is a pointer to the ui_sprite being drawn
-*/
-void ui_sprite_render(ui_sprite* s);
 
 /*
 * @brief create a ui_label object which can be used to print text_label to the screen
 * @param str is the text_label that will be displayed
-* @param x is the x coordinate of the upper left corner of the text_label 
+* @param x is the x coordinate of the upper left corner of the text_label
 * @param y is the y coordinate of the upper left corner of the text_label
 * @param font is the type of font that is printed. The creates pass this to the helper so that the programmer does not need to create of find the font
 * @return ui_label structure
@@ -146,13 +135,15 @@ ui_label* ui_create_text_label(char* str, int x, int y);
 * @param l is the ui_label being modified
 * @param new_str is the new ui_label->str attribute being set for l
 */
-void ui_label_update(ui_label* l, char * new_str);
+void ui_label_update(ui_label* l, char* new_str);
 
 /*
 * @brief draws a passed in ui_label to the screen
 * @param l is a pointer to the label being drawn
 */
 void ui_label_render(ui_label* l);
+
+
 
 /*
 * @brief creates a new ui_button struct 
@@ -165,12 +156,6 @@ void ui_label_render(ui_label* l);
 * @return ui_button pointer
 */ 
 ui_button* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void) );
-
-/*
-* @brief draws a passed in ui_button to the screen
-* @param l is a pointer to the label being drawn
-*/
-void ui_button_render(ui_button* b);
 
 /*
 * @brief listens for when the button is clicked and calls the on_click function when it is
@@ -193,6 +178,34 @@ gamestate_id ui_button_listen_alone(ui_button* b);
 * @returns the gamestate_id return by b->on_click(b)
 */
 gamestate_id ui_button_click(ui_button* b);
+
+/*
+* @brief draws a passed in ui_button to the screen
+* @param l is a pointer to the label being drawn
+*/
+void ui_button_render(ui_button* b);
+
+
+
+/*
+* @brief creates a sprite object that can be used in tandum with other ui components or alone
+* @param sprite pointer to the image being drawn
+* @param position (x, y) of the sprite in the window
+* @param scale determines sizing of sprite from top left corner
+* @param scale_center determines sizing from center of sprite
+* @param rotation determines orientation of the imagae
+* @param frame_count is the number of images to be cycled through in order to animate it
+* @return new ui_sprite object
+*/
+ui_sprite* ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count);
+
+/*
+* @brief draws ui_sprite to the screen
+* @param s is a pointer to the ui_sprite being drawn
+*/
+void ui_sprite_render(ui_sprite* s);
+
+
 
 /*
 * @brief creates a new ui_draggable and returns a pointer to it
@@ -218,19 +231,42 @@ void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my);
 void ui_draggable_render(ui_draggable* d);
 
 
+
+/*
+* @brief creates a new ui_text_input and returns a pointer to it
+* @param position is the location where the ui_text_input will be rendered (top left corner of the click_box)
+* @param on_enter is a pointer to the function that will be called when the ui_text_input's button_enter is clicked
+* @return a pointer to the ui_text_input that was just created
+*/
 ui_text_input* ui_create_text_input(Vector2D position, void (*on_enter)(void));
 
-gamestate_id ui_text_input_listen(ui_text_input* t);
+/*
+* @brief listens for mouse and keyboard events in order to update the ui_text_input accordingly
+* @param t is a pointer to the ui_text_input that will be listened for and updated if necessary
+* @param mouse_state says if mouse is clicked ( 1:left pressed, 4: right pressed, 0: no press ) 
+* @param mx	mouse x position
+* @param my mouse y position
+* @param keys is an array of Uint8 that can be used to get keyboard state using keys[<SCANCODE>]
+* @return gamestate_id of that the game needs to change to or gamestate NONE otherwize
+*/
+gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, int my, Uint8* keys);
 
+/*
+* @brief draws ui_text_input* to the screen
+* @param t is the ui_text_input being drawn
+*/
 void ui_text_input_render(ui_text_input* t);
 
 
+
+/* All "New" functions : allocate memory from managers */
 ui_label* ui_label_new(void);
 ui_button* ui_button_new(void);
 ui_sprite* ui_sprite_new(void);
 ui_draggable* ui_draggable_new(void);
 ui_text_input* ui_text_input_new(void);
 
+/* All Free Functions */
 void ui_label_free(ui_label* l);
 void ui_button_free(ui_button* b);
 void ui_sprite_free(ui_sprite* s);

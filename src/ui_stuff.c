@@ -101,6 +101,7 @@ void ui_stuff_close(void)
 }
 
 
+
 ui_label* ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
 {
 	SDL_Surface* surface;
@@ -209,6 +210,7 @@ void ui_label_render(ui_label* l)
 }
 
 
+
 ui_button* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void))
 {
 	ui_button* button = ui_button_new();
@@ -226,21 +228,6 @@ ui_button* ui_create_button(int x, int y, int w, int h, char* str, void (*on_cli
 
 	return button;
 
-}
-
-void ui_button_render(ui_button* b)
-{
-	if (!b)
-	{
-		slog("ui_button_render cannot render NULL ui_button*");
-		return;
-	}
-	
-	if (!b->hide_click_box) { gf2d_draw_rect(b->click_box, vector4d(255, 255, 255, 255)); }
-	
-	if (b->sprite_current) { ui_sprite_render(b->sprite_current); }
-	
-	ui_label_render(b->text_label);
 }
 
 gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
@@ -313,6 +300,23 @@ gamestate_id ui_button_click(ui_button* b)
 	return ret;
 }
 
+void ui_button_render(ui_button* b)
+{
+	if (!b)
+	{
+		slog("ui_button_render cannot render NULL ui_button*");
+		return;
+	}
+	
+	if (!b->hide_click_box) { gf2d_draw_rect(b->click_box, vector4d(255, 255, 255, 255)); }
+	
+	if (b->sprite_current) { ui_sprite_render(b->sprite_current); }
+	
+	ui_label_render(b->text_label);
+}
+
+
+
 ui_sprite* ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count)
 {
 	ui_sprite* s = ui_sprite_new();
@@ -348,6 +352,8 @@ void ui_sprite_render(ui_sprite* s)
 			);
 	}
 }
+
+
 
 ui_draggable* ui_create_draggable(Vector2D position, Vector2D size)
 {
@@ -410,6 +416,7 @@ void ui_draggable_render(ui_draggable* d)
 }
 
 
+
 ui_text_input* ui_create_text_input(Vector2D position,void (*on_enter)(void))
 {
 	ui_text_input* t = ui_text_input_new();
@@ -467,6 +474,7 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 			return NONE;
 		}
 
+		// TODO : There's probably a way to make this a switch() statement which would be faster and better
 		if (keys[SDL_SCANCODE_RSHIFT] || keys[SDL_SCANCODE_LSHIFT])
 		{
 			if (keys[SDL_SCANCODE_Q]) { c = 'Q'; }
@@ -590,6 +598,8 @@ void ui_text_input_render(ui_text_input* t)
 	ui_button_render(t->button_enter);
 	ui_label_render(t->text_label);
 }
+
+
 
 ui_label* ui_label_new(void)
 {
