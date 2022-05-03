@@ -49,18 +49,15 @@ Menu* menu_new(void)
 
 void menu_free(Menu* m)
 {
+	int i;
+
 	if (!m)
 	{
 		slog("menu_free cannot free NULL Menu*");
 		return;
 	}
 
-	int i;
-
-	for (i = 0; i < MAX_MENU_LABELS; i++) { ui_label_free(m->label_list[i]); }
-	for (i = 0; i < MAX_MENU_BUTTONS; i++) { ui_button_free(m->button_list[i]); }
-	for (i = 0; i < MAX_MENU_SPRITES; i++) { ui_sprite_free(m->sprite_list[i]); }
-	for (i = 0; i < MAX_MENU_BUTTONS; i++) { ui_draggable_free(m->draggable_list[i]); }
+	for (i = 0; i < MAX_MENU_OBJECTS; i++) { ui_object_free(m->object_list[i]); }
 
 	memset(m, 0, sizeof(Menu));
 }
@@ -91,57 +88,30 @@ gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my, Uint8* ke
 		return NONE;
 	}
 
-	for (i = 0; i < MAX_MENU_BUTTONS; i++)
+	for (i = 0; i < MAX_MENU_OBJECTS; i++)
 	{
-		if (m->button_list[i] && m->button_list[i]->_inuse)
-			id = ui_button_listen(m->button_list[i], mouse_state, *mx, *my);
+		if (m->object_list[i] && m->object_list[i]->_inuse)
+			id = ui_object_listen(m->object_list[i], mouse_state, *mx, *my, keys);
 		if (id) return id;
 	}
-	for (i = 0; i < MAX_MENU_BUTTONS; i++)
-	{
-		if (m->draggable_list[i] && m->draggable_list[i]->_inuse)
-			ui_draggable_listen(m->draggable_list[i], mouse_state, *mx, *my);
-	}
-	for (i = 0; i < MAX_MENU_TEXT_INPUTS; i++)
-	{
-		if (m->text_input_list[i] && m->text_input_list[i]->_inuse)
-			id = ui_text_input_listen(m->text_input_list[i], mouse_state, *mx, *my, keys);
-		if (id) return id;
-	}
-
 
 	return NONE;
 }
 
 void menu_draw(Menu* m)
 {
+	int i;
+
 	if(!m)
 	{
 		slog("menu_draw cannot draw NULL Menu*");
 		return;
 	}
 
-	int i;
-	for (i = 0; i < MAX_MENU_BUTTONS; i++)
+	for (i = 0; i < MAX_MENU_OBJECTS; i++)
 	{
-		if (m->button_list[i] && m->button_list[i]->_inuse)
-			ui_button_render(m->button_list[i]);
-	}
-	for (i = 0; i < MAX_MENU_LABELS; i++)
-	{
-		if (m->label_list[i] && m->label_list[i]->_inuse)
-			ui_label_render(m->label_list[i]);
-	}
-	for (i = 0; i < MAX_MENU_BUTTONS; i++)
-	{
-		if (m->draggable_list[i] && m->draggable_list[i]->_inuse)
-			ui_draggable_render(m->draggable_list[i]);
-	}
-	for (i = 0; i < MAX_MENU_TEXT_INPUTS; i++)
-	{
-		if (m->text_input_list[i]) {
-			ui_text_input_render(m->text_input_list[i]);
-		}
+		if (m->object_list[i] && m->object_list[i]->_inuse)
+			ui_object_render(m->object_list[i]);
 	}
 }
 
@@ -162,7 +132,7 @@ void menu_draw(Menu* m)
 //	for(i = 0; arr && i < sj_array_get_count(arr); i++)
 //	{
 //		comp = sj_array_get_nth(arr, i);
-//		menu->sprite_list[i] = ui_create_sprite(
+//		menu->image_list[i] = ui_create_image(
 //			sj_get_string_value(sj_object_get_value(comp, "filename")),
 //			vector2d(
 //				sj_get_integer_value(sj_object_get_value(comp, "position_x"), NULL),

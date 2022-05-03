@@ -5,13 +5,13 @@ Uint16 crew_additions = 0;
 
 Menu* menu_crew_select_init(void)
 {
-	Menu* menu_crew_select = menu_new();
-	if (!menu_crew_select) { slog("Could not allocate Menu* for menu_crew_select"); }
+	Menu* menu = menu_new();
+	if (!menu) { slog("Could not allocate Menu* for menu"); }
 
-	menu_crew_select->id = CREW_SELECT;
+	menu->id = CREW_SELECT;
 	char* crew_member_display_string;
 
-	menu_crew_select->button_list[0] = ui_create_button(
+	menu->object_list[0] = ui_create_button(
 		WINDOW_WIDTH-200,
 		(WINDOW_HEIGHT >> 3) * 7,
 		100,
@@ -19,7 +19,7 @@ Menu* menu_crew_select_init(void)
 		"Next",
 		next_crew_member);
 
-	menu_crew_select->button_list[1] = ui_create_button(
+	menu->object_list[1] = ui_create_button(
 		(WINDOW_WIDTH >> 1) - 50,
 		(WINDOW_HEIGHT >> 3) * 7,
 		100,
@@ -28,15 +28,27 @@ Menu* menu_crew_select_init(void)
 		select_crew_member
 	);
 
-	menu_crew_select->label_list[0] = ui_create_title_label(
+	menu->object_list[2] = ui_create_label(
 		"Select Your Crew",
 		(WINDOW_WIDTH >> 1) - 300,
-		(WINDOW_HEIGHT >> 4)
+		(WINDOW_HEIGHT >> 4),
+		TITLE
 	);
 
-	update_name_and_title();
+	menu->object_list[3] = ui_create_label(
+		crew_options[crew_options_index].name,
+		(WINDOW_WIDTH >> 1) - 100,
+		(WINDOW_HEIGHT >> 1),
+		HEADER
+	);
+	menu->object_list[4] = ui_create_label(
+		crew_options[crew_options_index].title,
+		(WINDOW_WIDTH >> 1) - 100,
+		(WINDOW_HEIGHT >> 1) + 50,
+		HEADER
+	);
 
-	return &menu_crew_select;
+	return &menu;
 }
 
 gamestate_id next_crew_member(void)
@@ -77,16 +89,14 @@ gamestate_id select_crew_member(void)
 
 void update_name_and_title(void)
 {
-	Menu* crew_select = menu_get_by_id(CREW_SELECT);
+	Menu* menu = menu_get_by_id(CREW_SELECT);
 
-	crew_select->label_list[1] = ui_create_header_label(
-		crew_options[crew_options_index].name,
-		(WINDOW_WIDTH >> 1) - 100,
-		(WINDOW_HEIGHT >> 1)
+	ui_label_update(
+		menu->object_list[3]->l,
+		crew_options[crew_options_index].name
 	);
-	crew_select->label_list[2] = ui_create_header_label(
-		crew_options[crew_options_index].title,
-		(WINDOW_WIDTH >> 1) - 100,
-		(WINDOW_HEIGHT >> 1) + 50
+	ui_label_update(
+		menu->object_list[4]->l,
+		crew_options[crew_options_index].title
 	);
 }

@@ -30,12 +30,12 @@ void map_init(void)
 	map_set_position_by_spot(0);
 }
 
-gamestate_id map_listen(Uint32 mouse_state, int mx, int my)
+gamestate_id map_listen(Uint32 mouse_state, int mx, int my, Uint8* keys)
 {
 	gamestate_id id;
-	id = ui_button_listen(map.crew_view_button, mouse_state, mx, my);
+	id = ui_object_listen(map.crew_view_button, mouse_state, mx, my, keys);
 	if (id) { return id; }
-	id = ui_button_listen(map.travel_button, mouse_state, mx, my);
+	id = ui_object_listen(map.travel_button, mouse_state, mx, my, keys);
 	return id;
 
 }
@@ -45,8 +45,8 @@ void map_draw(void)
 	gf2d_sprite_draw_image(map.image, vector2d(0,0));
 	gf2d_sprite_draw_image(map.ship_image, map.position);
 	
-	ui_button_render(map.crew_view_button);
-	ui_button_render(map.travel_button);
+	ui_object_render(map.crew_view_button);
+	ui_object_render(map.travel_button);
 }	
 
 void map_set_position_by_spot(Uint32 spot)

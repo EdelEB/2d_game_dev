@@ -2,14 +2,33 @@
 
 typedef struct UI_MANAGER {
 	Uint32 max_components;
+	ui_object* object_list;
 	ui_label* label_list;
 	ui_button* button_list;
-	ui_sprite* sprite_list;
+	ui_image* image_list;
 	ui_draggable* draggable_list;
 	ui_text_input* text_input_list;
 }UI_Manager;
 
+typedef struct UI_OBJECT_MANAGER {
+	Uint32 max_objects;
+	ui_object* object_list;
+}UI_ObjectManager;
+
 UI_Manager ui_manager = { 0 };
+UI_ObjectManager ui_object_manager = { 0 };
+
+void ui_object_manager_init(Uint32 max_objects)
+{
+	if (max_objects == 0)
+	{
+		slog("ui_object_manager cannot allocate for 0 max_objects");
+		return;
+	}
+
+	ui_object_manager.max_objects = max_objects;
+	ui_object_manager.object_list = gfc_allocate_array(sizeof(ui_object), max_objects);
+}
 
 void ui_manager_init(Uint32 max_components) 
 {
@@ -19,12 +38,17 @@ void ui_manager_init(Uint32 max_components)
 		return;
 	}
 	ui_manager.max_components = max_components;
+
 	ui_manager.label_list = gfc_allocate_array(sizeof(ui_label), max_components);
 	ui_manager.button_list = gfc_allocate_array(sizeof(ui_button), max_components);
-	ui_manager.sprite_list = gfc_allocate_array(sizeof(ui_sprite), max_components);
+	ui_manager.image_list = gfc_allocate_array(sizeof(ui_image), max_components);
 	ui_manager.draggable_list = gfc_allocate_array(sizeof(ui_draggable), max_components);
 	ui_manager.text_input_list = gfc_allocate_array(sizeof(ui_text_input), max_components);
+
+	/*This must be increased every time a new object type is added*/
+	ui_object_manager_init(max_components * 6);
 }
+
 void ui_font_info_init(void)
 {
 	font_info.title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 80);
@@ -62,22 +86,11 @@ void ui_sound_fx_close(void)
 void ui_manager_clear(void)
 {
 	int i;
-	for (i = 0; i < ui_manager.max_components; i++)
+	for (i = 0; i < ui_object_manager.max_objects; i++)
 	{
-		if (ui_manager.label_list[i]._inuse) { 
-			ui_label_free(&ui_manager.label_list[i]); 
-		}
-		if (ui_manager.button_list[i]._inuse) {
-			ui_button_free(&ui_manager.button_list[i]);
-		}
-		if (ui_manager.sprite_list[i]._inuse) {
-			ui_sprite_free(&ui_manager.sprite_list[i]);
-		}
-		if (ui_manager.draggable_list[i]._inuse) {
-			ui_draggable_free(&ui_manager.draggable_list[i]);
-		}
-		if (ui_manager.text_input_list[i]._inuse) {
-			ui_text_input_free(&ui_manager.text_input_list[i]);
+		if (ui_object_manager.object_list[i]._inuse)
+		{
+			ui_object_free(&ui_object_manager.object_list[i]);
 		}
 	}
 }
@@ -85,9 +98,11 @@ void ui_manager_close(void)
 {
 	ui_manager_clear();
 
+	if (ui_object_manager.object_list) free(ui_object_manager.object_list);
+
 	if (ui_manager.label_list) free(ui_manager.label_list);
 	if (ui_manager.button_list) free(ui_manager.button_list);
-	if (ui_manager.sprite_list) free(ui_manager.sprite_list);
+	if (ui_manager.image_list) free(ui_manager.image_list);
 	if (ui_manager.draggable_list) free(ui_manager.draggable_list);
 	if (ui_manager.text_input_list) free(ui_manager.text_input_list);
 	
@@ -102,15 +117,92 @@ void ui_stuff_close(void)
 
 
 
-ui_label* ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
+gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, Uint8* keys)
 {
-	SDL_Surface* surface;
-	ui_label* label = ui_label_new();
-	if (!label) {
-		slog("ui_create_label_helper failed to retrieve ui_label pointer");
+	if (!o) {
+		slog("NULL ui_object* passed to ui_object_listen()");
 		return;
 	}
 
+	switch (o->id)
+	{
+	case LABEL:
+	case SPRITE:
+		break;
+	case BUTTON:
+		return ui_button_listen(o->b, mouse_state, mx, my);
+	case DRAGGABLE:
+		ui_draggable_listen(o->d, mouse_state, mx, my);
+		break;
+	case TEXT_INPUT:
+		return ui_text_input_listen(o->t, mouse_state, mx, my, keys);
+	}
+
+	return NONE;
+}
+
+void ui_object_render(ui_object* o)
+{
+	if (!o){
+		slog("NULL ui_object* passed to ui_object_render");
+		return;
+	}
+
+	switch (o->id)
+	{
+	case LABEL:
+		ui_label_render(o->l);
+		break;
+	case BUTTON:
+		ui_button_render(o->b);
+		break;
+	case SPRITE:
+		ui_image_render(o->i);
+		break;
+	case DRAGGABLE:
+		ui_draggable_render(o->d);
+		break;
+	case TEXT_INPUT:
+		ui_text_input_render(o->t);
+		break;
+	}
+	return;
+}
+
+
+TTF_Font* ui_get_font_by_type(ui_label_type type)
+{
+	switch (type) {
+	case TEXT:
+		return font_info.text_font;
+	case HEADER:
+		return font_info.header_font;
+	case TITLE:
+		return font_info.title_font;
+	}
+
+	return NULL;
+}
+
+ui_object* ui_create_label(char* str, int x, int y, ui_label_type type)
+{
+	TTF_Font* font;
+	SDL_Surface* surface;
+	ui_label* label = ui_label_new();
+	ui_object* object = ui_object_new();
+	
+	if (!object) {
+		slog("create function failed to get ui_object pointer");
+		return NULL;
+	}
+	if (!label) {
+		slog("ui_create_label failed to retrieve ui_label pointer");
+		return NULL;
+	}
+	font = ui_get_font_by_type(type);
+	if (!font) { slog("ui_create_label failed to retrieve a font"); return NULL; }
+
+	label->type = type;
 	label->str = str;
 
 	surface = TTF_RenderText_Solid(
@@ -119,7 +211,7 @@ ui_label* ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
 		font_info.font_color
 	);
 	if (!surface) {
-		slog("ui_create_label_helper failed to create SDL_Surface with TTF_RenderText_Solid");
+		slog("ui_create_label failed to create SDL_Surface with TTF_RenderText_Solid");
 		label->texture = NULL;
 	}
 	else {
@@ -141,34 +233,27 @@ ui_label* ui_create_label_helper(char* str, int x, int y, TTF_Font* font)
 	//label->render_rect.w = 200;
 	//label->render_rect.h = 200;
 
-	return label;
-}
-ui_label* ui_create_title_label(char* str, int x, int y)
-{
-	return ui_create_label_helper(str, x, y, font_info.title_font);
-}
-ui_label* ui_create_header_label(char* str, int x, int y)
-{
-	return ui_create_label_helper(str, x, y, font_info.header_font);
-}
-ui_label* ui_create_text_label(char* str, int x, int y)
-{
-	return ui_create_label_helper(str, x, y, font_info.text_font);
+	object->id = LABEL;
+	object->l = label;
+	return object;
 }
 
 void ui_label_update(ui_label* l, char* new_str)
 {
 	SDL_Surface* surface;
+	TTF_Font* font;
 
-	if (!l ) return;
+	if (!l) { slog("NULL ui_label* passed to ui_label_update"); return; }
+	font = ui_get_font_by_type(l->type);
+	if (!font) { slog("ui_label with no font passed to ui_label_update"); return; }
 
 	surface = TTF_RenderText_Solid(
-		font_info.text_font,
+		font,
 		new_str,
 		font_info.font_color
 	);
 	if (!surface) {
-		slog("ui_create_label_helper failed to create SDL_Surface with TTF_RenderText_Solid");
+		slog("ui_create_label failed to create SDL_Surface with TTF_RenderText_Solid");
 		return NULL;
 	}
 
@@ -192,8 +277,8 @@ void ui_label_render(ui_label* l)
 		return;
 	}
 	
-	if (l->sprite) {
-		ui_sprite_render(l->sprite);
+	if (l->image) {
+		ui_image_render(l->image);
 	}
 
 	if (l->texture) {
@@ -209,24 +294,64 @@ void ui_label_render(ui_label* l)
 	
 }
 
+void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Vector2D scale_center, Vector3D rotation)
+{
+	Uint8 i;
+	char filename[64];
+	Sprite* sprite; 
+	ui_image* image;
+	
+	for (i = 0; i < 3; i++)
+	{
+		sprintf(filename, "assets/images/ui/%s_%d.png", file_base_name, i);
 
+		image = ui_create_image(
+			filename,
+			vector2d(b->click_box.x, b->click_box.y),
+			scale,
+			scale_center,
+			rotation
+		)->i;
 
-ui_button* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void))
+		if (!image) continue;
+		switch (i) {
+			case 0: 
+				b->image_default = image; 
+				b->image_current = b->image_default;
+				break;
+			case 1: 
+				b->image_hover = image;	
+				break;
+			case 2: 
+				b->image_pressed = image; 
+				break;
+		}
+	}
+}
+
+ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void))
 {
 	ui_button* button = ui_button_new();
+	ui_object* object = ui_object_new();
+	if (!object) {
+		slog("create function failed to get ui_object pointer");
+		return;
+	}
 	if (!button) {
 		slog("ui_create_button failed to retrieve button pointer");
 		return NULL;
 	}
 
-	button->text_label = ui_create_text_label(str, x + 10, y + 10);
+	button->text_label = ui_create_label(str, x + 10, y + 10, TEXT)->l;
 	button->click_box.x = x;
 	button->click_box.y = y;
 	button->click_box.w = w;
 	button->click_box.h = h;
 	button->on_click = on_click;
 
-	return button;
+	object->id = BUTTON;
+	object->b = button;
+	return object;
 
 }
 
@@ -248,7 +373,7 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 
 		if (mouse_state == 1) 
 		{
-			b->sprite_current = b->sprite_pressed;
+			b->image_current = b->image_pressed;
 		}
 		else if (global_was_mouse_down == 1)
 		{
@@ -259,12 +384,12 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 		}
 		else 
 		{
-			b->sprite_current = b->sprite_hover;
+			b->image_current = b->image_hover;
 		}
 	}
 	else 
 	{
-		b->sprite_current = b->sprite_default;
+		b->image_current = b->image_default;
 	}
 	return NONE;
 }
@@ -310,54 +435,70 @@ void ui_button_render(ui_button* b)
 	
 	if (!b->hide_click_box) { gf2d_draw_rect(b->click_box, vector4d(255, 255, 255, 255)); }
 	
-	if (b->sprite_current) { ui_sprite_render(b->sprite_current); }
+	if (b->image_current) { ui_image_render(b->image_current); }
 	
 	ui_label_render(b->text_label);
 }
 
 
 
-ui_sprite* ui_create_sprite(Sprite* sprite, Vector2D	position, Vector2D scale, Vector2D scale_center, Vector3D rotation, Uint32 frame_count)
+ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Vector2D scale_center, Vector3D rotation)
 {
-	ui_sprite* s = ui_sprite_new();
-	if (!s) {
-		slog("ui_create_sprite failed to retrieve a ui_sprite pointer");
+	Sprite* sprite;
+	ui_image* image = ui_image_new();
+	ui_object* object = ui_object_new();
+	if (!object) {
+		slog("create function failed to get ui_object pointer");
+		return;
+	}
+	if (!image) {
+		slog("ui_create_image failed to retrieve a ui_image pointer");
 		return NULL;
 	}
 
-	s->sprite = sprite;
-	vector2d_copy(s->position, position);
-	vector2d_copy(s->scale, scale);
-	vector2d_copy(s->scale_center, scale_center);
-	vector3d_copy(s->rotation, rotation);
-	s->frame_count = frame_count;
-
-	return s;
-}
-
-void ui_sprite_render(ui_sprite* s)
-{
-	if (!s) { slog("ui_sprite_render cannot render NULL ui_sprite*"); return; }
-
-	if (s->frame_count == 1) {
-		gf2d_sprite_draw(
-			s->sprite, 
-			s->position, 
-			&s->scale, 
-			&s->scale_center, 
-			&s->rotation,
-			NULL,
-			NULL,
-			0
-			);
+	sprite = gf2d_sprite_load_image(filename);
+	if (!sprite) {
+		slog("failed to create a image in ui_create_image");
+		return NULL;
 	}
+
+	image->sprite = sprite;
+	vector2d_copy(image->position, position);
+	vector2d_copy(image->scale, scale);
+	vector2d_copy(image->scale_center, scale_center);
+	vector3d_copy(image->rotation, rotation);
+
+	object->id = SPRITE;
+	object->i = image;
+	return object;
+}
+
+void ui_image_render(ui_image* image)
+{
+	if (!image) { slog("ui_image_render cannot render NULL ui_image*"); return; }
+
+	gf2d_sprite_draw(
+		image->sprite, 
+		image->position, 
+		&image->scale, 
+		&image->scale_center, 
+		&image->rotation,
+		NULL,
+		NULL,
+		0
+	);
 }
 
 
 
-ui_draggable* ui_create_draggable(Vector2D position, Vector2D size)
+ui_object* ui_create_draggable(Vector2D position, Vector2D size)
 {
 	ui_draggable* d = ui_draggable_new();
+	ui_object* object = ui_object_new();
+	if (!object) {
+		slog("create function failed to get ui_object pointer");
+		return;
+	}
 	if(!d){
 		slog("ui_create_draggable faile to retrieve new ui_draggable*");
 		return;
@@ -371,7 +512,9 @@ ui_draggable* ui_create_draggable(Vector2D position, Vector2D size)
 	d->click_box.w = size.x;
 	d->click_box.h = size.y;
 
-	return d;
+	object->id = DRAGGABLE;
+	object->d = d;
+	return object;
 }
 
 void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my)
@@ -394,13 +537,14 @@ void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my)
 			global_was_mouse_down = 0;
 			vector2d_copy(d->prev_position, d->position);
 		}
-		else if(d->is_held)
-		{
-			d->position.x	= d->prev_position.x - (d->mouse_anchor.x - mx);
-			d->position.y	= d->prev_position.y - (d->mouse_anchor.y - my);
-			d->click_box.x	= d->prev_position.x - (d->mouse_anchor.x - mx);
-			d->click_box.y	= d->prev_position.y - (d->mouse_anchor.y - my);
-		}
+	}
+
+	if (d->is_held)
+	{
+		d->position.x = d->prev_position.x - (d->mouse_anchor.x - mx);
+		d->position.y = d->prev_position.y - (d->mouse_anchor.y - my);
+		d->click_box.x = d->prev_position.x - (d->mouse_anchor.x - mx);
+		d->click_box.y = d->prev_position.y - (d->mouse_anchor.y - my);
 	}
 }
 
@@ -417,16 +561,26 @@ void ui_draggable_render(ui_draggable* d)
 
 
 
-ui_text_input* ui_create_text_input(Vector2D position,void (*on_enter)(void))
+ui_object* ui_create_text_input(Vector2D position,void (*on_enter)(void))
 {
 	ui_text_input* t = ui_text_input_new();
+	ui_object* object = ui_object_new();
+	if (!object) {
+		slog("create function failed to get ui_object pointer");
+		return;
+	}
 	if (!t) { 
 		slog("ui_create_text_input could not retrieve ui_text_input pointer"); 
 		return; 
 	}
 	
 	t->index = 0;
-	t->text_label = ui_create_text_label(" ",position.x+5, position.y+7);
+	t->text_label = ui_create_label(
+		" ",
+		position.x+5, 
+		position.y+7,
+		TEXT
+	)->l;
 	vector2d_copy(t->position, position);
 	t->click_box.x = position.x;
 	t->click_box.y = position.y;
@@ -439,9 +593,11 @@ ui_text_input* ui_create_text_input(Vector2D position,void (*on_enter)(void))
 		40,
 		"Enter",
 		on_enter
-		);
+		)->b;
 
-	return t;
+	object->id = TEXT_INPUT;
+	object->t = t;
+	return object;
 }
 
 gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, int my, Uint8* keys)
@@ -600,7 +756,17 @@ void ui_text_input_render(ui_text_input* t)
 }
 
 
-
+ui_object* ui_object_new(void)
+{
+	int i;
+	for (i = 0; i < ui_object_manager.max_objects; i++)
+	{
+		if (ui_object_manager.object_list[i]._inuse) continue;
+		ui_object_manager.object_list[i]._inuse = 1;
+		return &ui_object_manager.object_list[i];
+	}
+	return NULL;
+}
 ui_label* ui_label_new(void)
 {
 	int i;
@@ -623,14 +789,14 @@ ui_button* ui_button_new(void)
 	}
 	return NULL;
 }
-ui_sprite* ui_sprite_new(void)
+ui_image* ui_image_new(void)
 {
 	int i;
 	for (i = 0; i < ui_manager.max_components; i++)
 	{
-		if (ui_manager.sprite_list[i]._inuse) continue;
-		ui_manager.sprite_list[i]._inuse = 1;
-		return &ui_manager.sprite_list[i];
+		if (ui_manager.image_list[i]._inuse) continue;
+		ui_manager.image_list[i]._inuse = 1;
+		return &ui_manager.image_list[i];
 	}
 	return NULL;
 }
@@ -657,26 +823,49 @@ ui_text_input* ui_text_input_new(void)
 	return NULL;
 }
 
+void ui_object_free(ui_object* o)
+{
+	if (!o) return;
+
+	switch (o->id)
+	{
+		case LABEL:		
+			ui_label_free(o->l);
+			break;
+		case BUTTON:		
+			ui_button_free(o->b);
+			break;
+		case SPRITE:		
+			ui_image_free(o->i);
+			break;
+		case DRAGGABLE:	
+			ui_draggable_free(o->d);
+			break;
+		case TEXT_INPUT: 
+			ui_text_input_free(o->t);
+			break;
+	}
+}
 void ui_label_free(ui_label* l)
 {
 	if (!l) { return; }
-	ui_sprite_free(l->sprite);
+	ui_image_free(l->image);
 	memset(l, 0, sizeof(ui_label));
 }
 void ui_button_free(ui_button* b)
 {
 	if (!b) return;
 	ui_label_free(b->text_label);
-	ui_sprite_free(b->sprite_default);
-	ui_sprite_free(b->sprite_hover);
-	ui_sprite_free(b->sprite_pressed);
+	ui_image_free(b->image_default);
+	ui_image_free(b->image_hover);
+	ui_image_free(b->image_pressed);
 	memset(b, 0, sizeof(ui_button));
 }
-void ui_sprite_free(ui_sprite* s)
+void ui_image_free(ui_image* image)
 {
-	if (!s) return;
-	gf2d_sprite_free(s->sprite);
-	memset(s, 0, sizeof(ui_sprite));
+	if (!image) return;
+	gf2d_sprite_free(image->sprite);
+	memset(image, 0, sizeof(ui_image));
 }
 void ui_draggable_free(ui_draggable* d)
 {

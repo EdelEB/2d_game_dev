@@ -41,7 +41,7 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 			switch(id) 
 			{
 				case MAP: 
-					return map_listen(mouse_state, *mx, *my); 
+					return map_listen(mouse_state, *mx, *my, keys); 
 				default:
 					return menu_listen(menu_get_by_id(id), mouse_state, mx, my, keys);
 			}

@@ -87,10 +87,10 @@ void note_log(Notification* n)
 		slog("note_log cannot log NULL Notification*");
 		return;
 	}
-	slog("NOTE LOG : Title - %s", n->title);
+	slog("NOTE LOG : Title - %i", n->title);
 	for (int i = 0; i < MAX_LINES; i++)
 	{
-		slog("Line %i - %s", i, n->line_strings[i]);
+		slog("Line %i - %i", i, n->line_strings[i]);
 	}
 }
 
@@ -377,7 +377,7 @@ void add_all_notes(void)
 		}
 		n->id = MOUSE_TRAPPED;
 		n->title = "Mouse Trapped?";
-		n->line_strings[0] = "The engineer's trap malfunctioned and killed the mouse";
+		n->line_strings[0] = "The engineer'i trap malfunctioned and killed the mouse";
 		n->line_strings[1] = "instead of capturing it. Sadness.";
 		n->line_strings[2] = "";
 		n->line_strings[3] = "";
@@ -451,7 +451,7 @@ void add_all_notes(void)
 			return;
 		}
 		n->id = RM_BLAME;
-		n->line_strings[0] = "You point to Ken, because he's Ken. The crew grabs him";
+		n->line_strings[0] = "You point to Ken, because he'i Ken. The crew grabs him";
 		n->line_strings[1] = "and throws him out the airlock. Ahh Ken.";
 		n->line_strings[2] = "You didn't have a crew member named Ken? He was undercover.";
 		n->line_strings[3] = "Don't worry; we got'm";

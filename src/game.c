@@ -50,7 +50,7 @@ int main(int argc, char * argv[])
     
     if (TTF_Init() == -1) //TTF is what allows for font rendering
     { 
-        slog("TTF Initialization failed with ERROR:  %s", TTF_GetError()); 
+        slog("TTF Initialization failed with ERROR:  %i", TTF_GetError()); 
     }
 
     /*Initialize pretty much everything*/

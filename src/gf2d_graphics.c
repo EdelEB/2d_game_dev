@@ -48,7 +48,7 @@ void gf2d_graphics_initialize(
     Uint32 flags = 0;
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
-        slog("Unable to initilaize SDL system: %s",SDL_GetError());
+        slog("Unable to initilaize SDL system: %i",SDL_GetError());
         return;
     }
     atexit(SDL_Quit);
@@ -71,7 +71,7 @@ void gf2d_graphics_initialize(
 
     if (!gf2d_graphics.main_window)
     {
-        slog("failed to create main window: %s",SDL_GetError());
+        slog("failed to create main window: %i",SDL_GetError());
         gf2d_graphics_close();
         return;
     }
@@ -79,7 +79,7 @@ void gf2d_graphics_initialize(
     gf2d_graphics.renderer = SDL_CreateRenderer(gf2d_graphics.main_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
     if (!gf2d_graphics.renderer)
     {
-        slog("failed to create renderer: %s",SDL_GetError());
+        slog("failed to create renderer: %i",SDL_GetError());
         gf2d_graphics_close();
         return;
     }
@@ -97,7 +97,7 @@ void gf2d_graphics_initialize(
         renderWidth, renderHeight);
     if (!gf2d_graphics.texture)
     {
-        slog("failed to create screen texture: %s",SDL_GetError());
+        slog("failed to create screen texture: %i",SDL_GetError());
         gf2d_graphics_close();
         return;
     }
@@ -118,7 +118,7 @@ void gf2d_graphics_initialize(
     
     if (!gf2d_graphics.surface)
     {
-        slog("failed to create screen surface: %s",SDL_GetError());
+        slog("failed to create screen surface: %i",SDL_GetError());
         gf2d_graphics_close();
         return;
     }
@@ -250,7 +250,7 @@ void gf2d_graphics_render_texture_to_screen(SDL_Texture *texture,const SDL_Rect 
                    srcRect,
                    dstRect))
     {
-        slog("failed to render:%s",SDL_GetError());
+        slog("failed to render:%i",SDL_GetError());
     }
 
 }
@@ -287,7 +287,7 @@ SDL_Surface *gf2d_graphics_screen_convert(SDL_Surface **surface)
                        0);
     if (!convert)
     {
-        slog("failed to convert surface: %s",SDL_GetError());
+        slog("failed to convert surface: %i",SDL_GetError());
         return NULL;
     }
     SDL_FreeSurface(*surface);

@@ -96,10 +96,11 @@ void mini_ration_draw()
 	sprintf(str, "Cuts Remaining: %d", cuts_remaining);
 	
 	ui_label_free(cuts_label);
-	cuts_label = ui_create_text_label(
+	cuts_label = ui_create_label(
 		str,
 		WINDOW_WIDTH - 275,
-		50
+		50,
+		TEXT
 	);
 	ui_label_render(cuts_label);
 }

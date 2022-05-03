@@ -25,14 +25,14 @@ void gf2d_sprite_close()
     }
     sprite_manager.sprite_list = NULL;
     sprite_manager.max_sprites = 0;
-    slog("sprite system closed");
+    slog("image system closed");
 }
 
 void gf2d_sprite_init(Uint32 max)
 {
     if (!max)
     {
-        slog("cannot intialize a sprite manager for Zero sprites!");
+        slog("cannot intialize a image manager for Zero sprites!");
         return;
     }
     sprite_manager.max_sprites = max;
@@ -40,9 +40,9 @@ void gf2d_sprite_init(Uint32 max)
     memset (sprite_manager.sprite_list,0,sizeof(Sprite)*max);
     if (!(IMG_Init( IMG_INIT_PNG) & IMG_INIT_PNG))
     {
-        slog("failed to init image: %s",SDL_GetError());
+        slog("failed to init image: %i",SDL_GetError());
     }
-    slog("sprite system initialized");
+    slog("image system initialized");
     atexit(IMG_Quit);
     atexit(gf2d_sprite_close);
 }
@@ -94,7 +94,7 @@ Sprite *gf2d_sprite_new()
             return &sprite_manager.sprite_list[i];//return address of this array element
         }
     }
-    slog("error: out of sprite addresses");
+    slog("error: out of image addresses");
     return NULL;
 }
 
@@ -143,7 +143,7 @@ Sprite *gf2d_sprite_load_all(
     surface = IMG_Load(filename);
     if (!surface)
     {
-        slog("failed to load sprite image %s",filename);
+        slog("failed to load image image %i",filename);
         gf2d_sprite_free(sprite);
         return NULL;
     }
@@ -151,7 +151,7 @@ Sprite *gf2d_sprite_load_all(
     surface = gf2d_graphics_screen_convert(&surface);
     if (!surface)
     {
-        slog("failed to load sprite image %s",filename);
+        slog("failed to load image image %i",filename);
         gf2d_sprite_free(sprite);
         return NULL;
     }
@@ -159,7 +159,7 @@ Sprite *gf2d_sprite_load_all(
     sprite->texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(),surface);
     if (!sprite->texture)
     {
-        slog("failed to load sprite image %s",filename);
+        slog("failed to load image image %i",filename);
         gf2d_sprite_free(sprite);
         SDL_FreeSurface(surface);
         return NULL;
