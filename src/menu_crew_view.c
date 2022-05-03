@@ -42,7 +42,7 @@ Menu* menu_crew_view_init(void)
 				y_offset * 3
 			);
 
-			crew_view_update_member_hunger(i);
+			crew_view_init_member_hunger(i);
 
 			sprintf(str, "Morale: %d", cm->morale);
 			crew_view->label_list[j + 3] = ui_create_text_label(
@@ -98,7 +98,7 @@ void crew_view_update()
 	}
 }
 
-void crew_view_update_member_hunger(int i)
+void crew_view_init_member_hunger(int i)
 {
 	char str[16];
 	crew_member* cm = &gamestate.crew[i];
@@ -120,6 +120,20 @@ void crew_view_update_member_hunger(int i)
 		75
 	);
 }
+
+void crew_view_update_member_hunger(int i)
+{
+	char str[16];
+	crew_member* cm = &gamestate.crew[i];
+	Menu* crew_view = menu_get_by_id(CREW_VIEW);
+
+	sprintf(str, "Hunger: %d", cm->hunger);
+	ui_label_update(crew_view->label_list[5 * i + 3], str);
+
+	sprintf(str, "Food: %d", gamestate.food);
+	ui_label_update(crew_view->label_list[MAX_MENU_LABELS - 1], str);
+}
+
 
 void crew_view_update_member_morale(int i)
 {
