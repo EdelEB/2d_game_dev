@@ -117,11 +117,12 @@ typedef struct UI_SLIDER {
 	SDL_Rect		click_box;		/**< the bounds the the mouse must click inside of to move the slider*/
 	Vector2D		prev_position;
 	Vector2D		mouse_anchor;
+	Vector4D		click_box_color;
 }ui_slider;
 
 typedef struct UI_SIZABLE {
 	Uint8			_inuse;
-	Uint8			needs_update;
+	Uint8			is_held;
 	SDL_Rect		rect;
 	ui_slider*		left;
 	ui_slider*		right;

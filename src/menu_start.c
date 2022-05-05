@@ -68,6 +68,11 @@ Menu* menu_start_init()
 		1
 	);
 
+	menu->object_list[6] = ui_create_sizable(
+		vector2d(700, 400),
+		vector2d(200, 200)
+	);
+
 	return menu;
 }
 

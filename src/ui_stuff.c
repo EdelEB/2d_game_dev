@@ -827,10 +827,37 @@ ui_object* ui_create_sizable(Vector2D position, Vector2D size)
 	s->rect.w = size.x;
 	s->rect.h = size.y;
 
-	s->left = ui_create_draggable(vector2d(position.x, position.y + size.y / 2 - corner_dim.y / 2), corner_dim)->draggable;
-	s->right = ui_create_draggable(vector2d(position.x + size.x - corner_dim.x, position.y + size.y / 2 - corner_dim.y / 2), corner_dim)->draggable;
-	s->top = ui_create_draggable(vector2d(position.x + size.x / 2 - corner_dim.x / 2, position.y), corner_dim)->draggable;
-	s->bottom = ui_create_draggable(vector2d(position.x + size.x / 2 - corner_dim.x / 2, position.y + size.y - corner_dim.y), corner_dim)->draggable;
+	s->left =	ui_create_slider(
+		vector2d(
+			position.x, 
+			position.y + size.y / 2 - corner_dim.y / 2), 
+		corner_dim, 
+		0,0,0,0
+	)->slider;
+
+	s->right =	ui_create_slider(
+		vector2d(
+			position.x + size.x - corner_dim.x, 
+			position.y + size.y / 2 - corner_dim.y / 2), 
+		corner_dim,
+		0, 0, 0, 0
+	)->slider;
+	
+	s->top =	ui_create_slider(
+		vector2d(
+			position.x + size.x / 2 - corner_dim.x / 2, 
+			position.y), 
+		corner_dim,
+		1, 0, 0, 0
+	)->slider;
+	
+	s->bottom = ui_create_slider(
+		vector2d(
+			position.x + size.x / 2 - corner_dim.x / 2, 
+			position.y + size.y - corner_dim.y)
+		, corner_dim,
+		1, 0, 0, 0
+	)->slider;
 
 	o->id = SIZABLE;
 	o->sizable = s;
@@ -868,14 +895,15 @@ gamestate_id ui_sizable_listen(ui_sizable* s, Uint32 mouse_state, int mx, int my
 
 void ui_sizable_render(ui_sizable* s)
 {
-	if (!s) return;
-
+	if (!s) {
+		slog("NULL ui_sizable* passed to ui_sizable_render");
+		return;
+	}
 	ui_slider_render(s->left);
 	ui_slider_render(s->right);
 	ui_slider_render(s->top);
 	ui_slider_render(s->bottom);
 	gf2d_draw_rect(s->rect, vector4d(255, 255, 255, 255));
-
 }
 
 
@@ -888,32 +916,34 @@ ui_object* ui_create_slider(Vector2D position, Vector2D size, Uint8 is_vertical,
 	if (!s) return;
 	if (!o) return;
 
-
+	s->click_box_color = vector4d(255, 255, 255, 255);
 	vector2d_copy(s->prev_position, position);
 	s->click_box.x = position.x;
 	s->click_box.y = position.y;
 	s->click_box.w = size.x;
 	s->click_box.h = size.y;
-	
+	s->is_vertical = is_vertical;
+
 	if (length_left == 0 && length_right == 0) {
 		s->show_line = 0;
+		vector2d_copy(s->line_p1, vector2d(-100, -100));
+		vector2d_copy(s->line_p1, vector2d(WINDOW_WIDTH + 100, WINDOW_HEIGHT + 100));
 	}
 	else {
 		s->show_line = show_line;
+		s->has_limit = 1;
+
+		if (s->is_vertical)
+		{
+			vector2d_copy(s->line_p1, vector2d(position.x + size.x / 2, position.y + length_right));
+			vector2d_copy(s->line_p2, vector2d(position.x + size.x / 2, position.y - length_right));
+		}
+		else
+		{
+			vector2d_copy(s->line_p1, vector2d(position.x + length_left, position.y + size.y / 2));
+			vector2d_copy(s->line_p2, vector2d(position.x - length_right, position.y + size.y / 2));
+		}
 	}
-	
-	s->is_vertical = is_vertical;
-	if (s->is_vertical)
-	{
-		vector2d_copy(s->line_p1, vector2d(position.x + size.x / 2, position.y + length_right));
-		vector2d_copy(s->line_p2, vector2d(position.x + size.x / 2, position.y - length_right));
-	}
-	else
-	{
-		vector2d_copy(s->line_p1, vector2d(position.x + length_left,  position.y + size.y / 2));
-		vector2d_copy(s->line_p2, vector2d(position.x - length_right, position.y + size.y / 2));
-	}
-	
 	
 	o->id = SLIDER;
 	o->slider = s;
@@ -922,16 +952,27 @@ ui_object* ui_create_slider(Vector2D position, Vector2D size, Uint8 is_vertical,
 
 gamestate_id ui_slider_listen(ui_slider* s, Uint32 mouse_state, int mx, int my)
 {
+	if (!s) {
+		slog("NULL ui_slider* passed to ui_slider_listen()");
+		return NONE;
+	}
+
 	if (mx > s->click_box.x &&
 		mx < s->click_box.x + s->click_box.w &&
 		my > s->click_box.y &&
-		my < s->click_box.y + s->click_box.h &&
-		mouse_state == 1 && 
-		global_was_mouse_down == 0)
+		my < s->click_box.y + s->click_box.h)
 	{
+		s->click_box_color.x = 0;
+		
+		if (mouse_state == 1 && global_was_mouse_down == 0)
+		{
 			global_was_mouse_down = 1;
 			s->is_held = 1;
-			vector2d_copy(s->mouse_anchor, vector2d(mx, my));
+			vector2d_copy(s->mouse_anchor, vector2d(mx, my));	
+		}
+	}
+	else {
+		s->click_box_color.x = 255;
 	}
 
 	if (s->is_held)
@@ -964,7 +1005,7 @@ void ui_slider_render(ui_slider* s)
 {
 	if (!s) return;
 
-	gf2d_draw_rect(s->click_box, vector4d(255, 255, 255, 255));
+	gf2d_draw_rect(s->click_box, s->click_box_color);
 
 	if (s->show_line) gf2d_draw_line(s->line_p1, s->line_p2, vector4d(255, 255, 255, 255));
 }
