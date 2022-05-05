@@ -1,15 +1,16 @@
 #include "ui_stuff.h"
 
+//TODO : There has to be a better way to do this
 typedef struct UI_MANAGER {
-	Uint32 max_components;
-	ui_object* object_list;
-	ui_label* label_list;
-	ui_button* button_list;
-	ui_image* image_list;
-	ui_draggable* draggable_list;
-	ui_text_input* text_input_list;
-	ui_sizable* sizable_list;
-	ui_slider* slider_list;
+	Uint32			max_components;
+	ui_object*		object_list;
+	ui_label*		label_list;
+	ui_button*		button_list;
+	ui_image*		image_list;
+	ui_draggable*	draggable_list;
+	ui_text_input*	text_input_list;
+	ui_sizable*		sizable_list;
+	ui_slider*		slider_list;
 }UI_Manager;
 
 typedef struct UI_OBJECT_MANAGER {
@@ -31,7 +32,6 @@ void ui_object_manager_init(Uint32 max_objects)
 	ui_object_manager.max_objects = max_objects;
 	ui_object_manager.object_list = gfc_allocate_array(sizeof(ui_object), max_objects);
 }
-
 void ui_manager_init(Uint32 max_components)
 {
 	if (max_components == 0)
@@ -51,41 +51,6 @@ void ui_manager_init(Uint32 max_components)
 
 	/*This must be increased every time a new object type is added*/
 	ui_object_manager_init(max_components * 7);
-}
-
-void ui_font_info_init(void)
-{
-	font_info.title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 80);
-	font_info.header_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 35);
-	font_info.text_font = TTF_OpenFont("assets/fonts/Swansea.ttf", 30);
-	SDL_Color temp = { 255,255,255,255 }; // Why is this necessary you ask? I don't know. I get an error if I do it directly without the temporary variable
-	font_info.font_color = temp;
-}
-void ui_sound_fx_init(void)
-{
-	sound_fx.button_click = gfc_sound_load("assets/sound/sound_click2.wav", 1, 2);
-	if (sound_fx.button_click == NULL)slog("FUUUK");
-	sound_fx.gamestate_change = gfc_sound_load("assets/sound/sound_click.wav", 1, 2);
-	if (sound_fx.gamestate_change == NULL)slog("Fuk2");
-}
-void ui_stuff_init(void)
-{
-	ui_manager_init(512);
-	ui_font_info_init();
-	ui_sound_fx_init();
-}
-
-void ui_font_info_close(void)
-{
-	TTF_CloseFont(font_info.title_font);
-	TTF_CloseFont(font_info.header_font);
-	TTF_CloseFont(font_info.text_font);
-	//free(&font_info.font_color);
-}
-void ui_sound_fx_close(void)
-{
-	gfc_sound_free(sound_fx.button_click);
-	gfc_sound_free(sound_fx.gamestate_change);
 }
 void ui_manager_clear(void)
 {
@@ -112,6 +77,42 @@ void ui_manager_close(void)
 
 	slog("ui_manager closed");
 }
+
+void ui_font_info_init(void)
+{
+	font_info.title_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 80);
+	font_info.header_font = TTF_OpenFont("assets/fonts/SwanseaBold.ttf", 35);
+	font_info.text_font = TTF_OpenFont("assets/fonts/Swansea.ttf", 30);
+	SDL_Color temp = { 255,255,255,255 }; // Why is this necessary you ask? I don't know. I get an error if I do it directly without the temporary variable
+	font_info.font_color = temp;
+}
+void ui_font_info_close(void)
+{
+	TTF_CloseFont(font_info.title_font);
+	TTF_CloseFont(font_info.header_font);
+	TTF_CloseFont(font_info.text_font);
+	//free(&font_info.font_color);
+}
+
+void ui_sound_fx_init(void)
+{
+	sound_fx.button_click = gfc_sound_load("assets/sound/sound_click2.wav", 1, 2);
+	if (sound_fx.button_click == NULL)slog("FUUUK");
+	sound_fx.gamestate_change = gfc_sound_load("assets/sound/sound_click.wav", 1, 2);
+	if (sound_fx.gamestate_change == NULL)slog("Fuk2");
+}
+void ui_sound_fx_close(void)
+{
+	gfc_sound_free(sound_fx.button_click);
+	gfc_sound_free(sound_fx.gamestate_change);
+}
+
+void ui_stuff_init(void)
+{
+	ui_manager_init(512);
+	ui_font_info_init();
+	ui_sound_fx_init();
+}
 void ui_stuff_close(void)
 {
 	ui_font_info_close();
@@ -121,6 +122,7 @@ void ui_stuff_close(void)
 
 
 
+/////// UI_OBJECT ///////////////////////////////////////////////
 ui_object* ui_object_new(void)
 {
 	int i;
@@ -131,6 +133,36 @@ ui_object* ui_object_new(void)
 		return &ui_object_manager.object_list[i];
 	}
 	return NULL;
+}
+
+void ui_object_free(ui_object* o)
+{
+	if (!o) return;
+
+	switch (o->id)
+	{
+	case LABEL:
+		ui_label_free(o->label);
+		break;
+	case BUTTON:
+		ui_button_free(o->button);
+		break;
+	case SPRITE:
+		ui_image_free(o->image);
+		break;
+	case DRAGGABLE:
+		ui_draggable_free(o->draggable);
+		break;
+	case TEXT_INPUT:
+		ui_text_input_free(o->text_input);
+		break;
+	case SIZABLE:
+		ui_sizable_free(o->sizable);
+		break;
+	case SLIDER:
+		ui_slider_free(o->slider);
+		break;
+	}
 }
 
 gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, Uint8* keys)
@@ -195,50 +227,26 @@ void ui_object_render(ui_object* o)
 	return;
 }
 
-void ui_object_free(ui_object* o)
-{
-	if (!o) return;
 
-	switch (o->id)
+
+/////// UI_LABEL ///////////////////////////////////////////////
+ui_label* ui_label_new(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
 	{
-	case LABEL:
-		ui_label_free(o->label);
-		break;
-	case BUTTON:
-		ui_button_free(o->button);
-		break;
-	case SPRITE:
-		ui_image_free(o->image);
-		break;
-	case DRAGGABLE:
-		ui_draggable_free(o->draggable);
-		break;
-	case TEXT_INPUT:
-		ui_text_input_free(o->text_input);
-		break;
-	case SIZABLE:
-		ui_sizable_free(o->sizable);
-		break;
-	case SLIDER:
-		ui_slider_free(o->slider);
-		break;
+		if (ui_manager.label_list[i]._inuse) continue;
+		ui_manager.label_list[i]._inuse = 1;
+		return &ui_manager.label_list[i];
 	}
+	return NULL;
 }
 
-
-
-TTF_Font* ui_get_font_by_type(ui_label_type type)
+void ui_label_free(ui_label* l)
 {
-	switch (type) {
-	case TEXT:
-		return font_info.text_font;
-	case HEADER:
-		return font_info.header_font;
-	case TITLE:
-		return font_info.title_font;
-	}
-
-	return NULL;
+	if (!l) { return; }
+	ui_image_free(l->image);
+	memset(l, 0, sizeof(ui_label));
 }
 
 ui_object* ui_create_label(char* str, int x, int y, ui_label_type type)
@@ -327,6 +335,20 @@ void ui_label_update(ui_label* l, char* new_str)
 	);
 }
 
+TTF_Font* ui_get_font_by_type(ui_label_type type)
+{
+	switch (type) {
+	case TEXT:
+		return font_info.text_font;
+	case HEADER:
+		return font_info.header_font;
+	case TITLE:
+		return font_info.title_font;
+	}
+
+	return NULL;
+}
+
 void ui_label_render(ui_label* l)
 {
 	if (!l) {
@@ -352,6 +374,55 @@ void ui_label_render(ui_label* l)
 }
 
 
+
+/////// UI_BUTTON ///////////////////////////////////////////////
+ui_button* ui_button_new(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
+	{
+		if (ui_manager.button_list[i]._inuse) continue;
+		ui_manager.button_list[i]._inuse = 1;
+		return &ui_manager.button_list[i];
+	}
+	return NULL;
+}
+
+void ui_button_free(ui_button* b)
+{
+	if (!b) return;
+	ui_label_free(b->text_label);
+	ui_image_free(b->image_default);
+	ui_image_free(b->image_hover);
+	ui_image_free(b->image_pressed);
+	memset(b, 0, sizeof(ui_button));
+}
+
+ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void))
+{
+	ui_button* button = ui_button_new();
+	ui_object* object = ui_object_new();
+	if (!object) {
+		slog("create function failed to get ui_object pointer");
+		return;
+	}
+	if (!button) {
+		slog("ui_create_button failed to retrieve button pointer");
+		return NULL;
+	}
+
+	button->text_label = ui_create_label(str, x + 10, y + 10, TEXT)->label;
+	button->click_box.x = x;
+	button->click_box.y = y;
+	button->click_box.w = w;
+	button->click_box.h = h;
+	button->on_click = on_click;
+
+	object->id = BUTTON;
+	object->button = button;
+	return object;
+
+}
 
 void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Vector2D scale_center, Vector3D rotation)
 {
@@ -388,30 +459,28 @@ void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Ve
 	}
 }
 
-ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void))
+gamestate_id ui_button_click(ui_button* b)
 {
-	ui_button* button = ui_button_new();
-	ui_object* object = ui_object_new();
-	if (!object) {
-		slog("create function failed to get ui_object pointer");
-		return;
+	gamestate_id ret;
+
+	if (!b)
+	{
+		slog("ui_button_click passed NULL ui_button*");
+		return NONE;
 	}
-	if (!button) {
-		slog("ui_create_button failed to retrieve button pointer");
-		return NULL;
+	else if (!b->on_click)
+	{
+		slog("ui_button_click passed ui_button* with no on_click function");
+		return NONE;
 	}
 
-	button->text_label = ui_create_label(str, x + 10, y + 10, TEXT)->label;
-	button->click_box.x = x;
-	button->click_box.y = y;
-	button->click_box.w = w;
-	button->click_box.h = h;
-	button->on_click = on_click;
+	gfc_sound_play(sound_fx.button_click, 0, 0.3, -1, -1);
 
-	object->id = BUTTON;
-	object->button = button;
-	return object;
-
+	ret = b->on_click(b);
+	if (ret != NONE) {
+		gfc_sound_play(sound_fx.gamestate_change, 0, 0.3, -1, -1);
+	}
+	return ret;
 }
 
 gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
@@ -458,30 +527,6 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 	return NONE;
 }
 
-gamestate_id ui_button_click(ui_button* b)
-{
-	gamestate_id ret;
-
-	if (!b)
-	{
-		slog("ui_button_click passed NULL ui_button*");
-		return NONE;
-	}
-	else if (!b->on_click)
-	{
-		slog("ui_button_click passed ui_button* with no on_click function");
-		return NONE;
-	}
-
-	gfc_sound_play(sound_fx.button_click, 0, 0.3, -1, -1);
-
-	ret = b->on_click(b);
-	if (ret != NONE) {
-		gfc_sound_play(sound_fx.gamestate_change, 0, 0.3, -1, -1);
-	}
-	return ret;
-}
-
 void ui_button_render(ui_button* b)
 {
 	if (!b)
@@ -498,6 +543,26 @@ void ui_button_render(ui_button* b)
 }
 
 
+
+/////// UI_IMAGE ///////////////////////////////////////////////
+ui_image* ui_image_new(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
+	{
+		if (ui_manager.image_list[i]._inuse) continue;
+		ui_manager.image_list[i]._inuse = 1;
+		return &ui_manager.image_list[i];
+	}
+	return NULL;
+}
+
+void ui_image_free(ui_image* image)
+{
+	if (!image) return;
+	gf2d_sprite_free(image->sprite);
+	memset(image, 0, sizeof(ui_image));
+}
 
 ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Vector2D scale_center, Vector3D rotation)
 {
@@ -547,6 +612,25 @@ void ui_image_render(ui_image* image)
 }
 
 
+
+/////// UI_DRAGGABLE ///////////////////////////////////////////////
+ui_draggable* ui_draggable_new(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
+	{
+		if (ui_manager.draggable_list[i]._inuse) continue;
+		ui_manager.draggable_list[i]._inuse = 1;
+		return &ui_manager.draggable_list[i];
+	}
+	return NULL;
+}
+
+void ui_draggable_free(ui_draggable* d)
+{
+	if (!d) return;
+	memset(d, 0, sizeof(ui_draggable));
+}
 
 ui_object* ui_create_draggable(Vector2D position, Vector2D size)
 {
@@ -616,6 +700,28 @@ void ui_draggable_render(ui_draggable* d)
 }
 
 
+
+/////// UI_TEXT_INPUT ///////////////////////////////////////////////
+ui_text_input* ui_text_input_new(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
+	{
+		if (ui_manager.text_input_list[i]._inuse) continue;
+		ui_manager.text_input_list[i]._inuse = 1;
+		return &ui_manager.text_input_list[i];
+	}
+	return NULL;
+}
+
+void ui_text_input_free(ui_text_input* t)
+{
+	if (!t) return;
+
+	ui_button_free(t->button_enter);
+	ui_label_free(t->text_label);
+	memset(t, 0, sizeof(ui_text_input));
+}
 
 ui_object* ui_create_text_input(Vector2D position, void (*on_enter)(void))
 {
@@ -812,6 +918,155 @@ void ui_text_input_render(ui_text_input* t)
 }
 
 
+/////// UI_SLIDER ///////////////////////////////////////////////
+ui_slider* ui_slider_new(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
+	{
+		if (ui_manager.slider_list[i]._inuse) continue;
+		ui_manager.slider_list[i]._inuse = 1;
+		return &ui_manager.slider_list[i];
+	}
+	return NULL;
+}
+
+void ui_slider_free(ui_slider* s)
+{
+	if (!s) return;
+
+	//no pointers in sliders
+	memset(s, 0, sizeof(ui_slider));
+}
+
+ui_object* ui_create_slider(Vector2D position, Vector2D size, Uint8 is_vertical, Uint32 length_left, Uint32 length_right, Uint8 show_line)
+{
+	ui_slider* s = ui_slider_new();
+	ui_object* o = ui_object_new();
+
+	if (!s) return;
+	if (!o) return;
+
+	s->click_box_color = vector4d(255, 255, 255, 255);
+	vector2d_copy(s->prev_position, position);
+	s->click_box.x = position.x;
+	s->click_box.y = position.y;
+	s->click_box.w = size.x;
+	s->click_box.h = size.y;
+	s->is_vertical = is_vertical;
+
+	if (length_left == 0 && length_right == 0) {
+		s->show_line = 0;
+		vector2d_copy(s->line_p1, vector2d(-100, -100));
+		vector2d_copy(s->line_p1, vector2d(WINDOW_WIDTH + 100, WINDOW_HEIGHT + 100));
+	}
+	else {
+		s->show_line = show_line;
+		s->has_limit = 1;
+
+		if (s->is_vertical)
+		{
+			vector2d_copy(s->line_p1, vector2d(position.x + size.x / 2, position.y + length_right));
+			vector2d_copy(s->line_p2, vector2d(position.x + size.x / 2, position.y - length_right));
+		}
+		else
+		{
+			vector2d_copy(s->line_p1, vector2d(position.x + length_left, position.y + size.y / 2));
+			vector2d_copy(s->line_p2, vector2d(position.x - length_right, position.y + size.y / 2));
+		}
+	}
+	
+	o->id = SLIDER;
+	o->slider = s;
+	return o;
+}
+
+gamestate_id ui_slider_listen(ui_slider* s, Uint32 mouse_state, int mx, int my)
+{
+	if (!s) {
+		slog("NULL ui_slider* passed to ui_slider_listen()");
+		return NONE;
+	}
+
+	if (mx > s->click_box.x &&
+		mx < s->click_box.x + s->click_box.w &&
+		my > s->click_box.y &&
+		my < s->click_box.y + s->click_box.h)
+	{
+		s->click_box_color.x = 0;
+		
+		if (mouse_state == 1 && global_was_mouse_down == 0)
+		{
+			global_was_mouse_down = 1;
+			s->is_held = 1;
+			vector2d_copy(s->mouse_anchor, vector2d(mx, my));	
+		}
+	}
+	else {
+		s->click_box_color.x = 255;
+	}
+
+	if (s->is_held)
+	{
+		if (s->is_vertical &&
+			my < s->line_p1.y && 
+			my > s->line_p2.y)
+		{
+			s->click_box.y = s->prev_position.y - (s->mouse_anchor.y - my);
+		}
+		else if (mx < s->line_p1.x &&
+				mx > s->line_p2.x)
+		{
+			s->click_box.x = s->prev_position.x - (s->mouse_anchor.x - mx);
+		}
+
+		if (mouse_state == 0 && global_was_mouse_down == 1)
+		{
+			s->is_held = 0;
+			global_was_mouse_down = 0;
+			s->prev_position.x = s->click_box.x;
+			s->prev_position.y = s->click_box.y;
+		}
+	}
+
+	return NONE;
+}
+
+void ui_slider_render(ui_slider* s)
+{
+	if (!s) return;
+
+	gf2d_draw_rect(s->click_box, s->click_box_color);
+
+	if (s->show_line) gf2d_draw_line(s->line_p1, s->line_p2, vector4d(255, 255, 255, 255));
+}
+
+
+
+/////// UI_SIZABLE ///////////////////////////////////////////////
+ui_sizable* ui_sizable_new(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
+	{
+		if (ui_manager.sizable_list[i]._inuse) continue;
+		ui_manager.sizable_list[i]._inuse = 1;
+		return &ui_manager.sizable_list[i];
+	}
+	return NULL;
+}
+
+void ui_sizable_free(ui_sizable* s)
+{
+	if (!s) return;
+
+	ui_slider_free(s->left);
+	ui_slider_free(s->right);
+	ui_slider_free(s->top);
+	ui_slider_free(s->bottom);
+	free(&s->rect);
+	memset(s, 0, sizeof(ui_sizable));
+}
 
 ui_object* ui_create_sizable(Vector2D position, Vector2D size)
 {
@@ -928,240 +1183,4 @@ void ui_sizable_render(ui_sizable* s)
 	ui_slider_render(s->top);
 	ui_slider_render(s->bottom);
 	gf2d_draw_rect(s->rect, vector4d(255, 255, 255, 255));
-}
-
-
-
-ui_object* ui_create_slider(Vector2D position, Vector2D size, Uint8 is_vertical, Uint32 length_left, Uint32 length_right, Uint8 show_line)
-{
-	ui_slider* s = ui_slider_new();
-	ui_object* o = ui_object_new();
-
-	if (!s) return;
-	if (!o) return;
-
-	s->click_box_color = vector4d(255, 255, 255, 255);
-	vector2d_copy(s->prev_position, position);
-	s->click_box.x = position.x;
-	s->click_box.y = position.y;
-	s->click_box.w = size.x;
-	s->click_box.h = size.y;
-	s->is_vertical = is_vertical;
-
-	if (length_left == 0 && length_right == 0) {
-		s->show_line = 0;
-		vector2d_copy(s->line_p1, vector2d(-100, -100));
-		vector2d_copy(s->line_p1, vector2d(WINDOW_WIDTH + 100, WINDOW_HEIGHT + 100));
-	}
-	else {
-		s->show_line = show_line;
-		s->has_limit = 1;
-
-		if (s->is_vertical)
-		{
-			vector2d_copy(s->line_p1, vector2d(position.x + size.x / 2, position.y + length_right));
-			vector2d_copy(s->line_p2, vector2d(position.x + size.x / 2, position.y - length_right));
-		}
-		else
-		{
-			vector2d_copy(s->line_p1, vector2d(position.x + length_left, position.y + size.y / 2));
-			vector2d_copy(s->line_p2, vector2d(position.x - length_right, position.y + size.y / 2));
-		}
-	}
-	
-	o->id = SLIDER;
-	o->slider = s;
-	return o;
-}
-
-gamestate_id ui_slider_listen(ui_slider* s, Uint32 mouse_state, int mx, int my)
-{
-	if (!s) {
-		slog("NULL ui_slider* passed to ui_slider_listen()");
-		return NONE;
-	}
-
-	if (mx > s->click_box.x &&
-		mx < s->click_box.x + s->click_box.w &&
-		my > s->click_box.y &&
-		my < s->click_box.y + s->click_box.h)
-	{
-		s->click_box_color.x = 0;
-		
-		if (mouse_state == 1 && global_was_mouse_down == 0)
-		{
-			global_was_mouse_down = 1;
-			s->is_held = 1;
-			vector2d_copy(s->mouse_anchor, vector2d(mx, my));	
-		}
-	}
-	else {
-		s->click_box_color.x = 255;
-	}
-
-	if (s->is_held)
-	{
-		if (s->is_vertical &&
-			my < s->line_p1.y && 
-			my > s->line_p2.y)
-		{
-			s->click_box.y = s->prev_position.y - (s->mouse_anchor.y - my);
-		}
-		else if (mx < s->line_p1.x &&
-				mx > s->line_p2.x)
-		{
-			s->click_box.x = s->prev_position.x - (s->mouse_anchor.x - mx);
-		}
-
-		if (mouse_state == 0 && global_was_mouse_down == 1)
-		{
-			s->is_held = 0;
-			global_was_mouse_down = 0;
-			s->prev_position.x = s->click_box.x;
-			s->prev_position.y = s->click_box.y;
-		}
-	}
-
-	return NONE;
-}
-
-void ui_slider_render(ui_slider* s)
-{
-	if (!s) return;
-
-	gf2d_draw_rect(s->click_box, s->click_box_color);
-
-	if (s->show_line) gf2d_draw_line(s->line_p1, s->line_p2, vector4d(255, 255, 255, 255));
-}
-
-
-ui_label* ui_label_new(void)
-{
-	int i;
-	for (i = 0; i < ui_manager.max_components; i++)
-	{
-		if (ui_manager.label_list[i]._inuse) continue;
-		ui_manager.label_list[i]._inuse = 1;
-		return &ui_manager.label_list[i];
-	}
-	return NULL;
-}
-ui_button* ui_button_new(void)
-{
-	int i;
-	for (i = 0; i < ui_manager.max_components; i++)
-	{
-		if (ui_manager.button_list[i]._inuse) continue;
-		ui_manager.button_list[i]._inuse = 1;
-		return &ui_manager.button_list[i];
-	}
-	return NULL;
-}
-ui_image* ui_image_new(void)
-{
-	int i;
-	for (i = 0; i < ui_manager.max_components; i++)
-	{
-		if (ui_manager.image_list[i]._inuse) continue;
-		ui_manager.image_list[i]._inuse = 1;
-		return &ui_manager.image_list[i];
-	}
-	return NULL;
-}
-ui_draggable* ui_draggable_new(void)
-{
-	int i;
-	for (i = 0; i < ui_manager.max_components; i++)
-	{
-		if (ui_manager.draggable_list[i]._inuse) continue;
-		ui_manager.draggable_list[i]._inuse = 1;
-		return &ui_manager.draggable_list[i];
-	}
-	return NULL;
-}
-ui_text_input* ui_text_input_new(void)
-{
-	int i;
-	for (i = 0; i < ui_manager.max_components; i++)
-	{
-		if (ui_manager.text_input_list[i]._inuse) continue;
-		ui_manager.text_input_list[i]._inuse = 1;
-		return &ui_manager.text_input_list[i];
-	}
-	return NULL;
-}
-ui_sizable* ui_sizable_new(void)
-{
-	int i;
-	for (i = 0; i < ui_manager.max_components; i++)
-	{
-		if (ui_manager.sizable_list[i]._inuse) continue;
-		ui_manager.sizable_list[i]._inuse = 1;
-		return &ui_manager.sizable_list[i];
-	}
-	return NULL;
-}
-ui_slider* ui_slider_new(void)
-{
-	int i;
-	for (i = 0; i < ui_manager.max_components; i++)
-	{
-		if (ui_manager.slider_list[i]._inuse) continue;
-		ui_manager.slider_list[i]._inuse = 1;
-		return &ui_manager.slider_list[i];
-	}
-	return NULL;
-}
-
-void ui_label_free(ui_label* l)
-{
-	if (!l) { return; }
-	ui_image_free(l->image);
-	memset(l, 0, sizeof(ui_label));
-}
-void ui_button_free(ui_button* b)
-{
-	if (!b) return;
-	ui_label_free(b->text_label);
-	ui_image_free(b->image_default);
-	ui_image_free(b->image_hover);
-	ui_image_free(b->image_pressed);
-	memset(b, 0, sizeof(ui_button));
-}
-void ui_image_free(ui_image* image)
-{
-	if (!image) return;
-	gf2d_sprite_free(image->sprite);
-	memset(image, 0, sizeof(ui_image));
-}
-void ui_draggable_free(ui_draggable* d)
-{
-	if (!d) return;
-	memset(d, 0, sizeof(ui_draggable));
-}
-void ui_text_input_free(ui_text_input* t)
-{
-	if (!t) return;
-
-	ui_button_free(t->button_enter);
-	ui_label_free(t->text_label);
-	memset(t, 0, sizeof(ui_text_input));
-}
-void ui_sizable_free(ui_sizable* s)
-{
-	if (!s) return;
-
-	ui_slider_free(s->left);
-	ui_slider_free(s->right);
-	ui_slider_free(s->top);
-	ui_slider_free(s->bottom);
-	free(&s->rect);
-	memset(s, 0, sizeof(ui_sizable));
-}
-void ui_slider_free(ui_slider* s)
-{
-	if (!s) return;
-
-	//no pointers in sliders
-	memset(s, 0, sizeof(ui_slider));
 }

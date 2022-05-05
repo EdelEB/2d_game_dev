@@ -56,8 +56,10 @@ struct SOUND_FX {
 
 typedef struct UI_IMAGE {
 	Uint8			_inuse;
-	Sprite* sprite;
-	Vector2D		position, scale, scale_center;
+	Sprite*			sprite;
+	Vector2D		position;
+	Vector2D		scale;
+	Vector2D		scale_center;
 	Vector3D		rotation;
 }ui_image;
 
@@ -84,7 +86,6 @@ typedef struct UI_BUTTON {
 }ui_button;
 
 /* UI_DRAGGABLE is an object that can be clicked on and moved around the screen */
-/* UI_DRAGGABLE's are intended to be added to other ui components and allow them to be moved*/
 typedef struct UI_DRAGGABLE {
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
 	Uint8		is_held;			/**< 1 : mouse is pressed and on draggable, 0 : otherwize*/
@@ -106,30 +107,32 @@ typedef struct UI_TEXT_INPUT {
 	ui_button*	button_enter;		/**< Enter button next to the text_label box*/
 }ui_text_input;
 
+/* UI_SLIDER is a draggable button that moves along the x or y axis only*/
 typedef struct UI_SLIDER {
 	Uint8			_inuse;
-	Uint8			is_vertical;	/**< 1 : slide up and down, 0 : slide left and right*/
-	Uint8			has_limit;		/**< 1 : slide as far as length_left and length_right, 0 : no limit*/
-	Uint8			show_line;		/**< 1 : draws the line that slider moves along, 0 : hides line*/
+	Uint8			is_vertical;		/**< 1 : slide up and down, 0 : slide left and right*/
+	Uint8			has_limit;			/**< 1 : slide as far as length_left and length_right, 0 : no limit*/
+	Uint8			show_line;			/**< 1 : draws the line that slider moves along, 0 : hides line*/
 
-	Uint8			is_held;		/**< 1 : slider is currently clicked on by mouse, 0: otherwize*/
-	Vector2D		line_p1, line_p2;
-	SDL_Rect		click_box;		/**< the bounds the the mouse must click inside of to move the slider*/
-	Vector2D		prev_position;
-	Vector2D		mouse_anchor;
-	Vector4D		click_box_color;
+	Uint8			is_held;			/**< 1 : slider is currently clicked on by mouse, 0: otherwize*/
+	Vector2D		line_p1, line_p2;	/**< line point 1 and 2 used to draw the slider line and define limits*/
+	SDL_Rect		click_box;			/**< the bounds the the mouse must click inside of to move the slider*/
+	Vector2D		prev_position;		/**< position of ui_slider before it becomes held*/
+	Vector2D		mouse_anchor;		/**< position of mouse at the moment it clicks on the slider*/
+	Vector4D		click_box_color;	/**< color used when rendering the slider->click_box*/
 }ui_slider;
 
 typedef struct UI_SIZABLE {
 	Uint8			_inuse;
-	Uint8			is_held;
-	SDL_Rect		rect;
-	ui_slider*		left;
-	ui_slider*		right;
-	ui_slider*		top;
-	ui_slider*		bottom;
+	Uint8			is_held;		/**< 1 : one of the slider is held, 0 : otherwize*/
+	SDL_Rect		rect;			/**< this rectangle defines the bounds of the ui object*/
+	ui_slider*		left;			/**< clickable area that affects left side of object*/
+	ui_slider*		right;			/**< clickable area that affects right side of object*/
+	ui_slider*		top;			/**< clickable area that affects top side of object*/
+	ui_slider*		bottom;			/**< clickable area that affects bottom side of object*/
 }ui_sizable;
 
+/*This is a hideous attempt at polymorphism*/
 typedef struct UI_OBJECT {
 	Uint8			_inuse;
 	ui_object_id	id;
@@ -144,25 +147,29 @@ typedef struct UI_OBJECT {
 }ui_object;
 
 
+
 void ui_font_info_init(void);
+void ui_font_info_close(void);
+
 void ui_sound_fx_init(void);
+void ui_sound_fx_close(void);
 
 /*
 * @brief initializes the ui_component manager which handles ui_labels, ui_buttons, ui_images, ui_draggables, etc.
 * @param max_components is the maximum number of each individual ui component available
 */
 void ui_manager_init(Uint32 max_components);
-
-/*
-* @brief runs the other init functions
-*/
-void ui_stuff_init(void);
-
-
-void ui_font_info_close(void);
-void ui_sound_fx_close(void);
 void ui_manager_close(void);
+
+/* @brief runs the other init functions */
+void ui_stuff_init(void);
 void ui_stuff_close(void);
+
+
+
+/////// UI_OBJECT ///////////////////////////////////////////////
+ui_object* ui_object_new(void);
+void ui_object_free(ui_object* o);
 
 /*
 * @brief calls the appropriate listen function based on object id
@@ -182,10 +189,10 @@ gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, 
 void ui_object_render(ui_object* o);
 
 
-/*
-* @brief returns the appropriate font from font_info for corresponding type
-*/
-TTF_Font* ui_get_font_by_type(ui_label_type type);
+
+/////// UI_LABEL ///////////////////////////////////////////////
+ui_label* ui_label_new(void);
+void ui_label_free(ui_label* l);
 
 /*
 * @brief create a ui_label object which can be used to print text_label to the screen
@@ -198,11 +205,14 @@ TTF_Font* ui_get_font_by_type(ui_label_type type);
 ui_object* ui_create_label(char* str, int x, int y, ui_label_type type);
 
 /*
-* @brief updates a label to have a new_str
+* @brief updates a label to have a new_str to avoid needing to create a new one
 * @param l is the ui_label being modified
 * @param new_str is the new ui_label->str attribute being set for l
 */
 void ui_label_update(ui_label* l, char* new_str);
+
+/* @brief returns the appropriate font from font_info for corresponding type */
+TTF_Font* ui_get_font_by_type(ui_label_type type);
 
 /*
 * @brief draws a passed in ui_label to the screen
@@ -211,6 +221,10 @@ void ui_label_update(ui_label* l, char* new_str);
 void ui_label_render(ui_label* l);
 
 
+
+/////// UI_BUTTON ///////////////////////////////////////////////
+ui_button* ui_button_new(void);
+void ui_button_free(ui_button* b);
 
 /*
 * @brief creates a new ui_button struct
@@ -252,8 +266,12 @@ void ui_button_render(ui_button* b);
 
 
 
+/////// UI_IMAGE ///////////////////////////////////////////////
+ui_image* ui_image_new(void);
+void ui_image_free(ui_image* image);
+
 /*
-* @brief creates a sprite object that can be used in tandum with other ui components or alone
+* @brief creates a ui_image object
 * @param filename name of the image file to be loaded
 * @param position (x, y) of the sprite in the window
 * @param scale determines sizing of sprite from top left corner
@@ -271,6 +289,10 @@ ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Ve
 void ui_image_render(ui_image* image);
 
 
+
+/////// UI_DRAGGABLE ///////////////////////////////////////////////
+ui_draggable* ui_draggable_new(void);
+void ui_draggable_free(ui_draggable* d);
 
 /*
 * @brief creates a new ui_draggable and returns a pointer to it
@@ -296,6 +318,10 @@ void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my);
 void ui_draggable_render(ui_draggable* d);
 
 
+
+/////// UI_TEXT_INPUT ///////////////////////////////////////////////
+ui_text_input* ui_text_input_new(void);
+void ui_text_input_free(ui_text_input* t);
 
 /*
 * @brief creates a new ui_text_input and returns a pointer to it
@@ -324,14 +350,20 @@ void ui_text_input_render(ui_text_input* t);
 
 
 
-ui_object* ui_create_sizable(Vector2D position, Vector2D size);
+/////// UI_SLIDER ///////////////////////////////////////////////
+ui_slider* ui_slider_new(void);
+void ui_slider_free(ui_slider* s);
 
-gamestate_id ui_sizable_listen(ui_sizable* s, Uint32 mouse_state, int mx, int my);
-
-void ui_sizable_render(ui_sizable* s);
-
-
-
+/*
+* @brief creates a new ui_slider object and returns it as a ui_object*
+* @param position (x, y) coordinates of the upper left corner of the slider click_box
+* @param size (width ,height) of the slider click_box
+* @param is_vertical (1 : slider moves up and down, 0 : slider movers left to right)
+* @param length_left defines the distance that the slider can move left/down
+* @param length_right defines the distance that the slider can move right/up
+* @param show_line (1 : line that the clickbox is slid along is drawn, 0 : line is not drawn)
+* @returns ui_object* object where object->slider == new ui_slider this function created
+*/
 ui_object* ui_create_slider(Vector2D position, Vector2D size, Uint8 is_vertical, Uint32 length_left, Uint32 length_right, Uint8 show_line);
 
 gamestate_id ui_slider_listen(ui_slider* s, Uint32 mouse_state, int mx, int my);
@@ -340,24 +372,20 @@ void ui_slider_render(ui_slider* s);
 
 
 
-/* All "New" functions : allocate memory from managers */
-ui_object* ui_object_new(void);
-ui_label* ui_label_new(void);
-ui_button* ui_button_new(void);
-ui_image* ui_image_new(void);
-ui_draggable* ui_draggable_new(void);
-ui_text_input* ui_text_input_new(void);
+/////// UI_SIZABLE ///////////////////////////////////////////////
 ui_sizable* ui_sizable_new(void);
-ui_slider* ui_slider_new(void);
-
-/* All Free Functions */
-void ui_object_free(ui_object* o);
-void ui_label_free(ui_label* l);
-void ui_button_free(ui_button* b);
-void ui_image_free(ui_image* image);
-void ui_draggable_free(ui_draggable* d);
-void ui_text_input_free(ui_text_input* t);
 void ui_sizable_free(ui_sizable* s);
-void ui_slider_free(ui_slider* s);
+
+/*
+* @brief creates a new ui_sizable object and returns it as a ui_object*
+* @param position (x, y) coordinates of the sizable rectangle position
+* @param size (width, height) of the sizable rectangle 
+* @returns ui_object* object where object->sizable == the new ui_sizable just created
+*/
+ui_object* ui_create_sizable(Vector2D position, Vector2D size);
+
+gamestate_id ui_sizable_listen(ui_sizable* s, Uint32 mouse_state, int mx, int my);
+
+void ui_sizable_render(ui_sizable* s);
 
 #endif
