@@ -19,13 +19,13 @@ void director_init(void)
 	
 	map_init();
 
-	menu_manager_init(1024);
+	menu_manager_init(512);
 	menu_start_init();
 	menu_crew_select_init();
 	// menu_crew_view is not initialized here because the crew needs to be selected first
 	// therefore, it is initialized after load game is click in menu_start or after menu_crew_select is complete
 	
-	entity_manager_init(1024);
+	entity_manager_init(256);
 	mini_holder.asteroid_dodge = mini_asteroid_init();
 	mini_holder.mouse_hunt = mini_mouse_init();
 	mini_holder.ration_split = mini_ration_init();

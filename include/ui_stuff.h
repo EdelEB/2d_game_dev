@@ -43,7 +43,7 @@ typedef enum {
 /*FONT_INFO holds all fonts that intend to be used*/
 /*This allows all fonts to loaded once*/
 struct FONT_INFO {
-	TTF_Font* title_font, * header_font, * text_font;
+	TTF_Font*	title_font, * header_font, * text_font;
 	SDL_Color	font_color;
 }font_info;
 
@@ -65,20 +65,21 @@ typedef struct UI_LABEL {
 	Uint8			_inuse;			/**< 1 : being used, 0 : not being used*/
 	ui_label_type	type;			/**< the type of label which determines the font used*/
 	char* str;			/**< the string being displayed*/
-	SDL_Texture* texture;		/**< texture created using SDL_ttf and is essential to rendering*/
+	SDL_Texture*	texture;		/**< texture created using SDL_ttf and is essential to rendering*/
 	SDL_Rect		render_rect;	/**< this rect encapsulates the text_label in the texture and is necessary for rendering*/
-	ui_image* image;			/**< this is the label image*/
+	ui_image*		image;			/**< this is the label image*/
 }ui_label;
 
 typedef struct UI_BUTTON {
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
-	ui_label* text_label;			/**< this is the a label holding the text_label seen within the button*/
+	Uint8		is_held;
+	ui_label*	text_label;			/**< this is the a label holding the text_label seen within the button*/
 	SDL_Rect	click_box;			/**< this box defines where the button bounds are (what counts as clicking the button)*/
 	Uint8		hide_click_box;		/**< 0 : render click_box, 1 : do not render click_box*/
-	ui_image* image_default;		/**< the image displayed while a button is idle*/
-	ui_image* image_hover;		/**< the image displayed while a button is hovered over*/
-	ui_image* image_pressed;		/**< the image displayed while a button is pressed*/
-	ui_image* image_current;		/**< the image currently being rendered*/
+	ui_image*	image_default;		/**< the image displayed while a button is idle*/
+	ui_image*	image_hover;		/**< the image displayed while a button is hovered over*/
+	ui_image*	image_pressed;		/**< the image displayed while a button is pressed*/
+	ui_image*	image_current;		/**< the image currently being rendered*/
 	gamestate_id(*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
 
@@ -101,8 +102,8 @@ typedef struct UI_TEXT_INPUT {
 	Vector2D	position;			/**< position of the text box */
 	Uint8		is_active;			/**< 1 : when user can type, 0 : otherwize*/
 	SDL_Rect	click_box;			/**< bounds of the text_label box, when clicked input box becomes active*/
-	ui_label* text_label;			/**< text_label inside the text_label box*/
-	ui_button* button_enter;		/**< Enter button next to the text_label box*/
+	ui_label*	text_label;			/**< text_label inside the text_label box*/
+	ui_button*	button_enter;		/**< Enter button next to the text_label box*/
 }ui_text_input;
 
 typedef struct UI_SLIDER {
@@ -112,8 +113,7 @@ typedef struct UI_SLIDER {
 	Uint8			show_line;		/**< 1 : draws the line that slider moves along, 0 : hides line*/
 
 	Uint8			is_held;		/**< 1 : slider is currently clicked on by mouse, 0: otherwize*/
-	Uint32			length_left;	/**< the distance left/down that the slider can move beyond start position*/
-	Uint32			length_right;	/**< the distance right/up that the slider can move beyond start position */
+	Vector2D		line_p1, line_p2;
 	SDL_Rect		click_box;		/**< the bounds the the mouse must click inside of to move the slider*/
 	Vector2D		prev_position;
 	Vector2D		mouse_anchor;
@@ -123,23 +123,23 @@ typedef struct UI_SIZABLE {
 	Uint8			_inuse;
 	Uint8			needs_update;
 	SDL_Rect		rect;
-	ui_slider* left;
-	ui_slider* right;
-	ui_slider* top;
-	ui_slider* bottom;
+	ui_slider*		left;
+	ui_slider*		right;
+	ui_slider*		top;
+	ui_slider*		bottom;
 }ui_sizable;
 
 typedef struct UI_OBJECT {
 	Uint8			_inuse;
 	ui_object_id	id;
 
-	ui_label* label;
-	ui_button* button;
-	ui_image* image;
-	ui_text_input* text_input;
-	ui_draggable* draggable;
-	ui_sizable* sizable;
-	ui_slider* slider;
+	ui_label*		label;
+	ui_button*		button;
+	ui_image*		image;
+	ui_text_input*	text_input;
+	ui_draggable*	draggable;
+	ui_sizable*		sizable;
+	ui_slider*		slider;
 }ui_object;
 
 

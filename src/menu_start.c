@@ -21,7 +21,7 @@ Menu* menu_start_init()
 		vector2d(1.2, 0.5),
 		vector2d(50,100),
 		vector3d(0, 0, 0)
-	)->i;
+	)->image;
 
 	menu->object_list[1] = ui_create_button(
 		(WINDOW_WIDTH >> 1) - 100,
@@ -33,7 +33,7 @@ Menu* menu_start_init()
 	);
 
 	ui_button_set_images(
-		menu->object_list[1]->b,
+		menu->object_list[1]->button,
 		"button_test", 
 		vector2d(0.30, 0.25),
 		vector2d(1, 50),
@@ -57,6 +57,15 @@ Menu* menu_start_init()
 	menu->object_list[4] = ui_create_text_input(
 		vector2d(200, 100),
 		start_new_game
+	);
+
+	menu->object_list[5] = ui_create_slider(
+		vector2d(400, 400),
+		vector2d(20, 20),
+		1,
+		100,
+		100,
+		1
 	);
 
 	return menu;

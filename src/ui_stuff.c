@@ -8,6 +8,8 @@ typedef struct UI_MANAGER {
 	ui_image* image_list;
 	ui_draggable* draggable_list;
 	ui_text_input* text_input_list;
+	ui_sizable* sizable_list;
+	ui_slider* slider_list;
 }UI_Manager;
 
 typedef struct UI_OBJECT_MANAGER {
@@ -30,7 +32,7 @@ void ui_object_manager_init(Uint32 max_objects)
 	ui_object_manager.object_list = gfc_allocate_array(sizeof(ui_object), max_objects);
 }
 
-void ui_manager_init(Uint32 max_components) 
+void ui_manager_init(Uint32 max_components)
 {
 	if (max_components == 0)
 	{
@@ -44,9 +46,11 @@ void ui_manager_init(Uint32 max_components)
 	ui_manager.image_list = gfc_allocate_array(sizeof(ui_image), max_components);
 	ui_manager.draggable_list = gfc_allocate_array(sizeof(ui_draggable), max_components);
 	ui_manager.text_input_list = gfc_allocate_array(sizeof(ui_text_input), max_components);
+	ui_manager.sizable_list = gfc_allocate_array(sizeof(ui_sizable), max_components);
+	ui_manager.slider_list = gfc_allocate_array(sizeof(ui_slider), max_components);
 
 	/*This must be increased every time a new object type is added*/
-	ui_object_manager_init(max_components * 6);
+	ui_object_manager_init(max_components * 7);
 }
 
 void ui_font_info_init(void)
@@ -105,7 +109,7 @@ void ui_manager_close(void)
 	if (ui_manager.image_list) free(ui_manager.image_list);
 	if (ui_manager.draggable_list) free(ui_manager.draggable_list);
 	if (ui_manager.text_input_list) free(ui_manager.text_input_list);
-	
+
 	slog("ui_manager closed");
 }
 void ui_stuff_close(void)
@@ -116,6 +120,18 @@ void ui_stuff_close(void)
 }
 
 
+
+ui_object* ui_object_new(void)
+{
+	int i;
+	for (i = 0; i < ui_object_manager.max_objects; i++)
+	{
+		if (ui_object_manager.object_list[i]._inuse) continue;
+		ui_object_manager.object_list[i]._inuse = 1;
+		return &ui_object_manager.object_list[i];
+	}
+	return NULL;
+}
 
 gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, Uint8* keys)
 {
@@ -130,12 +146,16 @@ gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, 
 	case SPRITE:
 		break;
 	case BUTTON:
-		return ui_button_listen(o->b, mouse_state, mx, my);
+		return ui_button_listen(o->button, mouse_state, mx, my);
 	case DRAGGABLE:
-		ui_draggable_listen(o->d, mouse_state, mx, my);
+		ui_draggable_listen(o->draggable, mouse_state, mx, my);
 		break;
 	case TEXT_INPUT:
-		return ui_text_input_listen(o->t, mouse_state, mx, my, keys);
+		return ui_text_input_listen(o->text_input, mouse_state, mx, my, keys);
+	case SIZABLE:
+		return ui_sizable_listen(o->sizable, mouse_state, mx, my);
+	case SLIDER:
+		return ui_slider_listen(o->slider, mouse_state, mx, my);
 	}
 
 	return NONE;
@@ -143,7 +163,7 @@ gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, 
 
 void ui_object_render(ui_object* o)
 {
-	if (!o){
+	if (!o) {
 		slog("NULL ui_object* passed to ui_object_render");
 		return;
 	}
@@ -154,20 +174,57 @@ void ui_object_render(ui_object* o)
 		ui_label_render(o->label);
 		break;
 	case BUTTON:
-		ui_button_render(o->b);
+		ui_button_render(o->button);
 		break;
 	case SPRITE:
-		ui_image_render(o->i);
+		ui_image_render(o->image);
 		break;
 	case DRAGGABLE:
-		ui_draggable_render(o->d);
+		ui_draggable_render(o->draggable);
 		break;
 	case TEXT_INPUT:
-		ui_text_input_render(o->t);
+		ui_text_input_render(o->text_input);
+		break;
+	case SIZABLE:
+		ui_sizable_render(o->sizable);
+		break;
+	case SLIDER:
+		ui_slider_render(o->slider);
 		break;
 	}
 	return;
 }
+
+void ui_object_free(ui_object* o)
+{
+	if (!o) return;
+
+	switch (o->id)
+	{
+	case LABEL:
+		ui_label_free(o->label);
+		break;
+	case BUTTON:
+		ui_button_free(o->button);
+		break;
+	case SPRITE:
+		ui_image_free(o->image);
+		break;
+	case DRAGGABLE:
+		ui_draggable_free(o->draggable);
+		break;
+	case TEXT_INPUT:
+		ui_text_input_free(o->text_input);
+		break;
+	case SIZABLE:
+		ui_sizable_free(o->sizable);
+		break;
+	case SLIDER:
+		ui_slider_free(o->slider);
+		break;
+	}
+}
+
 
 
 TTF_Font* ui_get_font_by_type(ui_label_type type)
@@ -190,7 +247,7 @@ ui_object* ui_create_label(char* str, int x, int y, ui_label_type type)
 	SDL_Surface* surface;
 	ui_label* label = ui_label_new();
 	ui_object* object = ui_object_new();
-	
+
 	if (!object) {
 		slog("create function failed to get ui_object pointer");
 		return NULL;
@@ -276,7 +333,7 @@ void ui_label_render(ui_label* l)
 		slog("ui_label_render received NULL ui_label*");
 		return;
 	}
-	
+
 	if (l->image) {
 		ui_image_render(l->image);
 	}
@@ -290,17 +347,19 @@ void ui_label_render(ui_label* l)
 		);
 	}
 
-	if (DEBUG){ gf2d_draw_rect(l->render_rect, vector4d(55, 255, 255, 255)); }
-	
+	if (DEBUG) { gf2d_draw_rect(l->render_rect, vector4d(55, 255, 255, 255)); }
+
 }
+
+
 
 void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Vector2D scale_center, Vector3D rotation)
 {
 	Uint8 i;
 	char filename[64];
-	Sprite* sprite; 
+	Sprite* sprite;
 	ui_image* image;
-	
+
 	for (i = 0; i < 3; i++)
 	{
 		sprintf(filename, "assets/images/ui/%s_%d.png", file_base_name, i);
@@ -311,20 +370,20 @@ void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Ve
 			scale,
 			scale_center,
 			rotation
-		)->i;
+		)->image;
 
 		if (!image) continue;
 		switch (i) {
-			case 0: 
-				b->image_default = image; 
-				b->image_current = b->image_default;
-				break;
-			case 1: 
-				b->image_hover = image;	
-				break;
-			case 2: 
-				b->image_pressed = image; 
-				break;
+		case 0:
+			b->image_default = image;
+			b->image_current = b->image_default;
+			break;
+		case 1:
+			b->image_hover = image;
+			break;
+		case 2:
+			b->image_pressed = image;
+			break;
 		}
 	}
 }
@@ -350,7 +409,7 @@ ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_cli
 	button->on_click = on_click;
 
 	object->id = BUTTON;
-	object->b = button;
+	object->button = button;
 	return object;
 
 }
@@ -371,34 +430,32 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 		my > b->click_box.y &&
 		my < b->click_box.y + b->click_box.h) {
 
-		if (mouse_state == 1) 
+		if (mouse_state == 1 && global_was_mouse_down == 0) b->is_held = 1;
+		
+		if (b->is_held) 
 		{
 			b->image_current = b->image_pressed;
-		}
-		else if (global_was_mouse_down == 1)
-		{
-			global_was_mouse_down = 0;
 
-			id = ui_button_click(b);
-			if (id) return id;
+			if (mouse_state == 0 && global_was_mouse_down == 1)
+			{
+				global_was_mouse_down = 0;
+				id = ui_button_click(b);
+				if (id) return id;
+			}
 		}
 		else 
 		{
 			b->image_current = b->image_hover;
 		}
 	}
-	else 
+	else
 	{
 		b->image_current = b->image_default;
 	}
-	return NONE;
-}
-gamestate_id ui_button_listen_alone(ui_button* b) 
-{
-	int mx, my;
-	Uint32 mouse_state = SDL_GetMouseState(&mx, &my);
 
-	return ui_button_listen(b, mouse_state, mx, my);
+	if (mouse_state == 0 && global_was_mouse_down == 1) b->is_held = 0;
+	
+	return NONE;
 }
 
 gamestate_id ui_button_click(ui_button* b)
@@ -415,9 +472,9 @@ gamestate_id ui_button_click(ui_button* b)
 		slog("ui_button_click passed ui_button* with no on_click function");
 		return NONE;
 	}
-	
+
 	gfc_sound_play(sound_fx.button_click, 0, 0.3, -1, -1);
-	
+
 	ret = b->on_click(b);
 	if (ret != NONE) {
 		gfc_sound_play(sound_fx.gamestate_change, 0, 0.3, -1, -1);
@@ -432,11 +489,11 @@ void ui_button_render(ui_button* b)
 		slog("ui_button_render cannot render NULL ui_button*");
 		return;
 	}
-	
+
 	if (!b->hide_click_box) { gf2d_draw_rect(b->click_box, vector4d(255, 255, 255, 255)); }
-	
+
 	if (b->image_current) { ui_image_render(b->image_current); }
-	
+
 	ui_label_render(b->text_label);
 }
 
@@ -469,7 +526,7 @@ ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Ve
 	vector3d_copy(image->rotation, rotation);
 
 	object->id = SPRITE;
-	object->i = image;
+	object->image = image;
 	return object;
 }
 
@@ -478,10 +535,10 @@ void ui_image_render(ui_image* image)
 	if (!image) { slog("ui_image_render cannot render NULL ui_image*"); return; }
 
 	gf2d_sprite_draw(
-		image->sprite, 
-		image->position, 
-		&image->scale, 
-		&image->scale_center, 
+		image->sprite,
+		image->position,
+		&image->scale,
+		&image->scale_center,
 		&image->rotation,
 		NULL,
 		NULL,
@@ -499,7 +556,7 @@ ui_object* ui_create_draggable(Vector2D position, Vector2D size)
 		slog("create function failed to get ui_object pointer");
 		return;
 	}
-	if(!d){
+	if (!d) {
 		slog("ui_create_draggable faile to retrieve new ui_draggable*");
 		return;
 	}
@@ -513,7 +570,7 @@ ui_object* ui_create_draggable(Vector2D position, Vector2D size)
 	d->click_box.h = size.y;
 
 	object->id = DRAGGABLE;
-	object->d = d;
+	object->draggable = d;
 	return object;
 }
 
@@ -522,21 +579,13 @@ void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my)
 	if (mx > d->click_box.x &&
 		mx < d->click_box.x + d->click_box.w &&
 		my > d->click_box.y &&
-		my < d->click_box.y + d->click_box.h) {
-
-		if (mouse_state == 1 && global_was_mouse_down == 0) 
-		{
-			global_was_mouse_down = 1;
-
-			d->is_held = 1;
-			vector2d_copy(d->mouse_anchor, vector2d(mx,my));
-		}
-		else if (mouse_state == 0 && global_was_mouse_down == 1)
-		{
-			d->is_held = 0;
-			global_was_mouse_down = 0;
-			vector2d_copy(d->prev_position, d->position);
-		}
+		my < d->click_box.y + d->click_box.h &&
+		mouse_state == 1 && 
+		global_was_mouse_down == 0)
+	{
+		global_was_mouse_down = 1;
+		d->is_held = 1;
+		vector2d_copy(d->mouse_anchor, vector2d(mx, my));
 	}
 
 	if (d->is_held)
@@ -545,6 +594,13 @@ void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my)
 		d->position.y = d->prev_position.y - (d->mouse_anchor.y - my);
 		d->click_box.x = d->prev_position.x - (d->mouse_anchor.x - mx);
 		d->click_box.y = d->prev_position.y - (d->mouse_anchor.y - my);
+
+		if (mouse_state == 0 && global_was_mouse_down == 1)
+		{
+			d->is_held = 0;
+			global_was_mouse_down = 0;
+			vector2d_copy(d->prev_position, d->position);
+		}
 	}
 }
 
@@ -561,7 +617,7 @@ void ui_draggable_render(ui_draggable* d)
 
 
 
-ui_object* ui_create_text_input(Vector2D position,void (*on_enter)(void))
+ui_object* ui_create_text_input(Vector2D position, void (*on_enter)(void))
 {
 	ui_text_input* t = ui_text_input_new();
 	ui_object* object = ui_object_new();
@@ -569,16 +625,16 @@ ui_object* ui_create_text_input(Vector2D position,void (*on_enter)(void))
 		slog("create function failed to get ui_object pointer");
 		return;
 	}
-	if (!t) { 
-		slog("ui_create_text_input could not retrieve ui_text_input pointer"); 
-		return; 
+	if (!t) {
+		slog("ui_create_text_input could not retrieve ui_text_input pointer");
+		return;
 	}
-	
+
 	t->index = 0;
 	t->text_label = ui_create_label(
 		" ",
-		position.x+5, 
-		position.y+7,
+		position.x + 5,
+		position.y + 7,
 		TEXT
 	)->label;
 	vector2d_copy(t->position, position);
@@ -593,10 +649,10 @@ ui_object* ui_create_text_input(Vector2D position,void (*on_enter)(void))
 		40,
 		"Enter",
 		on_enter
-		)->b;
+	)->button;
 
 	object->id = TEXT_INPUT;
-	object->t = t;
+	object->text_input = t;
 	return object;
 }
 
@@ -605,8 +661,8 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 	gamestate_id id;
 	char c = '%';
 
-	if (!t) return; 
-	
+	if (!t) return;
+
 	if (global_was_mouse_down == 1 && mouse_state == 0)
 	{
 		if (mx > t->click_box.x &&
@@ -704,7 +760,7 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 				if (t->index == 0) {
 					t->str[t->index] = ' ';
 				}
-				else{
+				else {
 					t->index--;
 					if (t->index == 0) t->str[t->index] = ' ';
 					else t->str[t->index] = '\0';
@@ -714,12 +770,12 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 			}
 		}
 	}
-	
-	if (c != '%') 
+
+	if (c != '%')
 	{
 		t->str[t->index] = c;
 		ui_label_update(t->text_label, t->str);
-		
+
 		t->index++;
 		if (t->index >= SENTENCE_LEN) {
 			t->index = SENTENCE_LEN - 1;
@@ -731,7 +787,7 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 	return ui_button_listen(t->button_enter, mouse_state, mx, my);
 }
 
-void ui_text_input_render(ui_text_input* t) 
+void ui_text_input_render(ui_text_input* t)
 {
 	if (!t)
 	{
@@ -750,23 +806,170 @@ void ui_text_input_render(ui_text_input* t)
 	else {
 		gf2d_draw_rect(t->click_box, vector4d(255, 255, 255, 255));
 	}
-	
+
 	ui_button_render(t->button_enter);
 	ui_label_render(t->text_label);
 }
 
 
-ui_object* ui_object_new(void)
+
+ui_object* ui_create_sizable(Vector2D position, Vector2D size)
 {
-	int i;
-	for (i = 0; i < ui_object_manager.max_objects; i++)
-	{
-		if (ui_object_manager.object_list[i]._inuse) continue;
-		ui_object_manager.object_list[i]._inuse = 1;
-		return &ui_object_manager.object_list[i];
-	}
-	return NULL;
+	Vector2D corner_dim = vector2d(10, 10);
+	ui_sizable* s = ui_sizable_new();
+	ui_object* o = ui_object_new();
+
+	if (!s) return;
+	if (!o) return;
+
+	s->rect.x = position.x;
+	s->rect.y = position.y;
+	s->rect.w = size.x;
+	s->rect.h = size.y;
+
+	s->left = ui_create_draggable(vector2d(position.x, position.y + size.y / 2 - corner_dim.y / 2), corner_dim)->draggable;
+	s->right = ui_create_draggable(vector2d(position.x + size.x - corner_dim.x, position.y + size.y / 2 - corner_dim.y / 2), corner_dim)->draggable;
+	s->top = ui_create_draggable(vector2d(position.x + size.x / 2 - corner_dim.x / 2, position.y), corner_dim)->draggable;
+	s->bottom = ui_create_draggable(vector2d(position.x + size.x / 2 - corner_dim.x / 2, position.y + size.y - corner_dim.y), corner_dim)->draggable;
+
+	o->id = SIZABLE;
+	o->sizable = s;
+	return o;
 }
+
+gamestate_id ui_sizable_listen(ui_sizable* s, Uint32 mouse_state, int mx, int my)
+{
+	if (!s) return NONE;
+
+	ui_slider_listen(s->left, mouse_state, mx, my);
+	ui_slider_listen(s->right, mouse_state, mx, my);
+	ui_slider_listen(s->top, mouse_state, mx, my);
+	ui_slider_listen(s->bottom, mouse_state, mx, my);
+
+	if (s->left->is_held)
+	{
+
+	}
+	else if (s->right->is_held)
+	{
+
+	}
+	else if (s->top->is_held)
+	{
+
+	}
+	else if (s->bottom->is_held)
+	{
+
+	}
+
+	return NONE;
+}
+
+void ui_sizable_render(ui_sizable* s)
+{
+	if (!s) return;
+
+	ui_slider_render(s->left);
+	ui_slider_render(s->right);
+	ui_slider_render(s->top);
+	ui_slider_render(s->bottom);
+	gf2d_draw_rect(s->rect, vector4d(255, 255, 255, 255));
+
+}
+
+
+
+ui_object* ui_create_slider(Vector2D position, Vector2D size, Uint8 is_vertical, Uint32 length_left, Uint32 length_right, Uint8 show_line)
+{
+	ui_slider* s = ui_slider_new();
+	ui_object* o = ui_object_new();
+
+	if (!s) return;
+	if (!o) return;
+
+
+	vector2d_copy(s->prev_position, position);
+	s->click_box.x = position.x;
+	s->click_box.y = position.y;
+	s->click_box.w = size.x;
+	s->click_box.h = size.y;
+	
+	if (length_left == 0 && length_right == 0) {
+		s->show_line = 0;
+	}
+	else {
+		s->show_line = show_line;
+	}
+	
+	s->is_vertical = is_vertical;
+	if (s->is_vertical)
+	{
+		vector2d_copy(s->line_p1, vector2d(position.x + size.x / 2, position.y + length_right));
+		vector2d_copy(s->line_p2, vector2d(position.x + size.x / 2, position.y - length_right));
+	}
+	else
+	{
+		vector2d_copy(s->line_p1, vector2d(position.x + length_left,  position.y + size.y / 2));
+		vector2d_copy(s->line_p2, vector2d(position.x - length_right, position.y + size.y / 2));
+	}
+	
+	
+	o->id = SLIDER;
+	o->slider = s;
+	return o;
+}
+
+gamestate_id ui_slider_listen(ui_slider* s, Uint32 mouse_state, int mx, int my)
+{
+	if (mx > s->click_box.x &&
+		mx < s->click_box.x + s->click_box.w &&
+		my > s->click_box.y &&
+		my < s->click_box.y + s->click_box.h &&
+		mouse_state == 1 && 
+		global_was_mouse_down == 0)
+	{
+			global_was_mouse_down = 1;
+			s->is_held = 1;
+			vector2d_copy(s->mouse_anchor, vector2d(mx, my));
+	}
+
+	if (s->is_held)
+	{
+		if (s->is_vertical &&
+			my < s->line_p1.y && 
+			my > s->line_p2.y)
+		{
+			s->click_box.y = s->prev_position.y - (s->mouse_anchor.y - my);
+		}
+		else if (mx < s->line_p1.x &&
+				mx > s->line_p2.x)
+		{
+			s->click_box.x = s->prev_position.x - (s->mouse_anchor.x - mx);
+		}
+
+		if (mouse_state == 0 && global_was_mouse_down == 1)
+		{
+			s->is_held = 0;
+			global_was_mouse_down = 0;
+			s->prev_position.x = s->click_box.x;
+			s->prev_position.y = s->click_box.y;
+		}
+	}
+
+	return NONE;
+}
+
+void ui_slider_render(ui_slider* s)
+{
+	if (!s) return;
+
+	gf2d_draw_rect(s->click_box, vector4d(255, 255, 255, 255));
+
+	if (s->show_line) gf2d_draw_line(s->line_p1, s->line_p2, vector4d(255, 255, 255, 255));
+}
+
+
 ui_label* ui_label_new(void)
 {
 	int i;
@@ -822,30 +1025,29 @@ ui_text_input* ui_text_input_new(void)
 	}
 	return NULL;
 }
-
-void ui_object_free(ui_object* o)
+ui_sizable* ui_sizable_new(void)
 {
-	if (!o) return;
-
-	switch (o->id)
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
 	{
-		case LABEL:		
-			ui_label_free(o->label);
-			break;
-		case BUTTON:		
-			ui_button_free(o->b);
-			break;
-		case SPRITE:		
-			ui_image_free(o->i);
-			break;
-		case DRAGGABLE:	
-			ui_draggable_free(o->d);
-			break;
-		case TEXT_INPUT: 
-			ui_text_input_free(o->t);
-			break;
+		if (ui_manager.sizable_list[i]._inuse) continue;
+		ui_manager.sizable_list[i]._inuse = 1;
+		return &ui_manager.sizable_list[i];
 	}
+	return NULL;
 }
+ui_slider* ui_slider_new(void)
+{
+	int i;
+	for (i = 0; i < ui_manager.max_components; i++)
+	{
+		if (ui_manager.slider_list[i]._inuse) continue;
+		ui_manager.slider_list[i]._inuse = 1;
+		return &ui_manager.slider_list[i];
+	}
+	return NULL;
+}
+
 void ui_label_free(ui_label* l)
 {
 	if (!l) { return; }
@@ -879,4 +1081,22 @@ void ui_text_input_free(ui_text_input* t)
 	ui_button_free(t->button_enter);
 	ui_label_free(t->text_label);
 	memset(t, 0, sizeof(ui_text_input));
+}
+void ui_sizable_free(ui_sizable* s)
+{
+	if (!s) return;
+
+	ui_slider_free(s->left);
+	ui_slider_free(s->right);
+	ui_slider_free(s->top);
+	ui_slider_free(s->bottom);
+	free(&s->rect);
+	memset(s, 0, sizeof(ui_sizable));
+}
+void ui_slider_free(ui_slider* s)
+{
+	if (!s) return;
+
+	//no pointers in sliders
+	memset(s, 0, sizeof(ui_slider));
 }
