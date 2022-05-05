@@ -24,13 +24,14 @@ extern Uint8 global_was_mouse_down;
 extern Uint8* global_prev_keys;
 Uint16 type_cooldown;
 
-typedef enum{
+typedef enum {
 	LABEL,
 	BUTTON,
 	SPRITE,
 	DRAGGABLE,
 	TEXT_INPUT,
-	SIZABLE
+	SIZABLE,
+	SLIDER
 }ui_object_id;
 
 typedef enum {
@@ -41,21 +42,21 @@ typedef enum {
 
 /*FONT_INFO holds all fonts that intend to be used*/
 /*This allows all fonts to loaded once*/
-struct FONT_INFO{
-	TTF_Font	*title_font, *header_font, *text_font;
+struct FONT_INFO {
+	TTF_Font* title_font, * header_font, * text_font;
 	SDL_Color	font_color;
 }font_info;
 
 /*SOUND_FX holds all the Sounds that intend to be used*/
 /*This allows all sounds to be loaded once*/
 struct SOUND_FX {
-	Sound	*button_click;
-	Sound	*gamestate_change;
+	Sound* button_click;
+	Sound* gamestate_change;
 }sound_fx;
 
 typedef struct UI_IMAGE {
 	Uint8			_inuse;
-	Sprite*			sprite;
+	Sprite* sprite;
 	Vector2D		position, scale, scale_center;
 	Vector3D		rotation;
 }ui_image;
@@ -63,22 +64,22 @@ typedef struct UI_IMAGE {
 typedef struct UI_LABEL {
 	Uint8			_inuse;			/**< 1 : being used, 0 : not being used*/
 	ui_label_type	type;			/**< the type of label which determines the font used*/
-	char*			str;			/**< the string being displayed*/
-	SDL_Texture*	texture;		/**< texture created using SDL_ttf and is essential to rendering*/
+	char* str;			/**< the string being displayed*/
+	SDL_Texture* texture;		/**< texture created using SDL_ttf and is essential to rendering*/
 	SDL_Rect		render_rect;	/**< this rect encapsulates the text_label in the texture and is necessary for rendering*/
-	ui_image	   *image;			/**< this is the label image*/
+	ui_image* image;			/**< this is the label image*/
 }ui_label;
 
-typedef struct UI_BUTTON{
+typedef struct UI_BUTTON {
 	Uint8		_inuse;				/**< 1 : being used, 0 : not being used*/
-	ui_label   *text_label;			/**< this is the a label holding the text_label seen within the button*/
+	ui_label* text_label;			/**< this is the a label holding the text_label seen within the button*/
 	SDL_Rect	click_box;			/**< this box defines where the button bounds are (what counts as clicking the button)*/
 	Uint8		hide_click_box;		/**< 0 : render click_box, 1 : do not render click_box*/
-	ui_image   *image_default;		/**< the image displayed while a button is idle*/
-	ui_image   *image_hover;		/**< the image displayed while a button is hovered over*/
-	ui_image   *image_pressed;		/**< the image displayed while a button is pressed*/
-	ui_image   *image_current;		/**< the image currently being rendered*/
-	gamestate_id (*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
+	ui_image* image_default;		/**< the image displayed while a button is idle*/
+	ui_image* image_hover;		/**< the image displayed while a button is hovered over*/
+	ui_image* image_pressed;		/**< the image displayed while a button is pressed*/
+	ui_image* image_current;		/**< the image currently being rendered*/
+	gamestate_id(*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
 
 /* UI_DRAGGABLE is an object that can be clicked on and moved around the screen */
@@ -100,19 +101,45 @@ typedef struct UI_TEXT_INPUT {
 	Vector2D	position;			/**< position of the text box */
 	Uint8		is_active;			/**< 1 : when user can type, 0 : otherwize*/
 	SDL_Rect	click_box;			/**< bounds of the text_label box, when clicked input box becomes active*/
-	ui_label*	text_label;			/**< text_label inside the text_label box*/
-	ui_button*	button_enter;		/**< Enter button next to the text_label box*/
+	ui_label* text_label;			/**< text_label inside the text_label box*/
+	ui_button* button_enter;		/**< Enter button next to the text_label box*/
 }ui_text_input;
+
+typedef struct UI_SLIDER {
+	Uint8			_inuse;
+	Uint8			is_vertical;	/**< 1 : slide up and down, 0 : slide left and right*/
+	Uint8			has_limit;		/**< 1 : slide as far as length_left and length_right, 0 : no limit*/
+	Uint8			show_line;		/**< 1 : draws the line that slider moves along, 0 : hides line*/
+
+	Uint8			is_held;		/**< 1 : slider is currently clicked on by mouse, 0: otherwize*/
+	Uint32			length_left;	/**< the distance left/down that the slider can move beyond start position*/
+	Uint32			length_right;	/**< the distance right/up that the slider can move beyond start position */
+	SDL_Rect		click_box;		/**< the bounds the the mouse must click inside of to move the slider*/
+	Vector2D		prev_position;
+	Vector2D		mouse_anchor;
+}ui_slider;
+
+typedef struct UI_SIZABLE {
+	Uint8			_inuse;
+	Uint8			needs_update;
+	SDL_Rect		rect;
+	ui_slider* left;
+	ui_slider* right;
+	ui_slider* top;
+	ui_slider* bottom;
+}ui_sizable;
 
 typedef struct UI_OBJECT {
 	Uint8			_inuse;
 	ui_object_id	id;
 
 	ui_label* label;
-	ui_button* b;
-	ui_image* i;
-	ui_text_input* t;
-	ui_draggable* d;
+	ui_button* button;
+	ui_image* image;
+	ui_text_input* text_input;
+	ui_draggable* draggable;
+	ui_sizable* sizable;
+	ui_slider* slider;
 }ui_object;
 
 
@@ -139,7 +166,7 @@ void ui_stuff_close(void);
 /*
 * @brief calls the appropriate listen function based on object id
 * @param o is the object being listened to
-* @param mouse_state says if mouse is clicked ( 1:left pressed, 4: right pressed, 0: no press ) 
+* @param mouse_state says if mouse is clicked ( 1:left pressed, 4: right pressed, 0: no press )
 * @param mx	mouse x position
 * @param my mouse y position
 * @param keys is an array of Uint8 that can be used to get keyboard state using keys[<SCANCODE>]
@@ -185,7 +212,7 @@ void ui_label_render(ui_label* l);
 
 
 /*
-* @brief creates a new ui_button struct 
+* @brief creates a new ui_button struct
 * @param x is the x	coordinate of the top left corner of the button's click_box
 * @param y is the y coordinate of the top left corner of the button's click_box
 * @param w is the width of the button's click box
@@ -193,8 +220,8 @@ void ui_label_render(ui_label* l);
 * @param str is the text_label that is inside the button
 * @param on_click is the function that is called when the button is clicked
 * @returns ui_object pointer with non-null ui_button attribute object->b
-*/ 
-ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void) );
+*/
+ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void));
 
 void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Vector2D scale_center, Vector3D rotation);
 
@@ -208,11 +235,6 @@ void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Ve
 * @returns gamestate_id if it changes gamestate NONE otherwise
 */
 gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my);
-
-/*
-* @brief this is intended to be used only during development when mouse input is not immediatley available where it is called
-*/
-gamestate_id ui_button_listen_alone(ui_button* b);
 
 /*
 * @brief calls the passed button's on_click function
@@ -285,7 +307,7 @@ ui_object* ui_create_text_input(Vector2D position, void (*on_enter)(void));
 /*
 * @brief listens for mouse and keyboard events in order to update the ui_text_input accordingly
 * @param t is a pointer to the ui_text_input that will be listened for and updated if necessary
-* @param mouse_state says if mouse is clicked ( 1:left pressed, 4: right pressed, 0: no press ) 
+* @param mouse_state says if mouse is clicked ( 1:left pressed, 4: right pressed, 0: no press )
 * @param mx	mouse x position
 * @param my mouse y position
 * @param keys is an array of Uint8 that can be used to get keyboard state using keys[<SCANCODE>]
@@ -301,13 +323,31 @@ void ui_text_input_render(ui_text_input* t);
 
 
 
+ui_object* ui_create_sizable(Vector2D position, Vector2D size);
+
+gamestate_id ui_sizable_listen(ui_sizable* s, Uint32 mouse_state, int mx, int my);
+
+void ui_sizable_render(ui_sizable* s);
+
+
+
+ui_object* ui_create_slider(Vector2D position, Vector2D size, Uint8 is_vertical, Uint32 length_left, Uint32 length_right, Uint8 show_line);
+
+gamestate_id ui_slider_listen(ui_slider* s, Uint32 mouse_state, int mx, int my);
+
+void ui_slider_render(ui_slider* s);
+
+
+
 /* All "New" functions : allocate memory from managers */
-ui_object* ui_object_new();
+ui_object* ui_object_new(void);
 ui_label* ui_label_new(void);
 ui_button* ui_button_new(void);
 ui_image* ui_image_new(void);
 ui_draggable* ui_draggable_new(void);
 ui_text_input* ui_text_input_new(void);
+ui_sizable* ui_sizable_new(void);
+ui_slider* ui_slider_new(void);
 
 /* All Free Functions */
 void ui_object_free(ui_object* o);
@@ -316,5 +356,7 @@ void ui_button_free(ui_button* b);
 void ui_image_free(ui_image* image);
 void ui_draggable_free(ui_draggable* d);
 void ui_text_input_free(ui_text_input* t);
+void ui_sizable_free(ui_sizable* s);
+void ui_slider_free(ui_slider* s);
 
 #endif
