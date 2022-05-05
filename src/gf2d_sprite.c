@@ -40,7 +40,7 @@ void gf2d_sprite_init(Uint32 max)
     memset (sprite_manager.sprite_list,0,sizeof(Sprite)*max);
     if (!(IMG_Init( IMG_INIT_PNG) & IMG_INIT_PNG))
     {
-        slog("failed to init image: %i",SDL_GetError());
+        slog("failed to init image: %s",SDL_GetError());
     }
     slog("image system initialized");
     atexit(IMG_Quit);
@@ -143,7 +143,7 @@ Sprite *gf2d_sprite_load_all(
     surface = IMG_Load(filename);
     if (!surface)
     {
-        slog("failed to load image image %i",filename);
+        slog("failed to load image image %s",filename);
         gf2d_sprite_free(sprite);
         return NULL;
     }
@@ -151,7 +151,7 @@ Sprite *gf2d_sprite_load_all(
     surface = gf2d_graphics_screen_convert(&surface);
     if (!surface)
     {
-        slog("failed to load image image %i",filename);
+        slog("failed to load image image %s",filename);
         gf2d_sprite_free(sprite);
         return NULL;
     }
@@ -159,7 +159,7 @@ Sprite *gf2d_sprite_load_all(
     sprite->texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(),surface);
     if (!sprite->texture)
     {
-        slog("failed to load image image %i",filename);
+        slog("failed to load image image %s",filename);
         gf2d_sprite_free(sprite);
         SDL_FreeSurface(surface);
         return NULL;

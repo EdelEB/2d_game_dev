@@ -108,7 +108,7 @@ typedef struct UI_OBJECT {
 	Uint8			_inuse;
 	ui_object_id	id;
 
-	ui_label* l;
+	ui_label* label;
 	ui_button* b;
 	ui_image* i;
 	ui_text_input* t;

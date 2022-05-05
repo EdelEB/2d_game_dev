@@ -76,7 +76,7 @@ void ui_font_info_close(void)
 	TTF_CloseFont(font_info.title_font);
 	TTF_CloseFont(font_info.header_font);
 	TTF_CloseFont(font_info.text_font);
-	free(&font_info.font_color);
+	//free(&font_info.font_color);
 }
 void ui_sound_fx_close(void)
 {
@@ -151,7 +151,7 @@ void ui_object_render(ui_object* o)
 	switch (o->id)
 	{
 	case LABEL:
-		ui_label_render(o->l);
+		ui_label_render(o->label);
 		break;
 	case BUTTON:
 		ui_button_render(o->b);
@@ -234,7 +234,7 @@ ui_object* ui_create_label(char* str, int x, int y, ui_label_type type)
 	//label->render_rect.h = 200;
 
 	object->id = LABEL;
-	object->l = label;
+	object->label = label;
 	return object;
 }
 
@@ -342,7 +342,7 @@ ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_cli
 		return NULL;
 	}
 
-	button->text_label = ui_create_label(str, x + 10, y + 10, TEXT)->l;
+	button->text_label = ui_create_label(str, x + 10, y + 10, TEXT)->label;
 	button->click_box.x = x;
 	button->click_box.y = y;
 	button->click_box.w = w;
@@ -580,7 +580,7 @@ ui_object* ui_create_text_input(Vector2D position,void (*on_enter)(void))
 		position.x+5, 
 		position.y+7,
 		TEXT
-	)->l;
+	)->label;
 	vector2d_copy(t->position, position);
 	t->click_box.x = position.x;
 	t->click_box.y = position.y;
@@ -830,7 +830,7 @@ void ui_object_free(ui_object* o)
 	switch (o->id)
 	{
 		case LABEL:		
-			ui_label_free(o->l);
+			ui_label_free(o->label);
 			break;
 		case BUTTON:		
 			ui_button_free(o->b);

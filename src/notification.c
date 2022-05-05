@@ -87,10 +87,10 @@ void note_log(Notification* n)
 		slog("note_log cannot log NULL Notification*");
 		return;
 	}
-	slog("NOTE LOG : Title - %i", n->title);
+	slog("NOTE LOG : Title - %s", n->title);
 	for (int i = 0; i < MAX_LINES; i++)
 	{
-		slog("Line %i - %i", i, n->line_strings[i]);
+		slog("Line %i - %s", i, n->line_strings[i]);
 	}
 }
 

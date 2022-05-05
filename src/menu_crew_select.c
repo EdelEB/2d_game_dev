@@ -92,11 +92,11 @@ void update_name_and_title(void)
 	Menu* menu = menu_get_by_id(CREW_SELECT);
 
 	ui_label_update(
-		menu->object_list[3]->l,
+		menu->object_list[3]->label,
 		crew_options[crew_options_index].name
 	);
 	ui_label_update(
-		menu->object_list[4]->l,
+		menu->object_list[4]->label,
 		crew_options[crew_options_index].title
 	);
 }

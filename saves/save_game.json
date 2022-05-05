@@ -1,1 +1,1 @@
-25581833611841376
+{"crew":[{"name":"John","title":"Pilot","clearance":"1","hunger":"2","morale":"0","is_alive":"1","_inuse":"1"},{"name":"Ken","title":"Doctor","clearance":"2","hunger":"5","morale":"0","is_alive":"1","_inuse":"1"},{"name":"Will","title":"Engineer","clearance":"3","hunger":"14","morale":"0","is_alive":"1","_inuse":"1"},{"name":"Tom","title":"Phsycologist","clearance":"4","hunger":"5","morale":"0","is_alive":"1","_inuse":"1"},{"name":"Rich","title":"Programmer","clearance":"5","hunger":"8","morale":"0","is_alive":"1","_inuse":"1"}],"food":"6"}

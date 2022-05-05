@@ -117,10 +117,10 @@ void crew_view_update_member_hunger(int i)
 	Menu* menu = menu_get_by_id(CREW_VIEW);
 
 	sprintf(str, "Hunger: %d", cm->hunger);
-	ui_label_update(menu->object_list[6 * i + 3]->l, str);
+	ui_label_update(menu->object_list[6 * i + 3]->label, str);
 
 	sprintf(str, "Food: %d", gamestate.food);
-	ui_label_update(menu->object_list[MAX_MENU_OBJECTS - 1]->l, str);
+	ui_label_update(menu->object_list[MAX_MENU_OBJECTS - 1]->label, str);
 }
 
 
@@ -130,7 +130,7 @@ void crew_view_update_member_morale(int i)
 
 	sprintf(str, "Morale: %d", gamestate.crew[i].morale);
 	ui_label_update(
-		menu_get_by_id(CREW_VIEW)->object_list[6 * i + 4]->l,
+		menu_get_by_id(CREW_VIEW)->object_list[6 * i + 4]->label,
 		str
 	);
 }
@@ -142,7 +142,7 @@ void crew_view_update_member_alive(int i)
 	if (gamestate.crew[i].is_alive) { sprintf(str, "Alive"); }
 	else { sprintf(str, "Dead"); }
 	ui_label_update(
-		menu_get_by_id(CREW_VIEW)->object_list[6*i + 5]->l,
+		menu_get_by_id(CREW_VIEW)->object_list[6*i + 5]->label,
 		str
 	);
 }

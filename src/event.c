@@ -74,7 +74,7 @@ void event_manager_load_all(void)
 
 	if (json)
 	{
-		slog("%i", json->get_string);
+		slog("%s", json->get_string);
 	}
 	else 
 	{
@@ -104,7 +104,7 @@ void event_log(Event* e)
 		return; 
 	}
 
-	slog("\n-EVENT LOG: %i\nPrompt: %i", e->title, e->prompt);
+	slog("\n-EVENT LOG: %s\nPrompt: %s", e->title, e->prompt);
 	for (int i = 0; i < 4; i++)
 	{
 		if (&e->options[0])

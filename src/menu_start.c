@@ -12,11 +12,11 @@ Menu* menu_start_init()
 		TITLE
 	);
 	// TODO : Use a better Title Label
-	menu->object_list[0]->l->image = ui_create_image(
+	menu->object_list[0]->label->image = ui_create_image(
 		"assets/images/ui/button_test_1.png",
 		vector2d(
-			menu->object_list[0]->l->render_rect.x, 
-			menu->object_list[0]->l->render_rect.y
+			menu->object_list[0]->label->render_rect.x, 
+			menu->object_list[0]->label->render_rect.y
 		),
 		vector2d(1.2, 0.5),
 		vector2d(50,100),
