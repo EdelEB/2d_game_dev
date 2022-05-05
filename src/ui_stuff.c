@@ -866,6 +866,8 @@ ui_object* ui_create_sizable(Vector2D position, Vector2D size)
 
 gamestate_id ui_sizable_listen(ui_sizable* s, Uint32 mouse_state, int mx, int my)
 {
+	Vector2D corner_dim = vector2d(10, 10);
+
 	if (!s) return NONE;
 
 	ui_slider_listen(s->left, mouse_state, mx, my);
@@ -873,21 +875,43 @@ gamestate_id ui_sizable_listen(ui_sizable* s, Uint32 mouse_state, int mx, int my
 	ui_slider_listen(s->top, mouse_state, mx, my);
 	ui_slider_listen(s->bottom, mouse_state, mx, my);
 
+	s->is_held = 1; // this is here instead of in every part of the if() because the else() cancels it out if it doesn't hit anyway
 	if (s->left->is_held)
 	{
-
+		s->rect.w += s->rect.x - s->left->click_box.x;
+		s->rect.x = s->left->click_box.x;
 	}
 	else if (s->right->is_held)
 	{
-
+		s->rect.w = s->right->click_box.x + s->right->click_box.w - s->rect.x;
 	}
 	else if (s->top->is_held)
 	{
-
+		s->rect.h += s->rect.y - s->top->click_box.y;
+		s->rect.y = s->top->click_box.y;	
 	}
 	else if (s->bottom->is_held)
 	{
+		s->rect.h = s->bottom->click_box.y + s->bottom->click_box.h - s->rect.y;
+	}
+	else
+	{
+		s->is_held = 0;
+	}
 
+	if (s->is_held)
+	{
+		s->left->click_box.x = s->rect.x;
+		s->left->click_box.y = s->rect.y + s->rect.h / 2 - corner_dim.y / 2;
+
+		s->right->click_box.x = s->rect.x + s->rect.w - corner_dim.x;
+		s->right->click_box.y = s->rect.y + s->rect.h / 2 - corner_dim.y / 2;
+
+		s->top->click_box.x = s->rect.x + s->rect.w / 2 - corner_dim.x / 2;
+		s->top->click_box.y = s->rect.y;
+
+		s->bottom->click_box.x = s->rect.x + s->rect.w / 2 - corner_dim.x / 2;
+		s->bottom->click_box.y = s->rect.y + s->rect.h - corner_dim.y;
 	}
 
 	return NONE;
