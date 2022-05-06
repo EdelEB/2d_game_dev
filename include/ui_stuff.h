@@ -23,6 +23,7 @@ extern Uint8 DEBUG;
 extern const Uint32 WINDOW_WIDTH, WINDOW_HEIGHT;
 extern Uint8 global_was_mouse_down;
 extern Uint8* global_prev_keys;
+extern Uint16 SLIDER_POINT_DIM;
 Uint16 type_cooldown;
 
 typedef enum {

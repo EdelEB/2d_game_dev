@@ -5,15 +5,16 @@ typedef enum {
 
 	NONE,
 	PROBLEM_STATE,
-
+	EDITOR_MENU,
+	EDITOR_EVENTS,
+	
 	/*Menu States*/
 	MENU_START,
 	PAUSE,
 	CREW_SELECT,
 	CREW_VIEW,
 	MAP,
-	EDITOR_MENU,
-	EDITOR_EVENTS,
+	
 
 	/* Notification States */
 	THRESHOLD_NOTE_START,  // used to divide gamestates in game loop

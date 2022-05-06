@@ -163,6 +163,8 @@ void ui_object_free(ui_object* o)
 		ui_slider_free(o->slider);
 		break;
 	}
+
+	memset(o, 0, sizeof(ui_object));
 }
 
 gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, Uint8* keys)
@@ -853,8 +855,8 @@ void ui_draggable_listen(ui_draggable* d, Uint32 mouse_state, int mx, int my)
 	{
 		d->position.x = d->prev_position.x - (d->mouse_anchor.x - mx);
 		d->position.y = d->prev_position.y - (d->mouse_anchor.y - my);
-		d->click_box.x = d->prev_position.x - (d->mouse_anchor.x - mx);
-		d->click_box.y = d->prev_position.y - (d->mouse_anchor.y - my);
+		d->click_box.x = d->position.x;
+		d->click_box.y = d->position.y;
 
 		if (mouse_state == 0 && global_was_mouse_down == 1)
 		{
@@ -1303,8 +1305,6 @@ ui_object* ui_create_sizable(Vector2D position, Vector2D size)
 
 gamestate_id ui_sizable_listen(ui_sizable* s, Uint32 mouse_state, int mx, int my)
 {
-	Vector2D corner_dim = vector2d(10, 10);
-
 	if (!s) return NONE;
 
 	ui_slider_listen(s->left, mouse_state, mx, my);
@@ -1336,19 +1336,20 @@ gamestate_id ui_sizable_listen(ui_sizable* s, Uint32 mouse_state, int mx, int my
 		s->is_held = 0;
 	}
 
+	/*updates slider points*/
 	if (s->is_held)
 	{
 		s->left->click_box.x = s->rect.x;
-		s->left->click_box.y = s->rect.y + s->rect.h / 2 - corner_dim.y / 2;
+		s->left->click_box.y = s->rect.y + s->rect.h / 2 - SLIDER_POINT_DIM / 2;
 
-		s->right->click_box.x = s->rect.x + s->rect.w - corner_dim.x;
-		s->right->click_box.y = s->rect.y + s->rect.h / 2 - corner_dim.y / 2;
+		s->right->click_box.x = s->rect.x + s->rect.w - SLIDER_POINT_DIM;
+		s->right->click_box.y = s->rect.y + s->rect.h / 2 - SLIDER_POINT_DIM / 2;
 
-		s->top->click_box.x = s->rect.x + s->rect.w / 2 - corner_dim.x / 2;
+		s->top->click_box.x = s->rect.x + s->rect.w / 2 - SLIDER_POINT_DIM / 2;
 		s->top->click_box.y = s->rect.y;
 
-		s->bottom->click_box.x = s->rect.x + s->rect.w / 2 - corner_dim.x / 2;
-		s->bottom->click_box.y = s->rect.y + s->rect.h - corner_dim.y;
+		s->bottom->click_box.x = s->rect.x + s->rect.w / 2 - SLIDER_POINT_DIM / 2;
+		s->bottom->click_box.y = s->rect.y + s->rect.h - SLIDER_POINT_DIM;
 	}
 
 	return NONE;

@@ -90,8 +90,9 @@ gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int *mx, int *my, Uint8* ke
 
 	for (i = 0; i < MAX_MENU_OBJECTS; i++)
 	{
-		if (m->object_list[i] && m->object_list[i]->_inuse)
-			id = ui_object_listen(m->object_list[i], mouse_state, *mx, *my, keys);
+		if (!m->object_list[i] || !m->object_list[i]->_inuse) continue;
+	
+		id = ui_object_listen(m->object_list[i], mouse_state, *mx, *my, keys);
 		if (id) return id;
 	}
 

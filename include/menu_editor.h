@@ -23,30 +23,34 @@ typedef struct EDITABLE {
 }Editable;
 
 typedef struct MENU_EDITOR{
-	Uint8			_inuse;
 	gamestate_id	id;
 
-	Menu*			menu;	
+	Menu*			editor_menu;
+	Menu*			working_menu;
 	Editable		editable_list[MAX_MENU_OBJECTS]; /**< this is an array of all the ui_label's present in the menu*/
 } MenuEditor;
-
-MenuEditor menu_editor = {0};
 
 void menu_editor_init();
 
 void menu_editor_save_menu();
 
-void menu_editor_new_menu(char* title);
+void menu_editor_new_menu();
 
 void menu_editor_render();
 
-gamestate_id menu_editor_listen(Uint32 mouse_state, int mx, int my);
+gamestate_id menu_editor_listen(Uint32 mouse_state, int mx, int my, Uint8* keys);
 
 
 Editable* editable_new();
 
 void editable_create_label(char* str, Vector2D position, ui_label_type);
 
-void editable_listen(Editable* e);
+void editable_create_button();
+
+void editable_listen(Editable* e, Uint32 mouse_state, int mx, int my);
+
+void editable_render(Editable* e);
+
+gamestate_id prompt_button(void);
 
 #endif

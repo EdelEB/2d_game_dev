@@ -8,6 +8,7 @@
 #include "gfc_audio.h"
 
 #include "director.h"
+#include "menu_editor.h"
 
 Uint8 DEBUG = 0;
 const int CLICK_COOLDOWN = 20;
@@ -15,6 +16,7 @@ int debug_toggle_cooldown = 0;
 int mouse_click_cooldown = 0;
 Uint8 global_was_mouse_down;    // This is the previous state of the mouse
 Uint8* global_prev_keys;        // This is the previous set of keys that were pressed
+Uint16 SLIDER_POINT_DIM = 10;
 
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
@@ -57,6 +59,7 @@ int main(int argc, char * argv[])
     ui_stuff_init();
     gfc_audio_init(10, 5, 5, 3, 1, 0);
     director_init();
+    menu_editor_init();
     global_prev_keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
 
     /* Set default background */
@@ -105,15 +108,18 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
 
         /*update things here*/
-        new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
-        if (mouse_state == 1) global_was_mouse_down = 1;
-        else if (mouse_state == 0 ) global_was_mouse_down = 0;
-        
+        /*new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
         if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 
         {
             slog("STATE CHANGE %d -> %d", current_gamestate_id, new_gamestate_id);
             current_gamestate_id = new_gamestate_id;
-        }
+        }*/
+        menu_editor_listen(mouse_state, mx, my, keys);
+
+        if (mouse_state == 1) global_was_mouse_down = 1;
+        else if (mouse_state == 0) global_was_mouse_down = 0;
+
+
 
         /* clear drawing buffer */
         gf2d_graphics_clear_screen(); 
@@ -122,7 +128,8 @@ int main(int argc, char * argv[])
         //gf2d_sprite_draw_image(bg_current,vector2d(0,0));
             
         /* Draw game elements */
-        director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
+        //director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
+        menu_editor_render();
 
         /* Draw UI elements last */        
 
