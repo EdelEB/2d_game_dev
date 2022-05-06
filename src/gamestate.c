@@ -8,7 +8,7 @@ void gamestate_new(void)
 
 void gamestate_load(char* filename) 
 {
-	SJson *json = sj_load(SAVE_FILE);
+	SJson *json = sj_load(filename);
 	SJson *arr, *object, *data;
 	int i, j;
 
@@ -19,7 +19,7 @@ void gamestate_load(char* filename)
 	}
 
 	data = sj_object_get_value(json, "food");
-	sj_string_as_integer(data->v.string, &gamestate.food);
+	if (data) sj_get_integer_value(data, &gamestate.food);
 
 	arr = sj_object_get_value(json, "crew");
 	for (i = 0; i < MAX_CREW; i++)
@@ -28,26 +28,26 @@ void gamestate_load(char* filename)
 
 		data = sj_object_get_value(object, "name");
 		//strncpy(gamestate.crew[i].name, sj_get_string_value(data), len); // this needs to be implemented to free(json) 
-		gamestate.crew[i].name = sj_get_string_value(data);
+		if(data) gamestate.crew[i].name = sj_get_string_value(data);
 
 		data = sj_object_get_value(object, "title");
 		//strncpy(gamestate.crew[i].title, sj_get_string_value(data), WORD_LEN); // this needs to be implemented to free(json)
-		gamestate.crew[i].title = sj_get_string_value(data);
+		if (data) gamestate.crew[i].title = sj_get_string_value(data);
 
 		data = sj_object_get_value(object, "clearance");
-		sj_string_as_integer(data->v.string, &gamestate.crew[i].clearance);
+		if (data) sj_get_integer_value(data, &gamestate.crew[i].clearance);
 
 		data = sj_object_get_value(object, "hunger");
-		sj_string_as_integer(data->v.string, &gamestate.crew[i].hunger);
+		if (data) sj_get_integer_value(data, &gamestate.crew[i].hunger);
 
 		data = sj_object_get_value(object, "morale");
-		sj_string_as_integer(data->v.string, &gamestate.crew[i].morale);
+		if (data) sj_get_integer_value(data, &gamestate.crew[i].morale);
 
 		data = sj_object_get_value(object, "is_alive");
-		sj_string_as_integer(data->v.string, &gamestate.crew[i].is_alive);
+		if (data) sj_get_integer_value(data, &gamestate.crew[i].is_alive);
 
 		data = sj_object_get_value(object, "_inuse");
-		sj_string_as_integer(data->v.string, &gamestate.crew[i]._inuse);
+		if (data) sj_get_integer_value(data, &gamestate.crew[i]._inuse);
 	}
 
 	//sj_free(json);	// Names don't display correctly when used
@@ -66,33 +66,39 @@ void gamestate_save(char* filename)
 			*object,
 			*data;
 
-	slog("SAVE ATTEMPT");
-	
+	if (!json || !arr) {
+		slog("null SJson pointer received in gamestate_save");
+		return;
+	}	
 	
 	for (i = 0; i < MAX_CREW; i++)
 	{
 		object = sj_object_new();
+		if (!object) {
+			slog("sj_object_new return NULL pointer in gamestate_save");
+			break;
+		}
 
 		data = sj_new_str(gamestate.crew[i].name);
-		sj_object_insert(object, "name", data);
+		if(data) sj_object_insert(object, "name", data);
 
 		data = sj_new_str(gamestate.crew[i].title);
-		sj_object_insert(object, "title", data);
+		if (data) sj_object_insert(object, "title", data);
 
 		data = sj_new_int((int)gamestate.crew[i].clearance);
-		sj_object_insert(object, "clearance", data);
+		if (data) sj_object_insert(object, "clearance", data);
 
 		data = sj_new_int(gamestate.crew[i].hunger);
-		sj_object_insert(object, "hunger", data);
+		if (data) sj_object_insert(object, "hunger", data);
 
 		data = sj_new_int(gamestate.crew[i].morale);
-		sj_object_insert(object, "morale", data);
+		if (data) sj_object_insert(object, "morale", data);
 
 		data = sj_new_int(gamestate.crew[i].is_alive);
-		sj_object_insert(object, "is_alive", data);
+		if (data) sj_object_insert(object, "is_alive", data);
 
 		data = sj_new_int(gamestate.crew[i]._inuse);
-		sj_object_insert(object, "_inuse", data);
+		if (data) sj_object_insert(object, "_inuse", data);
 		
 		sj_array_append(arr, object);
 	}	

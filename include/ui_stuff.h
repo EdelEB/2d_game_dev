@@ -9,6 +9,7 @@
 #include "gf2d_draw.h"
 #include "gf2d_sprite.h"
 #include "gfc_audio.h"
+#include "simple_json.h"
 
 #include "enum_declarations.h"
 
@@ -27,7 +28,7 @@ Uint16 type_cooldown;
 typedef enum {
 	LABEL,
 	BUTTON,
-	SPRITE,
+	IMAGE,
 	DRAGGABLE,
 	TEXT_INPUT,
 	SIZABLE,
@@ -188,6 +189,10 @@ gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, 
 */
 void ui_object_render(ui_object* o);
 
+SJson* ui_object_to_json(ui_object* o);
+
+ui_object* ui_object_from_json(SJson* json);
+
 
 
 /////// UI_LABEL ///////////////////////////////////////////////
@@ -220,6 +225,9 @@ TTF_Font* ui_get_font_by_type(ui_label_type type);
 */
 void ui_label_render(ui_label* l);
 
+SJson* ui_label_to_json(ui_label* l);
+
+ui_object* ui_label_from_json(SJson* json);
 
 
 /////// UI_BUTTON ///////////////////////////////////////////////
@@ -239,7 +247,6 @@ void ui_button_free(ui_button* b);
 ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void));
 
 void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Vector2D scale_center, Vector3D rotation);
-
 
 /*
 * @brief listens for when the button is clicked and calls the on_click function when it is
@@ -264,6 +271,10 @@ gamestate_id ui_button_click(ui_button* b);
 */
 void ui_button_render(ui_button* b);
 
+SJson* ui_button_to_json(ui_button* b);
+
+ui_object* ui_button_from_json(SJson* json);
+
 
 
 /////// UI_IMAGE ///////////////////////////////////////////////
@@ -287,6 +298,10 @@ ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Ve
 * @param s is a pointer to the ui_image being drawn
 */
 void ui_image_render(ui_image* image);
+
+SJson* ui_image_to_json(ui_image* image);
+
+ui_object* ui_image_from_json(SJson* json);
 
 
 
@@ -348,6 +363,10 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 */
 void ui_text_input_render(ui_text_input* t);
 
+SJson* ui_text_input_to_json(ui_text_input* t);
+
+ui_object* ui_text_input_from_json(SJson* json);
+
 
 
 /////// UI_SLIDER ///////////////////////////////////////////////
@@ -369,6 +388,10 @@ ui_object* ui_create_slider(Vector2D position, Vector2D size, Uint8 is_vertical,
 gamestate_id ui_slider_listen(ui_slider* s, Uint32 mouse_state, int mx, int my);
 
 void ui_slider_render(ui_slider* s);
+
+SJson* ui_slider_to_json(ui_slider* s);
+
+ui_object* ui_slider_from_json(SJson* json);
 
 
 

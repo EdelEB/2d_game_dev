@@ -147,7 +147,7 @@ void ui_object_free(ui_object* o)
 	case BUTTON:
 		ui_button_free(o->button);
 		break;
-	case SPRITE:
+	case IMAGE:
 		ui_image_free(o->image);
 		break;
 	case DRAGGABLE:
@@ -175,7 +175,7 @@ gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, 
 	switch (o->id)
 	{
 	case LABEL:
-	case SPRITE:
+	case IMAGE:
 		break;
 	case BUTTON:
 		return ui_button_listen(o->button, mouse_state, mx, my);
@@ -208,7 +208,7 @@ void ui_object_render(ui_object* o)
 	case BUTTON:
 		ui_button_render(o->button);
 		break;
-	case SPRITE:
+	case IMAGE:
 		ui_image_render(o->image);
 		break;
 	case DRAGGABLE:
@@ -225,6 +225,62 @@ void ui_object_render(ui_object* o)
 		break;
 	}
 	return;
+}
+
+SJson* ui_object_to_json(ui_object* o)
+{
+	if (!o) {
+		slog("NULL ui_object* passed to ui_object_to_json()");
+		return;
+	}
+
+	switch (o->id)
+	{
+		case LABEL:
+			return ui_label_to_json(o->label);
+		case IMAGE:
+			return ui_image_to_json(o->image);
+		case BUTTON:
+			return ui_button_to_json(o->button);
+		case TEXT_INPUT:
+			return ui_text_input_to_json(o->text_input);
+		case SLIDER:
+			//return ui_slider_to_json(o->slider);
+		case DRAGGABLE:
+		case SIZABLE:
+		default:
+			break;
+	}
+
+	return NONE;
+}
+
+ui_object* ui_object_from_json(SJson* json)
+{
+	if (!json) {
+		slog("NULL SJson* passed to ui_object()");
+		return NULL;
+	}
+
+	switch ((ui_object_id)(sj_object_get_value(json, "id")))
+	{
+		case LABEL:
+			return ui_label_from_json(json);
+		case IMAGE:
+			return ui_image_from_json(json);
+		case BUTTON:
+			return ui_button_from_json(json);
+		case TEXT_INPUT:
+			return ui_text_input_from_json(json);
+		case SLIDER:
+			//return ui_slider_from_json(json);
+		case DRAGGABLE:
+		case SIZABLE:
+		default:
+			break;
+	}
+
+	return NULL;
 }
 
 
@@ -371,6 +427,53 @@ void ui_label_render(ui_label* l)
 
 	if (DEBUG) { gf2d_draw_rect(l->render_rect, vector4d(55, 255, 255, 255)); }
 
+}
+
+SJson* ui_label_to_json(ui_label* l) 
+{
+	SJson* object = sj_object_new();
+	SJson* data;
+
+	if (!object) {
+		slog("sj_object_new return NULL pointer in ui_label_to_json");
+		return;
+	}
+
+	data = sj_new_str(l->str);
+	if (data) sj_object_insert(object, "str", data);
+
+	data = sj_new_int(l->type);
+	if (data) sj_object_insert(object, "type", data);
+
+	data = sj_new_int(l->render_rect.x);
+	if (data) sj_object_insert(object, "x", data);
+
+	data = sj_new_int(l->render_rect.y);
+	if (data) sj_object_insert(object, "y", data);
+
+	return object;
+}
+
+ui_object* ui_label_from_json(SJson* json)
+{
+	ui_object* ret;
+	char *str;
+	int x, y;
+	ui_label_type type;
+
+	if (!json) {
+		slog("NULL SJson* passed to ui_label_load");
+		return NULL;
+	}
+
+	str = sj_get_string_value(sj_object_get_value(json, "str"));
+	sj_get_integer_value(sj_object_get_value(json, "x"), &x);
+	sj_get_integer_value(sj_object_get_value(json, "y"), &y);
+	sj_get_integer_value(sj_object_get_value(json, "type"), &type);
+
+	ret = ui_create_label(str, x, y, type);
+	if (ret) return ret;
+	return NULL;
 }
 
 
@@ -542,6 +645,66 @@ void ui_button_render(ui_button* b)
 	ui_label_render(b->text_label);
 }
 
+SJson* ui_button_to_json(ui_button* b)
+{
+	SJson* object = sj_object_new();
+	SJson* data;
+
+	if (!b) {
+		slog("NULL ui_button* passed to ui_button_to_json");
+		return NULL;
+	}
+	if (!object) {
+		slog("NULL SJson* received in ui_button_to_json()");
+		return NULL;
+	}
+
+	data = sj_new_str(b->text_label->str);
+	if (data) sj_object_insert(object, "str", data);
+
+	data = sj_new_int(b->click_box.x);
+	if (data) sj_object_insert(object, "x", data);
+
+	data = sj_new_int(b->click_box.y);
+	if (data) sj_object_insert(object, "y", data);
+
+	data = sj_new_int(b->click_box.w);
+	if (data) sj_object_insert(object, "w", data);
+
+	data = sj_new_int(b->click_box.h);
+	if (data) sj_object_insert(object, "h", data);
+
+
+	return object;
+}
+
+ui_object* ui_button_from_json(SJson* json) 
+{
+	int x, y, w, h;
+	char* str;
+
+	ui_object* ret;
+
+	if (!json) {
+		slog("NULL SJson* passed to ui_label_load");
+		return NULL;
+	}
+
+	sj_get_integer_value(
+		sj_object_get_value(json, "x"), &x );
+	sj_get_integer_value(
+		sj_object_get_value(json, "y"), &y );
+	sj_get_integer_value(
+		sj_object_get_value(json, "w"), &w );
+	sj_get_integer_value(
+		sj_object_get_value(json, "h"), &h );
+	str = sj_get_string_value(sj_object_get_value(json, "str"));
+
+	ret = ui_create_button( x, y, w, h, str, NULL);
+	if (ret) return ret;
+	return NULL;
+}
+
 
 
 /////// UI_IMAGE ///////////////////////////////////////////////
@@ -590,7 +753,7 @@ ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Ve
 	vector2d_copy(image->scale_center, scale_center);
 	vector3d_copy(image->rotation, rotation);
 
-	object->id = SPRITE;
+	object->id = IMAGE;
 	object->image = image;
 	return object;
 }
@@ -610,6 +773,10 @@ void ui_image_render(ui_image* image)
 		0
 	);
 }
+
+SJson* ui_image_to_json(ui_image* image) {}
+
+ui_object* ui_image_from_json(SJson* json) {}
 
 
 
@@ -916,6 +1083,11 @@ void ui_text_input_render(ui_text_input* t)
 	ui_button_render(t->button_enter);
 	ui_label_render(t->text_label);
 }
+
+SJson* ui_text_input_to_json(ui_text_input* t) {}
+
+ui_object* ui_text_input_from_json(SJson* json) {}
+
 
 
 /////// UI_SLIDER ///////////////////////////////////////////////
