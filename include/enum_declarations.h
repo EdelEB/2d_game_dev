@@ -12,6 +12,8 @@ typedef enum {
 	CREW_SELECT,
 	CREW_VIEW,
 	MAP,
+	EDITOR_MENU,
+	EDITOR_EVENTS,
 
 	/* Notification States */
 	THRESHOLD_NOTE_START,  // used to divide gamestates in game loop

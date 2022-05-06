@@ -115,6 +115,31 @@ void menu_draw(Menu* m)
 	}
 }
 
+void menu_save(Menu* m, char* filename)
+{
+	int i;
+	SJson* data, * object;
+	SJson* json = sj_object_new();
+	
+	if (!json) return;
+
+	for ( i = 0; i < MAX_MENU_OBJECTS; i++)
+	{
+		if (!m->object_list[i] || !m->object_list[i]->_inuse) break; 
+		
+		object = sj_object_new();
+		if (!object) return;
+
+		data = sj_new_int(m->object_list[i]->id);
+		if (data) sj_object_insert(object, "id", data);
+
+		data = ui_object_to_json(m->object_list[i]);
+		if (data) sj_object_insert(object, "object", data);
+		
+	}
+
+
+}
 
 
 //Menu menu_load(char* filename)

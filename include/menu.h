@@ -19,6 +19,7 @@
 typedef struct MENU {
 	Uint8		   _inuse;
 	gamestate_id	id;
+	char*			title;
 
 	ui_object*		object_list[MAX_MENU_OBJECTS];
 }Menu;
@@ -34,6 +35,8 @@ gamestate_id menu_listen(Menu* m, Uint8 mouse_state, int* mx, int* my, Uint8* ke
 void menu_draw(Menu *m);
 
 void menu_free(Menu *m);
+
+void menu_save(Menu* m, char* filename);
 
 void menu_load(char *filename);
 

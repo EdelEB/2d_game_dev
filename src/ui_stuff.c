@@ -229,30 +229,40 @@ void ui_object_render(ui_object* o)
 
 SJson* ui_object_to_json(ui_object* o)
 {
+	SJson* data;
+	SJson* json = sj_object_new();
+
 	if (!o) {
 		slog("NULL ui_object* passed to ui_object_to_json()");
 		return;
 	}
+	if (!json) return;
+	
+	data = sj_new_int(o->id);
+	if (data) sj_object_insert(json, "id", data);
 
 	switch (o->id)
 	{
 		case LABEL:
-			return ui_label_to_json(o->label);
+			data = ui_label_to_json(o->label);
 		case IMAGE:
-			return ui_image_to_json(o->image);
+			data = ui_image_to_json(o->image);
 		case BUTTON:
-			return ui_button_to_json(o->button);
+			data = ui_button_to_json(o->button);
 		case TEXT_INPUT:
-			return ui_text_input_to_json(o->text_input);
+			data = ui_text_input_to_json(o->text_input);
 		case SLIDER:
-			//return ui_slider_to_json(o->slider);
+			//data = ui_slider_to_json(o->slider);
 		case DRAGGABLE:
 		case SIZABLE:
 		default:
-			break;
+			data = NULL;
 	}
 
-	return NONE;
+	if (!data) return NULL;
+		
+	sj_object_insert(json, "object", data);
+	return json;
 }
 
 ui_object* ui_object_from_json(SJson* json)
