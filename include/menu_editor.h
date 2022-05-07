@@ -43,14 +43,21 @@ gamestate_id menu_editor_listen(Uint32 mouse_state, int mx, int my, Uint8* keys)
 
 Editable* editable_new();
 
-void editable_create_label(char* str, Vector2D position, ui_label_type);
+void editable_create_label();
 
 void editable_create_button();
+
+void editable_create_image();
+
+void editable_create_text_input();
 
 void editable_listen(Editable* e, Uint32 mouse_state, int mx, int my);
 
 void editable_render(Editable* e);
 
-gamestate_id prompt_button(void);
+void prompt_label(void);
+void prompt_button(void);
+void prompt_image(void);
+
 
 #endif

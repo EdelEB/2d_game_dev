@@ -9,6 +9,7 @@
 #include "gf2d_graphics.h"
 #include "gf2d_draw.h"
 
+#include "menu.h"
 #include "gamestate.h"
 
 #define MAX_OPTIONS 5
@@ -79,6 +80,17 @@ void event_draw(Event* e);
  * @return if something is pressed it returns the corresponding new gamestate_id, NULL if no buttons are pressed
  */
 gamestate_id event_listen(Event* e, Uint32 mouse_state, int* mx, int* my);
+
+
+
+void event_manager_save_all(char* filename);
+
+SJson* event_to_json(Event* e);
+
+Menu* event_json_to_menu(SJson* json);
+
+Menu* event_menu_from_json(SJson* json);
+
 
 /**
  * @brief this initializes all unique events. 

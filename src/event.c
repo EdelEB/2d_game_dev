@@ -82,6 +82,25 @@ void event_manager_load_all(void)
 	}
 }
 
+void event_manager_save_all(char* filename)
+{
+	int i;
+	SJson* json = sj_array_new();
+	SJson* data;
+
+	if (!json) return;
+
+	for (i = 0; i < event_manager.max_events; i++)
+	{
+		if (!event_manager.event_list[i]._inuse) continue;
+		
+		data = event_to_json(&event_manager.event_list[i]);
+		if (data) sj_array_append(json, data);
+	}
+
+	sj_save(json, filename);
+}
+
 Event* get_event_by_id(gamestate_id id)
 {
 	int i;
@@ -212,7 +231,7 @@ void event_create_render_variables(Event* e)
 		gf2d_graphics_get_renderer(),
 		surface
 	);
-	e->prompt_rect.x = WINDOW_WIDTH >> 4;
+	e->prompt_rect.x = WINDOW_WIDTH >> 4 ;
 	e->prompt_rect.y = WINDOW_HEIGHT >> 2; 
 	SDL_QueryTexture(e->prompt_texture, NULL, NULL, &e->prompt_rect.w, &e->prompt_rect.h); // I don't understand what this does but it doesn't render the text_label unless I do it
 
@@ -255,6 +274,126 @@ void event_create_all_render_variables(void)
 			event_create_render_variables(&event_manager.event_list[i]);
 		}
 	}
+}
+
+SJson* event_to_json(Event* e)
+{
+	int i;
+	SJson* ret = sj_object_new();
+	SJson* arr, * data, *option;
+
+	if (!e) return;
+	if (!ret) return;
+
+	data = sj_new_int(e->id);
+	if (data) sj_object_insert(ret, "id", data);
+
+	data = sj_new_str(e->title);
+	if (data) sj_object_insert(ret, "title", data);
+
+	data = sj_new_str(e->prompt);
+	if (data) sj_object_insert(ret, "prompt", data);
+
+	arr = sj_array_new();
+	if (!arr) return;
+
+	for (i = 0; i < MAX_OPTIONS; i++)
+	{
+		if (!e->options[i]._inuse) continue;
+
+		option = sj_object_new();
+		if (!option) return;
+			
+		data = sj_new_int(e->options[i].clearance);
+		if (data) sj_object_insert(option, "clearance", data);
+
+		data = sj_new_str(e->options[i].text);
+		if (data) sj_object_insert(option, "text", data);
+
+		data = sj_new_int(e->options[i].clicked);
+		if (data) sj_object_insert(option, "simple_nav", data);
+
+		sj_array_append(arr, option);
+	}
+
+	sj_object_insert(ret, "options", arr);
+
+	return ret;
+}
+
+Menu* event_menu_from_json(SJson* json)
+{
+	Menu* menu = menu_new();
+	SJson* arr, * data, *option;
+	char str[128];
+	int i;
+
+	if (!json)slog("NULL SJson* passed to event_menu_from_json()"); return NULL;
+	if (!menu) slog("menu received NULL Menu* in event_menu_from_json()"); return NULL;
+
+	data = sj_object_get_value(json, "id");
+	if (data) sj_get_integer_value(data, &menu->id);
+
+	data = sj_object_get_value(json, "title");
+	if (data) {
+		sprintf(str, "%s", sj_get_string_value(data));
+		menu->title = str;
+	}
+	menu->object_list[0] = ui_create_label(str, WINDOW_WIDTH >> 2, WINDOW_HEIGHT >> 4, TITLE);
+
+	data = sj_object_get_value(json, "prompt");
+	sprintf(str, "%s", sj_get_string_value(data));
+	menu->object_list[1] = ui_create_label(str, WINDOW_WIDTH >> 4, WINDOW_HEIGHT >> 2, HEADER);
+
+	arr = sj_object_get_value(json, "options");
+	if (!arr) slog("Tried convert empty Event to Menu"); return NULL;
+
+	for (i = 0; i < sj_array_get_count(arr); i++)
+	{
+		option = sj_array_get_nth(arr, i);
+
+		if (!option) continue;
+
+		data = sj_object_get_value(option, "text");
+		if (data) sprintf(str, "%s", sj_get_string_value(data));
+
+		menu->object_list[i + 2] = ui_create_button(
+			(WINDOW_WIDTH >> 4) - 20 ,
+			(WINDOW_HEIGHT >> 3) * (i + 3) - 30,
+			(WINDOW_WIDTH >> 3) * 7,
+			(WINDOW_HEIGHT >> 3),
+			str,
+			NULL
+		);
+
+		data = sj_object_get_value(option, "clearance");
+		sj_get_integer_value(data, &menu->object_list[i + 2]->button->simple_nav);
+
+	}
+
+	return menu;
+}
+
+
+Menu* event_to_menu(Event* e)
+{
+	int i;
+	Menu* menu = menu_new();
+
+	if (!menu || !e) return NULL;
+
+	menu->id = e->id;
+	menu->title = e->title;
+	menu->object_list[0] = e->title_texture;
+	menu->object_list[1] = e->prompt_texture;
+
+	for (i = 0; i < MAX_OPTIONS; i++)
+	{
+		if (!e->options[i]._inuse) continue;
+		//menu->object_list[i + 2] = ui_create_button(e->options[i]);
+	}
+	
+	return menu;
 }
 
 // I know this is gross and there is a better way to do this with 
@@ -392,7 +531,7 @@ void code_vomit_add_all_events(void)
 		}
 		e->id = EVENT_AI_TAKEOVER;
 		e->title = "Terminator Times";
-		e->prompt = "The ship AI says, \"I'm the captain now\"";
+		e->prompt = "The ship AI says, I'm the captain now";
 		o = &e->options[0];
 		o->_inuse = 1;
 		o->text = "Accept defeat. All hail our AI overlords.";
@@ -400,7 +539,7 @@ void code_vomit_add_all_events(void)
 		o->clicked = AI_ACCEPT_DEFEAT;
 		o = &e->options[1];
 		o->_inuse = 1;
-		o->text = "Yell, \"I MADE YOU\" and give it a stern punch.";
+		o->text = "Yell, I MADE YOU and give it a stern punch.";
 		o->clearance = DEFAULT;
 		o->clicked = AI_PUNCH;
 		o = &e->options[2];

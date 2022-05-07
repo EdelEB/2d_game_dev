@@ -84,6 +84,8 @@ typedef struct UI_BUTTON {
 	ui_image*	image_hover;		/**< the image displayed while a button is hovered over*/
 	ui_image*	image_pressed;		/**< the image displayed while a button is pressed*/
 	ui_image*	image_current;		/**< the image currently being rendered*/
+	
+	gamestate_id simple_nav;		/**< can be used as an alternative to on_click to change gamestate when button is pressed*/
 	gamestate_id(*on_click)(struct UI_BUTTON* self); /**< gamestate_id returned by the function that is called when the function is pressed*/
 }ui_button;
 
@@ -137,6 +139,7 @@ typedef struct UI_SIZABLE {
 /*This is a hideous attempt at polymorphism*/
 typedef struct UI_OBJECT {
 	Uint8			_inuse;
+	Uint32			index;
 	ui_object_id	id;
 
 	ui_label*		label;

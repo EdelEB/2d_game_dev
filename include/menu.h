@@ -13,7 +13,7 @@
 #include "gamestate.h"
 #include "ui_stuff.h"
 
-#define MAX_MENUS 16
+#define MAX_MENUS 64
 #define MAX_MENU_OBJECTS 128
 
 typedef struct MENU {
@@ -37,6 +37,10 @@ void menu_draw(Menu *m);
 void menu_free(Menu *m);
 
 void menu_save(Menu* m, char* filename);
+
+SJson* menu_to_json(Menu* menu);
+
+Menu* menu_from_json(SJson* json);
 
 void menu_load(char *filename);
 

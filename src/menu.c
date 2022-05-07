@@ -142,77 +142,68 @@ void menu_save(Menu* m, char* filename)
 
 }
 
+SJson* menu_to_json(Menu* menu)
+{
+	int i;
+	SJson* ret = sj_object_new();
+	SJson* arr, *data;
 
-//Menu menu_load(char* filename)
-//{
-//	Menu ret;
-//	Menu* menu = &ret;
-//	SJson* file = sj_load(filename);
-//	SJson* json, *comp;
-//	SJson* arr = sj_array_new();
-//	int i;
-//	TTF_Font* font;
-//
-//	json = sj_object_get_value(file, "<menu name>");
-//	arr = sj_object_get_value(json, "sprites");
-//	for(i = 0; arr && i < sj_array_get_count(arr); i++)
-//	{
-//		comp = sj_array_get_nth(arr, i);
-//		menu->image_list[i] = ui_create_image(
-//			sj_get_string_value(sj_object_get_value(comp, "filename")),
-//			vector2d(
-//				sj_get_integer_value(sj_object_get_value(comp, "position_x"), NULL),
-//				sj_get_integer_value(sj_object_get_value(comp, "position_y"), NULL)),
-//			vector2d(
-//				sj_get_integer_value(sj_object_get_value(comp, "scale_x"), NULL),
-//				sj_get_integer_value(sj_object_get_value(comp, "scale_y"), NULL)),
-//			vector2d(
-//				sj_get_integer_value(sj_object_get_value(comp, "scale_center_x"), NULL),
-//				sj_get_integer_value(sj_object_get_value(comp, "scale_center_y"), NULL)),
-//			vector3d(
-//				sj_get_integer_value(sj_object_get_value(comp, "rotation_x"), NULL),
-//				sj_get_integer_value(sj_object_get_value(comp, "rotation_y"), NULL),
-//				sj_get_integer_value(sj_object_get_value(comp, "rotation_z"), NULL)),
-//			sj_get_integer_value(sj_object_get_value(comp, "frame_count"), NULL)
-//		);
-//	}
-//
-//	arr = sj_object_get_value(json, "labels");
-//	for (i = 0; arr && i < sj_array_get_count(arr); i++) 
-//	{
-//		comp = sj_array_get_nth(arr, i);
-//		switch ((int)sj_get_string_value(comp, "font_code")) {
-//		case 0: font = font_info.text_font; break;
-//		case 1: font = font_info.title_font; break;
-//		case 3: font = font_info.header_font; break;
-//		}
-//		menu->label_list[i] = ui_create_label_helper(
-//			sj_get_string_value(sj_object_get_value(comp, "text_label")),
-//			sj_get_integer_value(sj_object_get_value(comp, "position_x"), NULL),
-//			sj_get_integer_value(sj_object_get_value(comp, "position_y"), NULL),
-//			font
-//			);
-//	}
-//	
-//	arr = sj_object_get_value(json, "buttons");
-//	for (i = 0; arr && i < sj_array_get_count(arr); i++)
-//	{
-//		comp = sj_array_get_nth(arr, i);
-//		
-//		menu->button_list[i] = ui_create_button(
-//			sj_get_integer_value(sj_object_get_value(comp, "position_x"), NULL),
-//			sj_get_integer_value(sj_object_get_value(comp, "position_y"), NULL),
-//			sj_get_integer_value(sj_object_get_value(comp, "dimensions_w"), NULL),
-//			sj_get_integer_value(sj_object_get_value(comp, "dimensions_h"), NULL),
-//			sj_get_string_value(sj_object_get_value(comp, "text_label")),
-//			sj_get_string_value(sj_object_get_value(comp, "func"))
-//		);
-//	}
-//
-//
-//	return ret;
-//}
+	if (!menu) return;
+	if (!ret) slog("ret received NULL SJson* in menu_to_json");  return NULL;
 
+	data = sj_new_int(menu->id);
+	if(data) sj_object_insert(ret, "id", data);
+	
+	data = sj_new_str(menu->title);
+	if (data) sj_object_insert(ret, "title", data);
+	//else sj_object_insert(ret, "title", sj_new_str("no_name"));
 
+	arr = sj_array_new();
+	if (!arr) slog("arr received NULL SJson* in menu_to_json"); return NULL;
 
+	for (i = 0; i < MAX_MENU_OBJECTS; i++)
+	{
+		if (!menu->object_list[i]) continue;
+		
+		data = ui_object_to_json(menu->object_list[i]);
+		if (data) sj_object_insert(data, "index", sj_new_int(i)); //TODO: NULL check
+		if(data) sj_array_append(arr, data);
+	}
 
+	sj_object_insert(ret, "objects", arr);
+
+	return ret;
+}
+
+Menu* menu_from_json(SJson* json)
+{
+	Menu* menu = menu_new();
+	ui_object* object;
+	SJson *arr, *data;
+	char str[128];
+	int i;
+
+	if (!json)slog("NULL SJson* passed to menu_from_json()"); return NULL;
+	if (!menu) slog("menu received NULL Menu* in menu_from_json()"); return NULL;
+
+	data = sj_object_get_value(json, "id");
+	if (data) sj_get_integer_value(data, &menu->id);
+
+	data = sj_object_get_value(json, "title");
+	if (data) {
+		sprintf(str, "%s", sj_get_string_value(data));
+		menu->title = str;
+	}
+
+	arr = sj_object_get_value(json, "objects");
+	if (!arr) slog("Tried convert empty Menu to json"); return NULL;
+
+	for (i = 0; i < MAX_MENU_OBJECTS && i < sj_array_get_count(arr); i++) 
+	{
+		data = sj_array_get_nth(arr, i);
+		if (data) object = ui_object_from_json(data);
+		if(object) menu->object_list[object->index] = object;
+	}
+
+	return menu;
+}

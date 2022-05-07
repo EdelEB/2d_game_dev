@@ -72,6 +72,9 @@ int main(int argc, char * argv[])
     Sound* music_grand = gfc_sound_load("assets/sound/music_grand.mp3", 1, 1);
     gfc_sound_play(music_grand, 1, 0.1, -1, -1);
     
+
+    //event_manager_save_all("assets/json/events.json");
+
     /*main game loop*/
     while(!done)
     {
@@ -108,13 +111,13 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
 
         /*update things here*/
-        /*new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
+        new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
         if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 
         {
             slog("STATE CHANGE %d -> %d", current_gamestate_id, new_gamestate_id);
             current_gamestate_id = new_gamestate_id;
-        }*/
-        menu_editor_listen(mouse_state, mx, my, keys);
+        }
+        //menu_editor_listen(mouse_state, mx, my, keys);
 
         if (mouse_state == 1) global_was_mouse_down = 1;
         else if (mouse_state == 0) global_was_mouse_down = 0;
@@ -128,8 +131,8 @@ int main(int argc, char * argv[])
         //gf2d_sprite_draw_image(bg_current,vector2d(0,0));
             
         /* Draw game elements */
-        //director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
-        menu_editor_render();
+        director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
+        //menu_editor_render();
 
         /* Draw UI elements last */        
 

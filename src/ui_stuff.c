@@ -243,6 +243,9 @@ SJson* ui_object_to_json(ui_object* o)
 	data = sj_new_int(o->id);
 	if (data) sj_object_insert(json, "id", data);
 
+	data = sj_new_int(o->index);
+	if (data) sj_object_insert(json, "index", data);
+
 	switch (o->id)
 	{
 		case LABEL:
@@ -269,12 +272,23 @@ SJson* ui_object_to_json(ui_object* o)
 
 ui_object* ui_object_from_json(SJson* json)
 {
+	ui_object* object;
+	SJson* data;
+
 	if (!json) {
 		slog("NULL SJson* passed to ui_object()");
 		return NULL;
 	}
+	
+	data = sj_object_get_value(json, "id");
+	if (!data) slog("cannot load ui_object without id"); return;
+	sj_get_integer_value(data, &object->id);
 
-	switch ((ui_object_id)(sj_object_get_value(json, "id")))
+	data = sj_object_get_value(json, "index");
+	if (!data) slog("cannot load ui_object without index"); return;
+	sj_get_integer_value(data, &object->index);
+
+	switch (object->id)
 	{
 		case LABEL:
 			return ui_label_from_json(json);
@@ -623,8 +637,10 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 			if (mouse_state == 0 && global_was_mouse_down == 1)
 			{
 				global_was_mouse_down = 0;
+				b->is_held = 0;
 				id = ui_button_click(b);
 				if (id) return id;
+				else return b->simple_nav;
 			}
 		}
 		else 
@@ -1041,6 +1057,8 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 			else if (keys[SDL_SCANCODE_8]) { c = '8'; }
 			else if (keys[SDL_SCANCODE_9]) { c = '9'; }
 			else if (keys[SDL_SCANCODE_SPACE]) { c = ' '; }
+			else if (keys[SDL_SCANCODE_SLASH]) { c = '/'; }
+			else if (keys[SDL_SCANCODE_PERIOD]) { c = '.'; }
 			else if (keys[SDL_SCANCODE_BACKSPACE]) {
 				if (t->index == 0) {
 					t->str[t->index] = ' ';
