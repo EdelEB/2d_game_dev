@@ -14,7 +14,7 @@ void map_init(void)
 	menu->object_list[0] = ui_create_image(
 		"assets/images/ship_view/ship.png",
 		vector2d(0,0),
-		vector2d(0.05,0.05),
+		vector2d(0.075,0.075),
 		vector2d(0,0),
 		vector3d(0,0,0)
 	);
