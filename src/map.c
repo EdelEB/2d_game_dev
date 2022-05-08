@@ -3,87 +3,79 @@
 
 void map_init(void)
 {
-	map.image = gf2d_sprite_load_image("assets/images/backgrounds/bg_map.png");
-	map.ship_image = gf2d_sprite_load_image("assets/images/my_ship2.png");
-
+	Menu* menu = menu_new();
 	
-	map.crew_view_button = ui_create_button(
+	if (!menu) return;
+
+	menu->title = "Map";
+	menu->id = MAP;
+
+	menu_set_background(menu, "assets/images/backgrounds/map_space.png");
+	menu->object_list[0] = ui_create_image(
+		"assets/images/ship_view/ship.png",
+		vector2d(0,0),
+		vector2d(0.05,0.05),
+		vector2d(0,0),
+		vector3d(0,0,0)
+	);
+
+	menu->object_list[1] = ui_create_button_standard(
 		20,
 		20,
-		170,
-		40,
 		"Crew View",
 		map_to_crew_view		
 	);
 
-	map.travel_button = ui_create_button(
+	menu->object_list[2] = ui_create_button_standard(
 		WINDOW_WIDTH-120,
 		WINDOW_HEIGHT-120,
-		170,
-		40,
 		"Travel",
 		map_travel
 	);
 
-	// NOTE : This is where game data will be loaded
-	map.spot = 0;
-	map_set_position_by_spot(0);
+	map_set_position_by_spot(gamestate.map_spot);
 }
-
-gamestate_id map_listen(Uint32 mouse_state, int mx, int my, Uint8* keys)
-{
-	gamestate_id id;
-	id = ui_object_listen(map.crew_view_button, mouse_state, mx, my, keys);
-	if (id) { return id; }
-	id = ui_object_listen(map.travel_button, mouse_state, mx, my, keys);
-	return id;
-
-}
-
-void map_draw(void)
-{
-	gf2d_sprite_draw_image(map.image, vector2d(0,0));
-	gf2d_sprite_draw_image(map.ship_image, map.position);
-	
-	ui_object_render(map.crew_view_button);
-	ui_object_render(map.travel_button);
-}	
 
 void map_set_position_by_spot(Uint32 spot)
 {
+	Menu* menu = menu_get_by_id(MAP);
+	if (!menu) return;
+
+	gamestate_save(SAVE_FILE);
+
 	switch (spot)
 	{
 		case 0:
-			map.position.x = 20;
-			map.position.y = 630;
+			menu->object_list[0]->image->position.x = 20;
+			menu->object_list[0]->image->position.y = 630;
 			break;
 		case 1:
-			map.position.x = 304;
-			map.position.y = 510;
+			menu->object_list[0]->image->position.x = 304;
+			menu->object_list[0]->image->position.y = 510;
 			break;
 		case 2:
-			map.position.x = 545;
-			map.position.y = 366;
+			menu->object_list[0]->image->position.x = 545;
+			menu->object_list[0]->image->position.y = 366;
 			break;
 		case 3:
-			map.position.x = 764;
-			map.position.y = 230;
+			menu->object_list[0]->image->position.x = 764;
+			menu->object_list[0]->image->position.y = 230;
 			break;
 		case 4:
-			map.position.x = 954;
-			map.position.y = 130;
+			menu->object_list[0]->image->position.x = 954;
+			menu->object_list[0]->image->position.y = 130;
 			break;
 	}
 }
 
 gamestate_id map_travel(void) 
 {
-	map.spot++;
-	map_set_position_by_spot(map.spot);
+	gamestate.map_spot++;
 	crew_lower_hunger();
 	crew_lower_morale();
-
-	switch (map.spot)
+	map_set_position_by_spot(gamestate.map_spot);
+	
+	switch (gamestate.map_spot)
 	{
 	case 0:
 		break;

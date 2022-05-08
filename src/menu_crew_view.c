@@ -24,11 +24,9 @@ Menu* menu_crew_view_init(void)
 		TEXT
 	);
 
-	menu->object_list[MAX_MENU_OBJECTS - 2] = ui_create_button(
+	menu->object_list[MAX_MENU_OBJECTS - 2] = ui_create_button_standard(
 		WINDOW_WIDTH - 100,
 		75,
-		75,
-		40,
 		"Map",
 		crew_view_to_map
 	);
@@ -80,18 +78,18 @@ Menu* menu_crew_view_init(void)
 				TEXT
 			);
 
-			menu->object_list[j + 5] = ui_create_button(
+			menu->object_list[j + 5] = ui_create_button_standard(
 				x_offset,
 				y_offset * 7,
-				x_offset - 190 * i,
-				y_offset - 20,
 				"Feed",
 				get_feed_crew_member_func(i)
 			);
 		}
 	}
 
+	/* These menus render differently based on gamestate */
 	event_menu_load_all("assets/json/events.json");
+	map_init();
 
 	return menu;
 }

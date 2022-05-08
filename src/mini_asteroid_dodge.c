@@ -10,7 +10,7 @@ MiniGame asteroid_dodge = { 0 };
 MiniGame* mini_asteroid_init()
 {
     asteroid_dodge.title = "Asteroid Dodge";
-    asteroid_dodge.background = gf2d_sprite_load_image("assets/images/backgrounds/bg_space.png");
+    asteroid_dodge.background = gf2d_sprite_load_image("assets/images/backgrounds/bg_space_black.png");
     asteroid_dodge.id = MINI_ASTEROID_DODGE;
     asteroid_dodge.end_state = NONE;
     asteroid_dodge.start    = mini_asteroid_start;

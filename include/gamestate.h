@@ -13,8 +13,10 @@
 
 struct GAMESTATE{
 	Uint32			food;
+	Uint32			fuel;
 	Uint32			map_spot; 
 	Uint32			ship_type;
+
 
 	gamestate_id	completed_events[128];
 	crew_member		crew[MAX_CREW]; // DO NOT CHANGE ORDER OF DECLARATIONS

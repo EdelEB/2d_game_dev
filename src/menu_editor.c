@@ -21,42 +21,42 @@ void menu_editor_init()
 
 	ui_button_set_images(
 		menu_editor.editor_menu->object_list[0]->button,
-		"button_test",
+		BUTTON_STANDARD_FILE,
 		vector2d(0.30, 0.25),
 		vector2d(1, 50),
 		vector3d(0, 0, 0)
 	);
 	ui_button_set_images(
 		menu_editor.editor_menu->object_list[1]->button,
-		"button_test",
+		BUTTON_STANDARD_FILE,
 		vector2d(0.30, 0.25),
 		vector2d(1, 50),
 		vector3d(0, 0, 0)
 	);
 	ui_button_set_images(
 		menu_editor.editor_menu->object_list[2]->button,
-		"button_test",
+		BUTTON_STANDARD_FILE,
 		vector2d(0.30, 0.25),
 		vector2d(1, 50),
 		vector3d(0, 0, 0)
 	);
 	ui_button_set_images(
 		menu_editor.editor_menu->object_list[3]->button,
-		"button_test",
+		BUTTON_STANDARD_FILE,
 		vector2d(0.30, 0.25),
 		vector2d(1, 50),
 		vector3d(0, 0, 0)
 	);
 	ui_button_set_images(
 		menu_editor.editor_menu->object_list[4]->button,
-		"button_test",
+		BUTTON_STANDARD_FILE,
 		vector2d(0.30, 0.25),
 		vector2d(1, 50),
 		vector3d(0, 0, 0)
 	);
 	ui_button_set_images(
 		menu_editor.editor_menu->object_list[5]->button,
-		"button_test",
+		BUTTON_STANDARD_FILE,
 		vector2d(0.30, 0.25),
 		vector2d(1, 50),
 		vector3d(0, 0, 0)

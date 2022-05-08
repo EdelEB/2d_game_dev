@@ -13,7 +13,7 @@
 
 #include "enum_declarations.h"
 
-
+#define BUTTON_STANDARD_FILE "button_default"
 #define WORD_LEN 16
 #define SENTENCE_LEN 64
 #define BLOCK_LEN 128
@@ -250,6 +250,8 @@ void ui_button_free(ui_button* b);
 * @returns ui_object pointer with non-null ui_button attribute object->b
 */
 ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_click)(void));
+
+ui_object* ui_create_button_standard(int x, int y, char* str, void(*on_click)(void));
 
 void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Vector2D scale_center, Vector3D rotation);
 

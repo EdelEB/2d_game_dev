@@ -14,20 +14,29 @@ my_line line_list[MAX_CREW];
 Uint8 cuts_remaining;
 Uint32 cut_delay = 50;
 ui_label* cuts_label = { 0 };
+ui_label* title_label = { 0 };
 
 MiniGame* mini_ration_init(void)
 {
+	char str[32];
+
 	ration_split.title = "Ration Split";
 	ration_split.id = MINI_RATION_SPLIT;
-	ration_split.background = gf2d_sprite_load_image("assets/images/backgrounds/bg_ration.jpg");
+	ration_split.background = gf2d_sprite_load_image("assets/images/minis/ration_split/bg_ration_split.png");
 	ration_split.start = mini_ration_start;
 	ration_split.run = mini_ration_run;
 	ration_split.end = mini_ration_end;
 
-	ration_rect.x = WINDOW_WIDTH >> 4;
-	ration_rect.y = WINDOW_HEIGHT >> 3;
-	ration_rect.w = (WINDOW_WIDTH >> 4) * 14;
-	ration_rect.h = (WINDOW_HEIGHT >> 3) * 6;
+	ration_rect.x = 172;
+	ration_rect.y = 212;
+	ration_rect.w = 619;
+	ration_rect.h = 422;
+
+	title_label = ui_create_label(ration_split.title, (WINDOW_WIDTH << 2), 50, TITLE)->label;
+
+	cuts_remaining = MAX_CREW;
+	sprintf(str, "Cuts Remaining: %d", cuts_remaining);
+	cuts_label = ui_create_label(str, WINDOW_WIDTH - 275, 50, TEXT)->label;
 
 	return &ration_split;
 }
@@ -79,6 +88,7 @@ void listen_cuts()
 void mini_ration_draw()
 {
 	int i;
+	char* str[32];
 	Vector4D color = { 255, 255, 255, 255 };
 
 	gf2d_draw_rect(ration_rect, color);
@@ -91,18 +101,13 @@ void mini_ration_draw()
 		}
 	}
 
-	//TODO : This is gross and will be fixed later
-	char* str[20];
+	if (title_label) ui_label_render(title_label);
+
+	if (!cuts_label) return;
 	sprintf(str, "Cuts Remaining: %d", cuts_remaining);
-	
-	ui_label_free(cuts_label);
-	cuts_label = ui_create_label(
-		str,
-		WINDOW_WIDTH - 275,
-		50,
-		TEXT
-	);
+	ui_label_update(cuts_label, str);
 	ui_label_render(cuts_label);
+
 }
 
 gamestate_id determine_ration_result()
@@ -171,8 +176,6 @@ void mini_ration_start(MiniGame* self)
 		slog("mini_ration_start called with NULL MiniGame*");
 		return;
 	}
-
-	cuts_remaining = MAX_CREW;
 
 	for (i = 0; i < MAX_CREW; i++)
 	{

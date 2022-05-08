@@ -19,7 +19,7 @@ void ent_asteroid_randomize(Entity* ent, Vector2D position, Vector2D velocity, f
 
 	slog("draw scale: %f", size);
 	vector2d_copy(ent->draw_scale, vector2d(size, size));
-	ent->maxs = vector2d(ent->draw_scale.x * 200, ent->draw_scale.y *200);
+	ent->maxs = vector2d(ent->draw_scale.x * 120, ent->draw_scale.y *120);
 	ent->mins = ent->maxs;
 
 	vector2d_copy(ent->velocity, velocity);
@@ -58,7 +58,7 @@ Entity* ent_asteroid_new() {
 	}
 
 	ent->team = ANTI_PLAYER;
-	ent->sprite = gf2d_sprite_load_image("assets/images/asteroid.png");
+	ent->sprite = gf2d_sprite_load_image("assets/images/minis/asteroid_dodge/asteroid.png");
 	ent->think = asteroid_think;
 
 	slog("Asteroid Spawned in ent_asteroid_new()");

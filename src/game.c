@@ -18,6 +18,8 @@ Uint8 global_was_mouse_down;    // This is the previous state of the mouse
 Uint8* global_prev_keys;        // This is the previous set of keys that were pressed
 Uint16 SLIDER_POINT_DIM = 10;
 
+
+
 const Uint32 WINDOW_HEIGHT = 720;
 const Uint32 WINDOW_WIDTH  = 1200;
 

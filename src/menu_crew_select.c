@@ -11,19 +11,15 @@ Menu* menu_crew_select_init(void)
 	menu->id = CREW_SELECT;
 	char* crew_member_display_string;
 
-	menu->object_list[0] = ui_create_button(
+	menu->object_list[0] = ui_create_button_standard(
 		WINDOW_WIDTH-200,
 		(WINDOW_HEIGHT >> 3) * 7,
-		100,
-		50,
 		"Next",
 		next_crew_member);
 
-	menu->object_list[1] = ui_create_button(
+	menu->object_list[1] = ui_create_button_standard(
 		(WINDOW_WIDTH >> 1) - 50,
 		(WINDOW_HEIGHT >> 3) * 7,
-		100,
-		50,
 		"Select",
 		select_crew_member
 	);

@@ -4,6 +4,8 @@ void gamestate_new(void)
 {
 	gamestate.food = 40;
 	gamestate.map_spot = 0;
+	gamestate.fuel = 20;
+	gamestate.ship_type = 1;
 }
 
 void gamestate_load(char* filename) 
@@ -20,6 +22,15 @@ void gamestate_load(char* filename)
 
 	data = sj_object_get_value(json, "food");
 	if (data) sj_get_integer_value(data, &gamestate.food);
+
+	data = sj_object_get_value(json, "fuel");
+	if (data) sj_get_integer_value(data, &gamestate.fuel);
+
+	data = sj_object_get_value(json, "map_spot");
+	if (data) sj_get_integer_value(data, &gamestate.map_spot);
+
+	data = sj_object_get_value(json, "ship_type");
+	if (data) sj_get_integer_value(data, &gamestate.ship_type);
 
 	arr = sj_object_get_value(json, "crew");
 	for (i = 0; i < MAX_CREW; i++)
@@ -102,8 +113,11 @@ void gamestate_save(char* filename)
 		
 		sj_array_append(arr, object);
 	}	
-	sj_object_insert(json, "crew", arr);
 	sj_object_insert(json, "food", sj_new_int(gamestate.food));
+	sj_object_insert(json, "fuel", sj_new_int(gamestate.fuel));
+	sj_object_insert(json, "map_spot", sj_new_int(gamestate.map_spot));
+	sj_object_insert(json, "ship_type", sj_new_int(gamestate.ship_type));
+	sj_object_insert(json, "crew", arr);
 
 	sj_save(json, filename);
 

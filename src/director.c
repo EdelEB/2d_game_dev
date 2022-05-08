@@ -16,15 +16,16 @@ void director_init(void)
 	//event_manager_init(20);
 	//note_manager_init(50);
 	
-	map_init();
+	
 
 	menu_manager_init(512);
 	menu_start_init();
 	menu_crew_select_init();
+	
 	// menu_crew_view is not initialized here because the crew needs to be selected first
 	// therefore, it is initialized after load game is click in menu_start or after menu_crew_select is complete
 	//event_menu_load_all("assets/json/events.json"); // events need to be loaded after crew is initialized
-
+	
 	note_menu_load_all("assets/json/notes.json");
 
 	entity_manager_init(256);
@@ -50,7 +51,6 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int* mx, int* m
 				mini_holder.current_mini = mini_holder.mouse_hunt;
 				break;
 		}
-
 		if (!mini_holder.current_mini) return NONE;
 
 		if (!mini_holder.current_mini->is_running)
@@ -71,14 +71,11 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int* mx, int* m
 			return NONE;
 		}
 	}
-	else if (id == MAP)
-	{
-		return map_listen(mouse_state, *mx, *my, keys);
-	}
 	else
 	{
 		return menu_listen(menu_get_by_id(id), mouse_state, mx, my, keys);
 	}
+	return NONE;
 }
 
 void director_draw(gamestate_id id)
@@ -94,10 +91,6 @@ void director_draw(gamestate_id id)
 			mini_ration_draw(); // The background gets drawn over the UI without this. I will fix this later. It's also because ration_split has no entities
 		}
 		entity_manager_draw_all();
-	}
-	else if(id == MAP)
-	{
-		map_draw();
 	}
 	else
 	{

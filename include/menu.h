@@ -15,6 +15,7 @@
 
 #define MAX_MENUS 256
 #define MAX_MENU_OBJECTS 128
+#define DEFAULT_BACKGROUND_FILE "assets/images/backgrounds/bg_space_black.png"
 
 typedef struct MENU {
 	Uint8		   _inuse;

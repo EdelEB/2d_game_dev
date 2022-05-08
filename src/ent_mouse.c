@@ -26,7 +26,7 @@ Entity* ent_mouse_new(Vector2D position)
     }
 
     ent->team = NPE;
-    ent->sprite = gf2d_sprite_load_image("assets/images/mouse.png");
+    ent->sprite = gf2d_sprite_load_image("assets/images/minis/mouse_hunt/mouse.png");
     ent->maxs = vector2d(18, 20);
     ent->mins = ent->maxs;
     ent->think = mouse_think;

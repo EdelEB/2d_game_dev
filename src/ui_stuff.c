@@ -553,6 +553,33 @@ ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_cli
 
 }
 
+ui_object* ui_create_button_standard(int x, int y, char* str, void(*on_click)(void))
+{
+	ui_object* object;
+	object = ui_create_button(
+		x,
+		y,
+		200,
+		50,
+		str,
+		on_click
+	);
+
+	if (!object) { slog("ui_create_button_standard failed"); return NULL; }
+	
+	ui_button_set_images(
+		object->button,
+		BUTTON_STANDARD_FILE,
+		vector2d(0.30, 0.25),
+		vector2d(1, 50),
+		vector3d(0, 0, 0)
+	);
+
+	object->button->hide_click_box = 1;
+
+	return object;
+}
+
 void ui_button_set_images(ui_button* b, char* file_base_name, Vector2D scale, Vector2D scale_center, Vector3D rotation)
 {
 	Uint8 i;

@@ -23,39 +23,19 @@ Menu* menu_start_init()
 		vector3d(0, 0, 0)
 	)->image;
 
-	menu->object_list[1] = ui_create_button(
+	menu->object_list[1] = ui_create_button_standard(
 		(WINDOW_WIDTH >> 1) - 100,
 		(WINDOW_HEIGHT >> 1) - 20,
-		200,
-		40,
 		"New Game",
 		start_new_game
 	);
-	ui_button_set_images(
-		menu->object_list[1]->button,
-		"button_test", 
-		vector2d(0.30, 0.25),
-		vector2d(1, 50),
-		vector3d(0, 0, 0)
-	);
-	menu->object_list[1]->button->hide_click_box = 1;
 
-	menu->object_list[2] = ui_create_button(
+	menu->object_list[2] = ui_create_button_standard(
 		(WINDOW_WIDTH >> 1) - 100,
 		(WINDOW_HEIGHT >> 1) + 60,
-		200,
-		40,
 		"Load Game",
 		load_game
 	);
-	ui_button_set_images(
-		menu->object_list[2]->button,
-		"button_test",
-		vector2d(0.30, 0.25),
-		vector2d(1, 50),
-		vector3d(0, 0, 0)
-	);
-	menu->object_list[2]->button->hide_click_box = 1;
 
 	return menu;
 }

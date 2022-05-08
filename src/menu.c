@@ -23,8 +23,8 @@ void menu_manager_init(Uint32 max_menus)
 	menu_manager.menu_list = gfc_allocate_array(sizeof(Menu), max_menus);
 
 	menu_manager.default_background = ui_create_image(
-		"assets/images/backgrounds/bg_space.png",
-		vector2d(0,0), vector2d(1,1), vector2d(1,1), vector3d(1,1,1)
+		DEFAULT_BACKGROUND_FILE,
+		vector2d(0,0), vector2d(1,1), vector2d(1,1), vector3d(0,0,0)
 	)->image;
 
 	atexit(menu_manager_close);
@@ -236,7 +236,7 @@ void menu_set_background(Menu* menu, char* filename)
 		vector2d(0, 0), 
 		vector2d(1, 1), 
 		vector2d(1, 1), 
-		vector3d(1, 1, 1)
+		vector3d(0,0,0)
 	)->image;
 
 	if (image) menu->background = image;

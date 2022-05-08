@@ -15,7 +15,7 @@ MiniGame* mini_mouse_init()
 	mouse_hunt.start = mini_mouse_start;
 	mouse_hunt.run = mini_mouse_run;
 	mouse_hunt.end = mini_mouse_end;
-	mouse_hunt.background = gf2d_sprite_load_image("assets/images/backgrounds/bg_mouse.png");
+	mouse_hunt.background = gf2d_sprite_load_image("assets/images/minis/mouse_hunt/bg_ship_interior.png");
 	
 	slog("Mouse Hunt Initialized");
 	return &mouse_hunt;
@@ -103,7 +103,7 @@ void mini_mouse_run(MiniGame* self)
 	if (mouse_hit())
 	{
 		//slog("MOUSE CLICKED");
-		self->entities[0]->sprite = gf2d_sprite_load_image("assets/images/mouse_dead.png");
+		self->entities[0]->sprite = gf2d_sprite_load_image("assets/images/minis/mouse_hunt/mouse_dead.png");
 		self->end_state = SUCCESS_MOUSE_HUNT;
 	}
 

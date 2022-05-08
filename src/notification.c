@@ -67,7 +67,7 @@ SJson* note_to_json(Notification* n)
 		
 		data = sj_new_str(n->line_strings[i]);
 		sprintf(str, "%d", i);
-		if (!data->get_string) data = sj_new_str(" "); // Does not load properly if there are empty strings
+		if (data->get_string == "") data = sj_new_str(" "); // Does not load properly if there are empty strings
 		if (data) sj_object_insert(json, str, data);
 	}
 
@@ -116,11 +116,9 @@ Menu* note_menu_from_json(SJson* json)
 	}
 	menu->object_list[0] = ui_create_label(str1, WINDOW_WIDTH >> 2, WINDOW_HEIGHT >> 4, TITLE);
 
-	menu->object_list[1] = ui_create_button(
+	menu->object_list[1] = ui_create_button_standard(
 		(WINDOW_WIDTH >> 1) - 100,
 		(WINDOW_HEIGHT >> 3) * 6,
-		200,
-		50,
 		"Next",
 		NULL
 	);

@@ -56,16 +56,16 @@ Entity* ent_ship_new(Vector2D position)
     }
 
     ent->team       = PLAYER;
-    ent->sprite     = gf2d_sprite_load_all("assets/images/my_ship.png", 128, 128, FRAME_COUNT);
-    ent->maxs       = vector2d(20, 14);
+    ent->sprite     = gf2d_sprite_load_all("assets/images/minis/asteroid_dodge/ship.png", 128, 73, FRAME_COUNT);
+    ent->maxs       = vector2d(31, 18);
     ent->mins       = ent->maxs;
     ent->think      = ship_think;
-    ent->draw_offset.x  = -42;
-    ent->draw_offset.y  = -55;
+    ent->draw_offset.x  = 0;
+    ent->draw_offset.y  = 0;
     ent->rotation.x     = 64;
     ent->rotation.y     = 64;
-    ent->draw_scale.x   = 1.2;
-    ent->draw_scale.y   = 1.2;
+    ent->draw_scale.x   = 1;
+    ent->draw_scale.y   = 1;
     vector2d_copy(ent->position, position);
     
     SDL_Rect rect;
