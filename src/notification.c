@@ -1,7 +1,7 @@
 #include "notification.h"
 
-extern Uint32 rest;
-extern Uint32 REST_DELAY;
+Uint32 rest = 0;
+Uint32 REST_DELAY = 30;
 
 typedef struct {
 	Uint32			max_notes;
@@ -196,6 +196,118 @@ void note_create_all_render_variables(void)
 		{
 			note_create_render_variables(&note_manager.note_list[i]);
 		}
+	}
+}
+
+
+
+SJson* note_to_json(Notification* n)
+{
+	SJson* json = sj_object_new();
+	SJson* data;
+	int i;
+	char str[16];
+
+	if (!n || !json ) return;
+
+	data = sj_new_int(n->id);
+	if(data) sj_object_insert(json, "id", data);
+
+	data = sj_new_str(n->title);
+	if (data) sj_object_insert(json, "title", data);
+
+	for (i = 0; i < MAX_LINES; i++)
+	{
+		if (!n->line_strings[i]) continue;
+		
+		data = sj_new_str(n->line_strings[i]);
+		sprintf(str, "%d", i);
+		if (data) sj_object_insert(json, str, data);
+	}
+
+	return json;
+}
+
+void note_save_all(char* filename)
+{
+	int i;
+	SJson* json = sj_object_new();
+	SJson* arr = sj_array_new();
+	SJson* note;
+
+	if (!filename || !json || !arr) return;
+
+	for (i = 0; i < note_manager.max_notes; i++)
+	{
+		if (!note_manager.note_list[i]._inuse) { continue; }
+
+		note = note_to_json(&note_manager.note_list[i]);
+		if (note) sj_array_append(arr, note);
+	}
+
+	sj_object_insert(json, "Notes", arr);
+
+	sj_save(json, filename);
+	sj_free(json);
+}
+
+Menu* note_menu_from_json(SJson* json)
+{
+	int i;
+	char str1[128], str2[16];
+	SJson* data;
+	Menu* menu = menu_new();
+
+	if (!json || !menu) return;
+
+	data = sj_object_get_value(json, "id");
+	if (data) sj_get_integer_value(data, &menu->id);
+
+	data = sj_object_get_value(json, "title");
+	if (data) {
+		sprintf(str1, "%s", sj_get_string_value(data));
+		menu->title = str1;
+	}
+	menu->object_list[0] = ui_create_label(str1, WINDOW_WIDTH >> 2, WINDOW_HEIGHT >> 4, TITLE);
+
+	menu->object_list[1] = ui_create_button(
+		(WINDOW_WIDTH >> 1) - 100,
+		(WINDOW_HEIGHT >> 3) * 6,
+		200,
+		50,
+		"Next",
+		NULL
+	);
+	menu->object_list[1]->button->simple_nav = MAP;
+
+	for (i = 0; i < MAX_LINES; i++)
+	{
+		sprintf(str2, "%d", i);
+		data = sj_object_get_value(json, str2);
+		if (!data) continue;
+		
+		sprintf(str1, sj_get_string_value(data));
+		menu->object_list[i + 2] = ui_create_label(str1, 100, 50 * i + 300, TEXT);
+	}
+
+	return menu;
+}
+
+void note_menu_load_all(char* filename)
+{
+	int i;
+	SJson* json, * arr, * data;
+
+	json = sj_load(filename);
+	if (!json) return;
+
+	arr = sj_object_get_value(json, "Notes");
+	if (!arr) return;
+
+	for (i = 0; i < sj_array_get_count(arr); i++)
+	{
+		data = sj_array_get_nth(arr, i);
+		if (data) note_menu_from_json(data);
 	}
 }
 
@@ -451,10 +563,11 @@ void add_all_notes(void)
 			return;
 		}
 		n->id = RM_BLAME;
-		n->line_strings[0] = "You point to Ken, because he'i Ken. The crew grabs him";
+		n->title = "Bye Ken";
+		n->line_strings[0] = "You point to Ken, because he's Ken. The crew grabs him";
 		n->line_strings[1] = "and throws him out the airlock. Ahh Ken.";
 		n->line_strings[2] = "You didn't have a crew member named Ken? He was undercover.";
-		n->line_strings[3] = "Don't worry; we got'm";
+		n->line_strings[3] = "Don't worry. We got him";
 	}
 
 	/*ML_BRAG*/
@@ -465,6 +578,7 @@ void add_all_notes(void)
 			return;
 		}
 		n->id = ML_BRAG;
+		n->title = "Bragadocious";
 		n->line_strings[0] = "You remind them that you are a perfect individual.";
 		n->line_strings[1] = "They look up and begin to smile. They had forgotten";
 		n->line_strings[2] = "about how glorious there leader was. Morale increased";
@@ -478,6 +592,7 @@ void add_all_notes(void)
 			return;
 		}
 		n->id = ML_HYPE;
+		n->title = "Not So Hyped";
 		n->line_strings[0] = "As you begin to discuss Mars and the spectacle of your";
 		n->line_strings[1] = "endeavour the crew eyes roll. They miss home and no ";
 		n->line_strings[2] = "longer care about the romantic Mars colonization that";
@@ -492,6 +607,7 @@ void add_all_notes(void)
 			return;
 		}
 		n->id = ML_STANDUP;
+		n->title = "Comedy Gold";
 		n->line_strings[0] = "Elon Musk wants to send people to mars...";
 		n->line_strings[1] = "I think we can all agree that he is the most creative";
 		n->line_strings[2] = "serial killer of all time.";
@@ -506,6 +622,7 @@ void add_all_notes(void)
 			return;
 		}
 		n->id = ML_SONG;
+		n->title = "Musical Genious";
 		n->line_strings[0] = "The musician grabs his guitar and plays a couple ";
 		n->line_strings[1] = "Greta Van Fleet songs because they are the best band.";
 		n->line_strings[2] = "The crew loves it and morale is improved.";

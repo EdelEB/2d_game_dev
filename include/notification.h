@@ -8,6 +8,7 @@
 #include "simple_logger.h"
 
 #include "gamestate.h"
+#include "menu.h"
 
 #define MAX_LINES 4
 extern const Uint32 WINDOW_HEIGHT;
@@ -48,5 +49,10 @@ void note_draw(Notification* n);
 gamestate_id note_listen(Uint32 mouse_state);
 
 void add_all_notes(void);
+
+
+void note_save_all(char* filename);
+
+SJson* note_to_json(Notification* n);
 
 #endif

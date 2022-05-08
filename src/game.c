@@ -74,6 +74,7 @@ int main(int argc, char * argv[])
     
 
     //event_manager_save_all("assets/json/events.json");
+    //note_save_all("assets/json/notes.json");
 
     /*main game loop*/
     while(!done)

@@ -13,7 +13,7 @@
 #include "gamestate.h"
 #include "ui_stuff.h"
 
-#define MAX_MENUS 64
+#define MAX_MENUS 256
 #define MAX_MENU_OBJECTS 128
 
 typedef struct MENU {

@@ -1,1 +1,152 @@
-[{"id":"35","title":"Asteroids Ahead","prompt":"You are approaching an asteroid field...","options":[{"clearance":"0","text":"I'm the best. Navigate the asteroid field yourself. <mini game>","simple_nav":"42"},{"clearance":"0","text":"Let Jesus take the wheel.","simple_nav":"13"},{"clearance":"1","text":"Trust my pilot to guide us to victory. <skip mini game>","simple_nav":"12"},{"clearance":"0","text":"Take the long way around","simple_nav":"14"}]},{"id":"36","title":"Rations Low","prompt":"Rations are dwindling. What is your solution?","options":[{"clearance":"0","text":"Try and divide them equally. <mini game>","simple_nav":"43"},{"clearance":"0","text":"I am the greatest and most important. I will eat all the rations myself.","simple_nav":"17"},{"clearance":"9","text":"Ask my nutritionist to divide it by crew members' needs. <skip mini game>","simple_nav":"15"},{"clearance":"0","text":"Let the crew fight it out.","simple_nav":"18"}]},{"id":"37","title":"Rations Missing","prompt":"You discover that rations are missing. What now?","options":[{"clearance":"0","text":"Investigate the crime seen.","simple_nav":"38"},{"clearance":"0","text":"Tell the group to deal with it.","simple_nav":"26"},{"clearance":"0","text":"Blame someone I don't like.","simple_nav":"27"}]},{"id":"38","title":"Mouse Found","prompt":"A mouse was found eating rations. What will you do?","options":[{"clearance":"0","text":"I played baseball. Try and throw things at it. <mini game>","simple_nav":"44"},{"clearance":"0","text":"Animals love me. Try and befriend the mouse.","simple_nav":"21"},{"clearance":"3","text":"Have the engineer make a mouse trap. <skip mini game>","simple_nav":"22"}]},{"id":"39","title":"Terminator Times","prompt":"The ship AI says, I'm the captain now","options":[{"clearance":"0","text":"Accept defeat. All hail our AI overlords.","simple_nav":"23"},{"clearance":"0","text":"Yell, I MADE YOU and give it a stern punch.","simple_nav":"24"},{"clearance":"5","text":"Have my programmer fix the malfunction.","simple_nav":"25"}]},{"id":"40","title":"Morale is Low","prompt":"Crew members seem down in the dumps.","options":[{"clearance":"0","text":"Tell them a story about how great you are.","simple_nav":"28"},{"clearance":"0","text":"Remind them that going to Mars is a big deal.","simple_nav":"29"},{"clearance":"7","text":"Tell your comedian to do stand-up.","simple_nav":"30"},{"clearance":"8","text":"Tell your musician to play a song.","simple_nav":"31"}]}]
+{
+    "Events": [
+
+        {
+            "id": "35",
+            "title": "Asteroids Ahead",
+            "prompt": "You are approaching an asteroid field...",
+            "options": [
+                {
+                    "clearance": "0",
+                    "text": "I'm the best. Navigate the asteroid field yourself. <mini game>",
+                    "simple_nav": "42"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Let Jesus take the wheel.",
+                    "simple_nav": "13"
+                },
+                {
+                    "clearance": "1",
+                    "text": "Trust my pilot to guide us to victory. <skip mini game>",
+                    "simple_nav": "12"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Take the long way around",
+                    "simple_nav": "14"
+                }
+            ]
+        },
+        {
+            "id": "36",
+            "title": "Rations Low",
+            "prompt": "Rations are dwindling. What is your solution?",
+            "options": [
+                {
+                    "clearance": "0",
+                    "text": "Try and divide them equally. <mini game>",
+                    "simple_nav": "43"
+                },
+                {
+                    "clearance": "0",
+                    "text": "I am the greatest and most important. I will eat all the rations myself.",
+                    "simple_nav": "17"
+                },
+                {
+                    "clearance": "9",
+                    "text": "Ask my nutritionist to divide it by crew members' needs. <skip mini game>",
+                    "simple_nav": "15"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Let the crew fight it out.",
+                    "simple_nav": "18"
+                }
+            ]
+        },
+        {
+            "id": "37",
+            "title": "Rations Missing",
+            "prompt": "You discover that rations are missing. What now?",
+            "options": [
+                {
+                    "clearance": "0",
+                    "text": "Investigate the crime seen.",
+                    "simple_nav": "38"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Tell the group to deal with it.",
+                    "simple_nav": "26"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Blame someone I don't like.",
+                    "simple_nav": "27"
+                }
+            ]
+        },
+        {
+            "id": "38",
+            "title": "Mouse Found",
+            "prompt": "A mouse was found eating rations. What will you do?",
+            "options": [
+                {
+                    "clearance": "0",
+                    "text": "I played baseball. Try and throw things at it. <mini game>",
+                    "simple_nav": "44"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Animals love me. Try and befriend the mouse.",
+                    "simple_nav": "21"
+                },
+                {
+                    "clearance": "3",
+                    "text": "Have the engineer make a mouse trap. <skip mini game>",
+                    "simple_nav": "22"
+                }
+            ]
+        },
+        {
+            "id": "39",
+            "title": "Terminator Times",
+            "prompt": "The ship AI says, I'm the captain now",
+            "options": [
+                {
+                    "clearance": "0",
+                    "text": "Accept defeat. All hail our AI overlords.",
+                    "simple_nav": "23"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Yell, I MADE YOU and give it a stern punch.",
+                    "simple_nav": "24"
+                },
+                {
+                    "clearance": "5",
+                    "text": "Have my programmer fix the malfunction.",
+                    "simple_nav": "25"
+                }
+            ]
+        },
+        {
+            "id": "40",
+            "title": "Morale is Low",
+            "prompt": "Crew members seem down in the dumps.",
+            "options": [
+                {
+                    "clearance": "0",
+                    "text": "Tell them a story about how great you are.",
+                    "simple_nav": "28"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Remind them that going to Mars is a big deal.",
+                    "simple_nav": "29"
+                },
+                {
+                    "clearance": "7",
+                    "text": "Tell your comedian to do stand-up.",
+                    "simple_nav": "30"
+                },
+                {
+                    "clearance": "8",
+                    "text": "Tell your musician to play a song.",
+                    "simple_nav": "31"
+                }
+            ]
+        }
+    ]
+}

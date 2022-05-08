@@ -597,10 +597,10 @@ gamestate_id ui_button_click(ui_button* b)
 		slog("ui_button_click passed NULL ui_button*");
 		return NONE;
 	}
-	else if (!b->on_click)
+	if (!b->on_click)
 	{
-		slog("ui_button_click passed ui_button* with no on_click function");
-		return NONE;
+		slog("ui_button_click returns simple_nav %d", b->simple_nav);
+		return b->simple_nav;
 	}
 
 	gfc_sound_play(sound_fx.button_click, 0, 0.3, -1, -1);
@@ -640,7 +640,6 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 				b->is_held = 0;
 				id = ui_button_click(b);
 				if (id) return id;
-				else return b->simple_nav;
 			}
 		}
 		else 

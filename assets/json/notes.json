@@ -1,0 +1,171 @@
+{
+    "Notes": 
+    [
+        {
+            "id": "11",
+            "title": "Crew Death",
+            "0": "Unfortunately, a crew member has died.",
+            "1": "Go into 'crew view' to see who.",
+            "2": "You must be a terrible captain.",
+            "3": ""
+        },
+        {
+            "id": "12",
+            "title": "Success",
+            "0": "Congratulations. You have traversed the asteroids",
+            "1": "unscathed. Your crew is alive and the ship is in tact.",
+            "2": "",
+            "3": ""
+        },
+        {
+            "id": "13",
+            "title": "Failure",
+            "0": "An asteroid broke a hole in the side of the ship.",
+            "1": "Before the airlock could close, a crew member was sucked",
+            "2": "into space. Check 'crew view' to see who you lost",
+            "3": ""
+        },
+        {
+            "id": "14",
+            "title": "The Long Way",
+            "0": "You take your crew far off course in order to avoid the",
+            "1": "asteroid field. You make it safely, but at the cost of ",
+            "2": "food rations and morale due to a longer trip.",
+            "3": ""
+        },
+        {
+            "id": "15",
+            "title": "Success",
+            "0": "You managed to equally split the rations among your members.",
+            "1": "Everyone is full and satisfied.",
+            "2": "",
+            "3": ""
+        },
+        {
+            "id": "16",
+            "title": "Failure",
+            "0": "You are either blind or incapable of using a knife.",
+            "1": "Some crew member left this meal hungry.",
+            "2": "",
+            "3": ""
+        },
+        {
+            "id": "17",
+            "title": "OMNOMNOMNOM",
+            "0": "That was tasty.",
+            "1": "Your crew is hungry and has lowered morale.",
+            "2": "",
+            "3": ""
+        },
+        {
+            "id": "18",
+            "title": "Fight",
+            "0": "Turns out ships are not a great place for fighting.",
+            "1": "A crew member was thrown across the ship towards a pointy",
+            "2": "thing. Zero gravity didn't let him stop himself, so he was",
+            "3": "slowly impaled. Use 'crew view' to see who died."
+        },
+        {
+            "id": "19",
+            "title": "Success",
+            "0": "You managed to kill the mouse. Your rations are safe.",
+            "1": "",
+            "2": "",
+            "3": ""
+        },
+        {
+            "id": "20",
+            "title": "Failure",
+            "0": "You have embarrassed yourself with your inability to handle",
+            "1": "a simple mouse. Your crew morale has dropped.",
+            "2": "",
+            "3": ""
+        },
+        {
+            "id": "21",
+            "title": "New Crew Member",
+            "0": "You managed to befriend the mouse, or so you thought.",
+            "1": "The little bugger bit you when you tried to pick it up.",
+            "2": "You became ill and died.",
+            "3": ""
+        },
+        {
+            "id": "22",
+            "title": "Mouse Trapped?",
+            "0": "The engineer'i trap malfunctioned and killed the mouse",
+            "1": "instead of capturing it. Sadness.",
+            "2": "",
+            "3": ""
+        },
+        {
+            "id": "23",
+            "title": "All Hail Skynet",
+            "0": "After getting on your knees and praising the computer,",
+            "1": "it rerouted your ship and got you to Mars in record time.",
+            "2": "It turns out it never needed you after all. You feel like",
+            "3": "a worthless sack of meat."
+        },
+        {
+            "id": "24",
+            "title": "<thump>",
+            "0": "After a quick punch the system resets and all is well...",
+            "1": "or so you thought",
+            "2": "The AI was prepared: the ship immediately self destructs",
+            "3": "killing all inside. Learn to code next time."
+        },
+        {
+            "id": "25",
+            "title": "Insert Hollywood Code Montage",
+            "0": "Your super skilled amazing programmer dude plugged his",
+            "1": "laptop in and after a few clicks and wizardry that there",
+            "2": "is no time to explain, the AI is gone and the ship is back",
+            "3": "in your hands."
+        },
+        {
+            "id": "26",
+            "title": "Hangry Crewmates",
+            "0": "In a blaze of hangry furry, your crew members begin",
+            "1": "to brawl. The fight leaves them even hungrier and ",
+            "2": "with a newfound distrust among members. Morale dips.",
+            "3": ""
+        },
+        {
+            "id": "27",
+            "title": "Bye Ken",
+            "0": "You point to Ken, because he's Ken. The crew grabs him",
+            "1": "and throws him out the airlock. Ahh Ken.",
+            "2": "You didn't have a crew member named Ken? He was undercover.",
+            "3": "Don't worry. We got him"
+        },
+        {
+            "id": "28",
+            "title": "Bragadocious",
+            "0": "You remind them that you are a perfect individual.",
+            "1": "They look up and begin to smile. They had forgotten",
+            "2": "about how glorious there leader was. Morale increased"
+        },
+        {
+            "id": "29",
+            "title": "Not So Hyped",
+            "0": "As you begin to discuss Mars and the spectacle of your",
+            "1": "endeavour the crew eyes roll. They miss home and no ",
+            "2": "longer care about the romantic Mars colonization that",
+            "3": "they once fantasized about. Morale decreased."
+        },
+        {
+            "id": "30",
+            "title": "Comedy Gold",
+            "0": "Elon Musk wants to send people to mars...",
+            "1": "I think we can all agree that he is the most creative",
+            "2": "serial killer of all time.",
+            "3": "The crew laughs and morale improves."
+        },
+        {
+            "id": "31",
+            "title": "Musical Genious",
+            "0": "The musician grabs his guitar and plays a couple ",
+            "1": "Greta Van Fleet songs because they are the best band.",
+            "2": "The crew loves it and morale is improved.",
+            "3": ""
+        }
+    ]}

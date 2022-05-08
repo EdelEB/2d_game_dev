@@ -24,7 +24,9 @@ void director_init(void)
 	menu_crew_select_init();
 	// menu_crew_view is not initialized here because the crew needs to be selected first
 	// therefore, it is initialized after load game is click in menu_start or after menu_crew_select is complete
-	
+	//event_menu_load_all("assets/json/events.json"); // events need to be loaded after crew is initialized
+
+
 	entity_manager_init(256);
 	mini_holder.asteroid_dodge = mini_asteroid_init();
 	mini_holder.mouse_hunt = mini_mouse_init();
@@ -47,9 +49,6 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int *mx, int *m
 			}
 			slog("director_think miss 1");
 			break;
-		
-		case EVENT:
-			return event_listen(get_event_by_id(id), mouse_state, mx, my);
 		
 		case NOTE:
 			return note_listen(mouse_state);
@@ -110,9 +109,6 @@ void director_draw(gamestate_id id)
 				return menu_draw(menu_get_by_id(id));
 		}
 		break;
-	case EVENT:
-		event_draw(get_event_by_id(id));
-		break;
 	case NOTE:
 		note_draw(get_note_by_id(id));
 		break;
@@ -138,7 +134,7 @@ state_type get_state_type(gamestate_id id)
 		return MINI;	// MINIGAME
 	}
 	else if (id > THRESHOLD_DECISION_START) {
-		return EVENT;	// DECISION EVENT
+		return MENU;	// DECISION EVENT
 	}
 	else if (id > THRESHOLD_NOTE_START) {
 		return NOTE;	// NOTIFICATION EVENT

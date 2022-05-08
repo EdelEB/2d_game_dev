@@ -91,7 +91,9 @@ Menu* menu_crew_view_init(void)
 		}
 	}
 
-	return &menu;
+	event_menu_load_all("assets/json/events.json");
+
+	return menu;
 }
 
 gamestate_id crew_view_to_map(void)
