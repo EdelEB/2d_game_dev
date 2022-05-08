@@ -7,15 +7,15 @@
             "0": "Unfortunately, a crew member has died.",
             "1": "Go into 'crew view' to see who.",
             "2": "You must be a terrible captain.",
-            "3": ""
+            "3": " "
         },
         {
             "id": "12",
             "title": "Success",
             "0": "Congratulations. You have traversed the asteroids",
             "1": "unscathed. Your crew is alive and the ship is in tact.",
-            "2": "",
-            "3": ""
+            "2": " ",
+            "3": " "
         },
         {
             "id": "13",
@@ -23,7 +23,7 @@
             "0": "An asteroid broke a hole in the side of the ship.",
             "1": "Before the airlock could close, a crew member was sucked",
             "2": "into space. Check 'crew view' to see who you lost",
-            "3": ""
+            "3": " "
         },
         {
             "id": "14",
@@ -31,31 +31,31 @@
             "0": "You take your crew far off course in order to avoid the",
             "1": "asteroid field. You make it safely, but at the cost of ",
             "2": "food rations and morale due to a longer trip.",
-            "3": ""
+            "3": " "
         },
         {
             "id": "15",
             "title": "Success",
             "0": "You managed to equally split the rations among your members.",
             "1": "Everyone is full and satisfied.",
-            "2": "",
-            "3": ""
+            "2": " ",
+            "3": " "
         },
         {
             "id": "16",
             "title": "Failure",
             "0": "You are either blind or incapable of using a knife.",
             "1": "Some crew member left this meal hungry.",
-            "2": "",
-            "3": ""
+            "2": " ",
+            "3": " "
         },
         {
             "id": "17",
             "title": "OMNOMNOMNOM",
             "0": "That was tasty.",
             "1": "Your crew is hungry and has lowered morale.",
-            "2": "",
-            "3": ""
+            "2": " ",
+            "3": " "
         },
         {
             "id": "18",
@@ -69,17 +69,17 @@
             "id": "19",
             "title": "Success",
             "0": "You managed to kill the mouse. Your rations are safe.",
-            "1": "",
-            "2": "",
-            "3": ""
+            "1": " ",
+            "2": " ",
+            "3": " "
         },
         {
             "id": "20",
             "title": "Failure",
             "0": "You have embarrassed yourself with your inability to handle",
             "1": "a simple mouse. Your crew morale has dropped.",
-            "2": "",
-            "3": ""
+            "2": " ",
+            "3": " "
         },
         {
             "id": "21",
@@ -87,15 +87,15 @@
             "0": "You managed to befriend the mouse, or so you thought.",
             "1": "The little bugger bit you when you tried to pick it up.",
             "2": "You became ill and died.",
-            "3": ""
+            "3": " "
         },
         {
             "id": "22",
             "title": "Mouse Trapped?",
             "0": "The engineer'i trap malfunctioned and killed the mouse",
             "1": "instead of capturing it. Sadness.",
-            "2": "",
-            "3": ""
+            "2": " ",
+            "3": " "
         },
         {
             "id": "23",
@@ -127,7 +127,7 @@
             "0": "In a blaze of hangry furry, your crew members begin",
             "1": "to brawl. The fight leaves them even hungrier and ",
             "2": "with a newfound distrust among members. Morale dips.",
-            "3": ""
+            "3": " "
         },
         {
             "id": "27",
@@ -166,6 +166,6 @@
             "0": "The musician grabs his guitar and plays a couple ",
             "1": "Greta Van Fleet songs because they are the best band.",
             "2": "The crew loves it and morale is improved.",
-            "3": ""
+            "3": " "
         }
     ]}

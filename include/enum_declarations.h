@@ -4,7 +4,7 @@
 typedef enum {
 
 	NONE,
-	PROBLEM_STATE,
+	NEW_MENU,
 	EDITOR_MENU,
 	EDITOR_EVENTS,
 	

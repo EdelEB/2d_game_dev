@@ -759,6 +759,8 @@ ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Ve
 	Sprite* sprite;
 	ui_image* image = ui_image_new();
 	ui_object* object = ui_object_new();
+	char str[128];
+
 	if (!object) {
 		slog("create function failed to get ui_object pointer");
 		return;
@@ -774,7 +776,10 @@ ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Ve
 		return NULL;
 	}
 
+	sprintf(str, "%s", filename);
+	image->filename = filename;
 	image->sprite = sprite;
+
 	vector2d_copy(image->position, position);
 	vector2d_copy(image->scale, scale);
 	vector2d_copy(image->scale_center, scale_center);

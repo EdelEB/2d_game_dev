@@ -14,7 +14,9 @@
 struct GAMESTATE{
 	Uint32			food;
 	Uint32			map_spot; 
-	gamestate_id	completed_events[40];
+	Uint32			ship_type;
+
+	gamestate_id	completed_events[128];
 	crew_member		crew[MAX_CREW]; // DO NOT CHANGE ORDER OF DECLARATIONS
 									//I don't know why, but when this is the first attribute, 
 									// when its loaded from json, when crew[MAX_CREW-1].is_alive 

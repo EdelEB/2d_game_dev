@@ -20,6 +20,7 @@ typedef struct MENU {
 	Uint8		   _inuse;
 	gamestate_id	id;
 	char*			title;
+	ui_image*		background;
 
 	ui_object*		object_list[MAX_MENU_OBJECTS];
 }Menu;
@@ -36,11 +37,13 @@ void menu_draw(Menu *m);
 
 void menu_free(Menu *m);
 
-void menu_save(Menu* m, char* filename);
+void menu_save_all(char* filename);
 
 SJson* menu_to_json(Menu* menu);
 
 Menu* menu_from_json(SJson* json);
+
+void menu_set_background(Menu* menu, char* filename);
 
 void menu_load(char *filename);
 

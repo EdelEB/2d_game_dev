@@ -31,7 +31,6 @@ Menu* menu_start_init()
 		"New Game",
 		start_new_game
 	);
-
 	ui_button_set_images(
 		menu->object_list[1]->button,
 		"button_test", 
@@ -39,6 +38,7 @@ Menu* menu_start_init()
 		vector2d(1, 50),
 		vector3d(0, 0, 0)
 	);
+	menu->object_list[1]->button->hide_click_box = 1;
 
 	menu->object_list[2] = ui_create_button(
 		(WINDOW_WIDTH >> 1) - 100,
@@ -48,30 +48,14 @@ Menu* menu_start_init()
 		"Load Game",
 		load_game
 	);
-
-	menu->object_list[3] = ui_create_draggable(
-		vector2d(100, 100),
-		vector2d(100, 100)
+	ui_button_set_images(
+		menu->object_list[2]->button,
+		"button_test",
+		vector2d(0.30, 0.25),
+		vector2d(1, 50),
+		vector3d(0, 0, 0)
 	);
-
-	menu->object_list[4] = ui_create_text_input(
-		vector2d(200, 100),
-		start_new_game
-	);
-
-	menu->object_list[5] = ui_create_slider(
-		vector2d(400, 400),
-		vector2d(20, 20),
-		1,
-		100,
-		100,
-		1
-	);
-
-	menu->object_list[6] = ui_create_sizable(
-		vector2d(700, 400),
-		vector2d(200, 200)
-	);
+	menu->object_list[2]->button->hide_click_box = 1;
 
 	return menu;
 }
@@ -84,7 +68,6 @@ gamestate_id start_new_game(void)
 
 gamestate_id load_game(void)
 {
-	slog("load clicked");
 	gamestate_load(SAVE_FILE);
 	menu_crew_view_init();
 	return CREW_VIEW;

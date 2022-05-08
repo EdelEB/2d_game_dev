@@ -40,7 +40,7 @@ void mini_run(MiniGame* self)
 	if (!self->run)
 	{
 		slog("mini_run passed a MiniGame * with no run() function");
-		return PROBLEM_STATE;
+		return NONE;
 	}
 
 	self->run(self);

@@ -58,6 +58,7 @@ struct SOUND_FX {
 
 typedef struct UI_IMAGE {
 	Uint8			_inuse;
+	char*			filename;
 	Sprite*			sprite;
 	Vector2D		position;
 	Vector2D		scale;
@@ -139,7 +140,7 @@ typedef struct UI_SIZABLE {
 /*This is a hideous attempt at polymorphism*/
 typedef struct UI_OBJECT {
 	Uint8			_inuse;
-	Uint32			index;
+	Uint32			index;			/**< index in a menu->object_list */
 	ui_object_id	id;
 
 	ui_label*		label;

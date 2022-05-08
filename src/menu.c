@@ -3,6 +3,7 @@
 typedef struct{
 	Uint32 max_menus;	/**<max number of menus in game*/
 	Menu* menu_list;	/**<array of all menus*/
+	ui_image* default_background;
 }MenuManager;
 
 MenuManager menu_manager = { 0 };
@@ -20,6 +21,11 @@ void menu_manager_init(Uint32 max_menus)
 	}
 	menu_manager.max_menus = max_menus;
 	menu_manager.menu_list = gfc_allocate_array(sizeof(Menu), max_menus);
+
+	menu_manager.default_background = ui_create_image(
+		"assets/images/backgrounds/bg_space.png",
+		vector2d(0,0), vector2d(1,1), vector2d(1,1), vector3d(1,1,1)
+	)->image;
 
 	atexit(menu_manager_close);
 	slog("menu manager initialized");
@@ -109,6 +115,9 @@ void menu_draw(Menu* m)
 		return;
 	}
 
+	if (m->background) ui_image_render(m->background);
+	else ui_image_render(menu_manager.default_background);
+
 	for (i = 0; i < MAX_MENU_OBJECTS; i++)
 	{
 		if (m->object_list[i] && m->object_list[i]->_inuse)
@@ -116,57 +125,59 @@ void menu_draw(Menu* m)
 	}
 }
 
-void menu_save(Menu* m, char* filename)
-{
+void menu_save_all(char* filename)
+{	
 	int i;
-	SJson* data, * object;
 	SJson* json = sj_object_new();
-	
-	if (!json) return;
+	SJson* arr = sj_array_new();
+	SJson* menu;
 
-	for ( i = 0; i < MAX_MENU_OBJECTS; i++)
+	if (!json || !arr || !filename ) return;
+
+	for ( i = 0; i < menu_manager.max_menus; i++)
 	{
-		if (!m->object_list[i] || !m->object_list[i]->_inuse) break; 
-		
-		object = sj_object_new();
-		if (!object) return;
-
-		data = sj_new_int(m->object_list[i]->id);
-		if (data) sj_object_insert(object, "id", data);
-
-		data = ui_object_to_json(m->object_list[i]);
-		if (data) sj_object_insert(object, "object", data);
-		
+		if (!menu_manager.menu_list[i]._inuse ||
+			menu_manager.menu_list[i].id > THRESHOLD_NOTE_START) continue;
+	
+		menu = menu_to_json(&menu_manager.menu_list[i]);
+		if (menu) sj_array_append(arr, menu);
 	}
 
-
+	sj_object_insert(json, "Menus", arr);
+	sj_save(json, filename);
 }
 
 SJson* menu_to_json(Menu* menu)
 {
 	int i;
 	SJson* ret = sj_object_new();
-	SJson* arr, *data;
+	SJson* arr = sj_array_new();
+	SJson* data;
 
 	if (!menu) return;
-	if (!ret) slog("ret received NULL SJson* in menu_to_json");  return NULL;
+	if (!ret) { slog("ret received NULL SJson* in menu_to_json");  return NULL; }
+	if (!arr) { slog("arr received NULL SJson* in menu_to_json"); return NULL; }
 
 	data = sj_new_int(menu->id);
 	if(data) sj_object_insert(ret, "id", data);
 	
 	data = sj_new_str(menu->title);
 	if (data) sj_object_insert(ret, "title", data);
-	//else sj_object_insert(ret, "title", sj_new_str("no_name"));
-
-	arr = sj_array_new();
-	if (!arr) slog("arr received NULL SJson* in menu_to_json"); return NULL;
+	
+	if (menu->background)
+	{
+		data = sj_new_str(menu->background->filename);
+		if (data) sj_object_insert(ret, "background", data);
+	}
 
 	for (i = 0; i < MAX_MENU_OBJECTS; i++)
 	{
 		if (!menu->object_list[i]) continue;
 		
 		data = ui_object_to_json(menu->object_list[i]);
-		if (data) sj_object_insert(data, "index", sj_new_int(i)); //TODO: NULL check
+		if (!data) continue;
+		sj_object_insert(data, "index", sj_new_int(i)); //TODO: NULL check
+		
 		if(data) sj_array_append(arr, data);
 	}
 
@@ -195,6 +206,12 @@ Menu* menu_from_json(SJson* json)
 		menu->title = str;
 	}
 
+	data = sj_object_get_value(json, "background");
+	if (data) {
+		sprintf(str, "%s", sj_get_string_value(data));
+		menu_set_background(menu, str);
+	}
+
 	arr = sj_object_get_value(json, "objects");
 	if (!arr) slog("Tried convert empty Menu to json"); return NULL;
 
@@ -207,3 +224,33 @@ Menu* menu_from_json(SJson* json)
 
 	return menu;
 }
+
+void menu_set_background(Menu* menu, char* filename)
+{
+	ui_image* image;
+
+	if (!menu || !filename) return;
+
+	image = ui_create_image(
+		filename, 
+		vector2d(0, 0), 
+		vector2d(1, 1), 
+		vector2d(1, 1), 
+		vector3d(1, 1, 1)
+	)->image;
+
+	if (image) menu->background = image;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
