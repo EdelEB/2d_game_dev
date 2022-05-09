@@ -64,7 +64,6 @@ void menu_free(Menu* m)
 	}
 
 	for (i = 0; i < MAX_MENU_OBJECTS; i++) { ui_object_free(m->object_list[i]); }
-
 	memset(m, 0, sizeof(Menu));
 }
 
@@ -115,7 +114,8 @@ void menu_draw(Menu* m)
 		return;
 	}
 
-	if (m->background) ui_image_render(m->background);
+	if(m->id == EDITOR_EDITOR || m->id == EDITOR_WORKING){ /* do not print background */ }
+	else if (m->background) ui_image_render(m->background);
 	else ui_image_render(menu_manager.default_background);
 
 	for (i = 0; i < MAX_MENU_OBJECTS; i++)
@@ -174,10 +174,10 @@ SJson* menu_to_json(Menu* menu)
 	{
 		if (!menu->object_list[i]) continue;
 		
+		menu->object_list[i]->index = i;
 		data = ui_object_to_json(menu->object_list[i]);
 		if (!data) continue;
-		sj_object_insert(data, "index", sj_new_int(i)); //TODO: NULL check
-		
+
 		if(data) sj_array_append(arr, data);
 	}
 
@@ -189,31 +189,32 @@ SJson* menu_to_json(Menu* menu)
 Menu* menu_from_json(SJson* json)
 {
 	Menu* menu = menu_new();
-	ui_object* object;
+	ui_object* object = NULL;
 	SJson *arr, *data;
 	char str[128];
 	int i;
 
-	if (!json)slog("NULL SJson* passed to menu_from_json()"); return NULL;
-	if (!menu) slog("menu received NULL Menu* in menu_from_json()"); return NULL;
+	if (!json) { slog("NULL SJson* passed to menu_from_json()"); return NULL; }
+	if (!menu) { slog("menu received NULL Menu* in menu_from_json()"); return NULL; }
 
 	data = sj_object_get_value(json, "id");
 	if (data) sj_get_integer_value(data, &menu->id);
 
 	data = sj_object_get_value(json, "title");
-	if (data) {
-		sprintf(str, "%s", sj_get_string_value(data));
-		menu->title = str;
+	if (data) 
+	{
+		menu->title = calloc(64, sizeof(char));
+		strcpy(menu->title, sj_get_string_value(data));
 	}
 
 	data = sj_object_get_value(json, "background");
 	if (data) {
-		sprintf(str, "%s", sj_get_string_value(data));
+		strcpy(str, sj_get_string_value(data));
 		menu_set_background(menu, str);
 	}
 
 	arr = sj_object_get_value(json, "objects");
-	if (!arr) slog("Tried convert empty Menu to json"); return NULL;
+	if (!arr) { slog("Tried convert empty Menu to json"); return NULL; }
 
 	for (i = 0; i < MAX_MENU_OBJECTS && i < sj_array_get_count(arr); i++) 
 	{

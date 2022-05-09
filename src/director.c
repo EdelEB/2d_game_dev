@@ -32,6 +32,8 @@ void director_init(void)
 	mini_holder.asteroid_dodge = mini_asteroid_init();
 	mini_holder.mouse_hunt = mini_mouse_init();
 	mini_holder.ration_split = mini_ration_init();
+
+	menu_editor_init();
 }
 
 gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int* mx, int* my, Uint8* keys)
@@ -71,6 +73,10 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int* mx, int* m
 			return NONE;
 		}
 	}
+	else if (id == EDITOR_MENU)
+	{
+		return menu_editor_listen(mouse_state, mx, my, keys);
+	}
 	else
 	{
 		return menu_listen(menu_get_by_id(id), mouse_state, mx, my, keys);
@@ -91,6 +97,10 @@ void director_draw(gamestate_id id)
 			mini_ration_draw(); // The background gets drawn over the UI without this. I will fix this later. It's also because ration_split has no entities
 		}
 		entity_manager_draw_all();
+	}
+	else if (id == EDITOR_MENU)
+	{
+		menu_editor_render();
 	}
 	else
 	{

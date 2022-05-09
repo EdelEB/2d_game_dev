@@ -4,6 +4,7 @@ MenuEditor menu_editor = {0};
 
 void menu_editor_init()
 {
+	menu_editor.id = EDITOR_MENU;
 	menu_editor.editor_menu = menu_new();
 	menu_editor.working_menu = menu_new();
 
@@ -12,56 +13,20 @@ void menu_editor_init()
 		return;
 	}
 	
-	menu_editor.editor_menu->object_list[0] = ui_create_button(0, 0, 200, 40, "New Menu", menu_editor_new_menu);
-	menu_editor.editor_menu->object_list[1] = ui_create_button(200, 0, 200, 40, "New Label", prompt_label);
-	menu_editor.editor_menu->object_list[2] = ui_create_button(400, 0, 200, 40, "New Button", prompt_button);
-	menu_editor.editor_menu->object_list[3] = ui_create_button(600, 0, 200, 40, "New Text_Box", editable_create_text_input);
-	menu_editor.editor_menu->object_list[4] = ui_create_button(800, 0, 200, 40, "New Image", prompt_image);
-	menu_editor.editor_menu->object_list[5] = ui_create_button(1000, 0, 200, 40, "Save Menu", NULL);
+	menu_editor.editor_menu->id = EDITOR_EDITOR;
+	menu_editor.working_menu->id = EDITOR_WORKING;
 
-	ui_button_set_images(
-		menu_editor.editor_menu->object_list[0]->button,
-		BUTTON_STANDARD_FILE,
-		vector2d(0.30, 0.25),
-		vector2d(1, 50),
-		vector3d(0, 0, 0)
-	);
-	ui_button_set_images(
-		menu_editor.editor_menu->object_list[1]->button,
-		BUTTON_STANDARD_FILE,
-		vector2d(0.30, 0.25),
-		vector2d(1, 50),
-		vector3d(0, 0, 0)
-	);
-	ui_button_set_images(
-		menu_editor.editor_menu->object_list[2]->button,
-		BUTTON_STANDARD_FILE,
-		vector2d(0.30, 0.25),
-		vector2d(1, 50),
-		vector3d(0, 0, 0)
-	);
-	ui_button_set_images(
-		menu_editor.editor_menu->object_list[3]->button,
-		BUTTON_STANDARD_FILE,
-		vector2d(0.30, 0.25),
-		vector2d(1, 50),
-		vector3d(0, 0, 0)
-	);
-	ui_button_set_images(
-		menu_editor.editor_menu->object_list[4]->button,
-		BUTTON_STANDARD_FILE,
-		vector2d(0.30, 0.25),
-		vector2d(1, 50),
-		vector3d(0, 0, 0)
-	);
-	ui_button_set_images(
-		menu_editor.editor_menu->object_list[5]->button,
-		BUTTON_STANDARD_FILE,
-		vector2d(0.30, 0.25),
-		vector2d(1, 50),
-		vector3d(0, 0, 0)
-	);
+	menu_editor.editor_menu->object_list[0] = ui_create_button_standard(0,    5, "Restart", menu_editor_new_menu);
+	menu_editor.editor_menu->object_list[1] = ui_create_button_standard(200,  5, "Label", prompt_label);
+	menu_editor.editor_menu->object_list[2] = ui_create_button_standard(400,  5, "Button", prompt_button);
+	menu_editor.editor_menu->object_list[3] = ui_create_button_standard(600,  5, "Text_Box", editable_create_text_input);
+	menu_editor.editor_menu->object_list[4] = ui_create_button_standard(800,  5, "Image", prompt_image);
+	menu_editor.editor_menu->object_list[5] = ui_create_button_standard(1000, 5, "Save Menu", prompt_save);
 
+	menu_editor.editor_menu->object_list[6] = ui_create_button_standard(0, WINDOW_HEIGHT - 60, "Return", NULL);
+	if (menu_editor.editor_menu->object_list[6]) menu_editor.editor_menu->object_list[0]->button->simple_nav = MENU_START;
+
+	menu_editor.editor_menu->object_list[7] = ui_create_button_standard(WINDOW_WIDTH/2 - 100, WINDOW_HEIGHT - 60, "Background", prompt_background);
 
 	slog("menu editor initialized");
 }
@@ -69,6 +34,7 @@ void menu_editor_init()
 gamestate_id menu_editor_listen(Uint32 mouse_state, int mx, int my, Uint8* keys)
 {
 	int i;
+	gamestate_id id;
 
 	for (i = 0; i < MAX_MENU_OBJECTS; i++)
 	{
@@ -76,12 +42,17 @@ gamestate_id menu_editor_listen(Uint32 mouse_state, int mx, int my, Uint8* keys)
 		editable_listen(&menu_editor.editable_list[i], mouse_state, mx, my, keys);
 	}
 
-	return menu_listen(menu_editor.editor_menu, mouse_state, &mx, &my, keys);
+	id = menu_listen(menu_editor.editor_menu, mouse_state, &mx, &my, keys);
+	if (id > 100) slog("%d", id);
+	return id;
 }
 
 void menu_editor_render() 
 {
 	int i;
+
+	if (menu_editor.background) 
+		ui_image_render(menu_editor.background);
 
 	for (i = 0; i < MAX_MENU_OBJECTS; i++)
 	{
@@ -90,25 +61,95 @@ void menu_editor_render()
 	}
 
 	menu_draw(menu_editor.editor_menu);
-	menu_draw(menu_editor.working_menu);
 	return;
 }
 
-void menu_editor_save_menu() {}
-
-void menu_editor_new_menu() 
+void menu_editor_new_menu()
 {
-	slog("New Menu");
+	int i;
+
+	menu_free(menu_editor.working_menu);
+
+	menu_editor.working_menu = menu_new();
+	if (!menu_editor.working_menu) { slog("Failed to create new menu"); return; }
+	menu_editor.working_menu->id = EDITOR_WORKING;
+
+	for (i = 0; i < MAX_MENU_OBJECTS; i++) {
+		editable_free(&menu_editor.editable_list[i]);
+	}
 }
 
+void menu_editor_save_menu() 
+{
+	char filename[64];
+	ui_object* tbox;
+	SJson* json;
+	int i;
 
+	tbox = menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1];
+	if (tbox->id == TEXT_INPUT) {
+		sprintf(filename, "assets/json/working/%s.json", tbox->text_input->str);
+		ui_object_free(tbox);
+	}
+	
+	menu_editor.working_menu->title = calloc(64, sizeof(char));
+	strcpy(menu_editor.working_menu->title, filename);
+	menu_editor.working_menu->id = UNFINISHED_MENU;
 
+	if(menu_editor.background) menu_editor.working_menu->background = menu_editor.background;
+	for (i = 0; i < MAX_MENU_OBJECTS; i++)
+	{
+		if (!menu_editor.editable_list[i]._inuse) continue;
+		menu_editor.working_menu->object_list[i] = menu_editor.editable_list[i].object;
+	}
+
+	json = menu_to_json(menu_editor.working_menu);
+	if (!json) return;
+
+	sj_save(json, filename);
+
+	menu_editor_new_menu();
+
+	return 0;
+}
+
+menu_editor_set_background(void) {
+	char filename[64];
+	ui_object* tbox;
+	SJson* json;
+	int i;
+
+	tbox = menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1];
+	if (tbox->id == TEXT_INPUT) {
+		sprintf(filename, "assets/images/backgrounds/%s.png", tbox->text_input->str);
+		ui_object_free(tbox);
+	}
+
+	menu_editor.background = ui_create_image( 
+		filename, 
+		vector2d(0,0), 
+		vector2d(1,1), 
+		vector2d(0, 0), 
+		vector3d(0, 0, 0)
+	)->image;
+
+	return 0;
+}
+
+void prompt_save(void)
+{
+	menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1] = ui_create_text_input(
+		vector2d(100, 100), menu_editor_save_menu
+	);
+	return 0;
+}
 
 void prompt_label(void) 
 {
 	menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1] = ui_create_text_input(
 		vector2d(100, 100), editable_create_label
 	);
+	return 0;
 }
 
 void prompt_button(void)
@@ -116,16 +157,25 @@ void prompt_button(void)
 	menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1] = ui_create_text_input(
 		vector2d(100, 100), editable_create_button
 	);
+	return 0;
 }
 
 void prompt_image(void) {
 	menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1] = ui_create_text_input(
 		vector2d(100, 100), editable_create_image
 	);
+	return 0;
+}
+
+void prompt_background(void) {
+	menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1] = ui_create_text_input(
+		vector2d(100, 100), menu_editor_set_background
+	);
+	return 0;
 }
 
 
-
+///////* Editable *///////////////////////////////////////////////////////////////////////
 
 Editable* editable_new()
 {
@@ -155,18 +205,14 @@ void editable_create_label()
 
 	position = vector2d(WINDOW_WIDTH >> 1, WINDOW_HEIGHT >> 1);
 	tbox = menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1];
-	if (tbox->id == TEXT_INPUT) {
-		sprintf(str, "%s", tbox->text_input->str);
-		ui_object_free(tbox);
-	}
-	else {
-		slog("editable_create_label failed");
-		return;
-	}
+
+	sprintf(str, "%s", tbox->text_input->str);
 
 	e->object = ui_create_label(str, position.x, position.y, type);
+	ui_object_free(tbox);
 	e->draggable = ui_create_draggable(position, vector2d(20, 20))->draggable;
 	e->sizable = ui_create_sizable(position, vector2d(100,100))->sizable;
+	return 0;
 }
 
 void editable_create_button()
@@ -194,8 +240,11 @@ void editable_create_button()
 	}
 	
 	e->object = ui_create_button(position.x, position.y, 200, 200, str, NULL);
+	if (!e->object) { editable_free(e); return 0; }
 	e->draggable = ui_create_draggable(position, vector2d(50, 50))->draggable;
 	e->sizable = ui_create_sizable(position, vector2d(200,200))->sizable;
+
+	return 0;
 }
 
 void editable_create_image() 
@@ -219,13 +268,16 @@ void editable_create_image()
 	}
 	else {
 		slog("editable_create_image failed");
-		return;
+		return 0;
 	}
 
 
 	e->object = ui_create_image(filename, position, vector2d(0.2,0.2), vector2d(1,1), vector3d(0,0,0));
+	if (!e->object) { editable_free(e); return 0; }
 	e->draggable = ui_create_draggable(position, vector2d(20, 20))->draggable;
 	e->sizable = ui_create_sizable(position, vector2d(100,100))->sizable;
+
+	return 0;
 }
 
 void editable_create_text_input()
@@ -236,6 +288,7 @@ void editable_create_text_input()
 	if (!e) return;
 
 	e->object = ui_create_text_input(position, NULL);
+	if (!e->object) { editable_free(e); return 0; }
 	e->draggable = ui_create_draggable(position, vector2d(20, 20))->draggable;
 	e->sizable = NULL;// ui_create_sizable(position, vector2d())->sizable;
 }
@@ -322,6 +375,7 @@ void editable_listen(Editable* e, Uint32 mouse_state, int mx, int my)
 			if (e->draggable)
 			{
 				e->draggable->position = vector2d(e->sizable->rect.x, e->sizable->rect.y);
+				vector2d_copy(e->draggable->prev_position, e->draggable->position);
 				e->draggable->click_box.x = e->sizable->rect.x;
 				e->draggable->click_box.y = e->sizable->rect.y;
 			}
@@ -361,8 +415,18 @@ void editable_render(Editable* e)
 {
 	if (!e) return;
 
-	
+	if(e->object) ui_object_render(e->object);
+
 	if(e->draggable) ui_draggable_render(e->draggable);
 	if(e->sizable) ui_sizable_render(e->sizable);
-	if(e->object) ui_object_render(e->object);
+}
+
+void editable_free(Editable* e)
+{
+	ui_object_free(e->object);
+	ui_draggable_free(e->draggable);
+	ui_sizable_free(e->sizable);
+	e->_inuse = 0;
+
+	memset(e, 0, sizeof(Editable));
 }

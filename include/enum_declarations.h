@@ -5,8 +5,8 @@ typedef enum {
 
 	NONE,
 	NEW_MENU,
-	EDITOR_MENU,
-	EDITOR_EVENTS,
+	SHIP_VIEW,
+	SHIP_SELECT,
 	
 	/*Menu States*/
 	MENU_START,
@@ -53,6 +53,12 @@ typedef enum {
 	EVENT_AI_TAKEOVER,
 	EVENT_MORALE_LOW,
 	
+	/* Editor Stuff */
+	EDITOR_MENU,
+	EDITOR_WORKING,
+	EDITOR_EDITOR,
+	UNFINISHED_MENU,
+
 	/* Mini Game States */	
 	THRESHOLD_MINI,  // used to divide gamestates in game loop
 	MINI_ASTEROID_DODGE,

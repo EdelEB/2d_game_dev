@@ -25,6 +25,7 @@ typedef struct EDITABLE {
 typedef struct MENU_EDITOR{
 	gamestate_id	id;
 
+	ui_image*		background;
 	Menu*			editor_menu;
 	Menu*			working_menu;
 	Editable		editable_list[MAX_MENU_OBJECTS]; /**< this is an array of all the ui_label's present in the menu*/
@@ -39,6 +40,11 @@ void menu_editor_new_menu();
 void menu_editor_render();
 
 gamestate_id menu_editor_listen(Uint32 mouse_state, int mx, int my, Uint8* keys);
+
+void menu_editor_save_menu(void);
+
+menu_editor_set_background(void);
+
 
 
 Editable* editable_new();
@@ -55,9 +61,13 @@ void editable_listen(Editable* e, Uint32 mouse_state, int mx, int my);
 
 void editable_render(Editable* e);
 
+void editable_free(Editable* e);
+
+void prompt_save(void);
 void prompt_label(void);
 void prompt_button(void);
 void prompt_image(void);
+void prompt_background(void);
 
 
 #endif

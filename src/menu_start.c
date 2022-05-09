@@ -37,6 +37,14 @@ Menu* menu_start_init()
 		load_game
 	);
 
+	menu->object_list[3] = ui_create_button_standard(
+		0,
+		WINDOW_HEIGHT - 60,
+		"Menu Editor",
+		NULL
+	);
+	if (menu->object_list[3]) menu->object_list[3]->button->simple_nav = EDITOR_MENU;
+
 	return menu;
 }
 

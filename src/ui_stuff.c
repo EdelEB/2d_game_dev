@@ -236,9 +236,9 @@ SJson* ui_object_to_json(ui_object* o)
 
 	if (!o) {
 		slog("NULL ui_object* passed to ui_object_to_json()");
-		return;
+		return NULL;
 	}
-	if (!json) return;
+	if (!json) return NULL;
 	
 	data = sj_new_int(o->id);
 	if (data) sj_object_insert(json, "id", data);
@@ -250,14 +250,17 @@ SJson* ui_object_to_json(ui_object* o)
 	{
 		case LABEL:
 			data = ui_label_to_json(o->label);
+			break;
 		case IMAGE:
 			data = ui_image_to_json(o->image);
+			break;
 		case BUTTON:
 			data = ui_button_to_json(o->button);
+			break;
 		case TEXT_INPUT:
 			data = ui_text_input_to_json(o->text_input);
+			break;
 		case SLIDER:
-			//data = ui_slider_to_json(o->slider);
 		case DRAGGABLE:
 		case SIZABLE:
 		default:
@@ -272,41 +275,45 @@ SJson* ui_object_to_json(ui_object* o)
 
 ui_object* ui_object_from_json(SJson* json)
 {
-	ui_object* object;
+	ui_object* object = NULL;
 	SJson* data;
+	ui_object_id id = SIZABLE; // this will skip the switch if not assigned
 
-	if (!json) {
-		slog("NULL SJson* passed to ui_object()");
-		return NULL;
+	if (!json) { slog("NULL SJson* passed to ui_object()"); return NULL; }
+
+	data = sj_object_get_value(json, "id");
+	if (data) sj_get_integer_value(data, &id);
+
+	switch (id)
+	{
+		case LABEL:
+			object = ui_label_from_json(json);
+			break;
+		case IMAGE:
+			object = ui_image_from_json(json);
+			break;
+		case BUTTON:
+			object = ui_button_from_json(json);
+			break;
+		case TEXT_INPUT:
+			object = ui_text_input_from_json(json);
+			break;
+		case SLIDER:
+		case DRAGGABLE:
+		case SIZABLE:
+		default: break;
 	}
+	if (!object) return NULL;
 	
 	data = sj_object_get_value(json, "id");
-	if (!data) slog("cannot load ui_object without id"); return;
+	if (!data) { slog("cannot load ui_object without id"); return; }
 	sj_get_integer_value(data, &object->id);
 
 	data = sj_object_get_value(json, "index");
-	if (!data) slog("cannot load ui_object without index"); return;
+	if (!data) { slog("cannot load ui_object without index"); return; }
 	sj_get_integer_value(data, &object->index);
 
-	switch (object->id)
-	{
-		case LABEL:
-			return ui_label_from_json(json);
-		case IMAGE:
-			return ui_image_from_json(json);
-		case BUTTON:
-			return ui_button_from_json(json);
-		case TEXT_INPUT:
-			return ui_text_input_from_json(json);
-		case SLIDER:
-			//return ui_slider_from_json(json);
-		case DRAGGABLE:
-		case SIZABLE:
-		default:
-			break;
-	}
-
-	return NULL;
+	return object;
 }
 
 
@@ -328,6 +335,7 @@ void ui_label_free(ui_label* l)
 {
 	if (!l) { return; }
 	ui_image_free(l->image);
+	free(l->str);
 	memset(l, 0, sizeof(ui_label));
 }
 
@@ -337,6 +345,7 @@ ui_object* ui_create_label(char* str, int x, int y, ui_label_type type)
 	SDL_Surface* surface;
 	ui_label* label = ui_label_new();
 	ui_object* object = ui_object_new();
+	char temp[64];
 
 	if (!object) {
 		slog("create function failed to get ui_object pointer");
@@ -350,7 +359,8 @@ ui_object* ui_create_label(char* str, int x, int y, ui_label_type type)
 	if (!font) { slog("ui_create_label failed to retrieve a font"); return NULL; }
 
 	label->type = type;
-	label->str = str;
+	label->str = calloc(128, sizeof(char));
+	strcpy(label->str, str);
 
 	surface = TTF_RenderText_Solid(
 		font,
@@ -483,7 +493,7 @@ SJson* ui_label_to_json(ui_label* l)
 ui_object* ui_label_from_json(SJson* json)
 {
 	ui_object* ret;
-	char *str;
+	char str[128];
 	int x, y;
 	ui_label_type type;
 
@@ -492,7 +502,7 @@ ui_object* ui_label_from_json(SJson* json)
 		return NULL;
 	}
 
-	str = sj_get_string_value(sj_object_get_value(json, "str"));
+	strcpy(str, sj_get_string_value(sj_object_get_value(json, "str")));
 	sj_get_integer_value(sj_object_get_value(json, "x"), &x);
 	sj_get_integer_value(sj_object_get_value(json, "y"), &y);
 	sj_get_integer_value(sj_object_get_value(json, "type"), &type);
@@ -540,6 +550,7 @@ ui_object* ui_create_button(int x, int y, int w, int h, char* str, void (*on_cli
 		return NULL;
 	}
 
+	button->simple_nav = NONE;
 	button->text_label = ui_create_label(str, x + 10, y + 10, TEXT)->label;
 	button->click_box.x = x;
 	button->click_box.y = y;
@@ -786,7 +797,6 @@ ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Ve
 	Sprite* sprite;
 	ui_image* image = ui_image_new();
 	ui_object* object = ui_object_new();
-	char str[128];
 
 	if (!object) {
 		slog("create function failed to get ui_object pointer");
@@ -796,6 +806,10 @@ ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Ve
 		slog("ui_create_image failed to retrieve a ui_image pointer");
 		return NULL;
 	}
+	if (!filename) {
+		slog("ui_create_image needs filename");
+		return;
+	}
 
 	sprite = gf2d_sprite_load_image(filename);
 	if (!sprite) {
@@ -803,8 +817,9 @@ ui_object* ui_create_image(char* filename, Vector2D position, Vector2D scale, Ve
 		return NULL;
 	}
 
-	sprintf(str, "%s", filename);
-	image->filename = filename;
+	image->filename = calloc(128, sizeof(char));
+	strcpy(image->filename, filename);
+	
 	image->sprite = sprite;
 
 	vector2d_copy(image->position, position);
@@ -833,9 +848,90 @@ void ui_image_render(ui_image* image)
 	);
 }
 
-SJson* ui_image_to_json(ui_image* image) {}
+SJson* ui_image_to_json(ui_image* image) 
+{
+	SJson* json = sj_object_new();
+	SJson* data;
+	
+	if (!json) return;
 
-ui_object* ui_image_from_json(SJson* json) {}
+	data = sj_new_str(image->filename);
+	if (data) sj_object_insert(json, "filename", data);
+
+	data = sj_new_int(image->position.x);
+	if (data) sj_object_insert(json, "pos_x", data);
+
+	data = sj_new_int(image->position.y);
+	if (data) sj_object_insert(json, "pos_y", data);
+
+	data = sj_new_int(image->scale.x);
+	if (data) sj_object_insert(json, "scale_x", data);
+
+	data = sj_new_int(image->scale.y);
+	if (data) sj_object_insert(json, "scale_y", data);
+
+	data = sj_new_int(image->scale_center.x);
+	if (data) sj_object_insert(json, "scale_center_x", data);
+
+	data = sj_new_int(image->scale_center.y);
+	if (data) sj_object_insert(json, "scale_center_y", data);
+
+	data = sj_new_int(image->rotation.x);
+	if (data) sj_object_insert(json, "rotation_x", data);
+
+	data = sj_new_int(image->rotation.y);
+	if (data) sj_object_insert(json, "rotation_y", data);
+	
+	data = sj_new_int(image->rotation.z);
+	if (data) sj_object_insert(json, "rotation_z", data);
+
+	return json;
+}
+
+ui_object* ui_image_from_json(SJson* json) 
+{
+	Vector2D 
+		position = vector2d(0, 0), 
+		scale = vector2d(1, 1),
+		scale_center = vector2d(0, 0);
+	Vector3D rotation = vector3d(0, 0, 0);
+	char filename[128];
+	SJson* data;
+
+	if (!json) return;
+
+	data = sj_object_get_value(json, "filename");
+	if(data) strcpy(filename, sj_get_string_value(data));
+
+	data = sj_object_get_value(json, "pos_x");
+	if (data) sj_get_integer_value(data, &position.x);
+
+	data = sj_object_get_value(json, "pos_y");
+	if (data) sj_get_integer_value(data, &position.y);
+
+	data = sj_object_get_value(json, "scale_x");
+	if (data) sj_get_integer_value(data, &scale.x);
+
+	data = sj_object_get_value(json, "scale_y");
+	if (data) sj_get_integer_value(data, &scale.y);
+
+	data = sj_object_get_value(json, "scale_center_x");
+	if (data) sj_get_integer_value(data, &scale_center.x);
+
+	data = sj_object_get_value(json, "scale_center_y");
+	if (data) sj_get_integer_value(data, &scale_center.y);
+
+	data = sj_object_get_value(json, "rotation_x");
+	if (data) sj_get_integer_value(data, &rotation.x);
+
+	data = sj_object_get_value(json, "rotation_y");
+	if (data) sj_get_integer_value(data, &rotation.y);
+
+	data = sj_object_get_value(json, "rotation_z");
+	if (data) sj_get_integer_value(data, &rotation.z);
+
+	return ui_create_image(filename, position, scale, scale_center, rotation);
+}
 
 
 
@@ -1048,6 +1144,7 @@ gamestate_id ui_text_input_listen(ui_text_input* t, Uint32 mouse_state, int mx, 
 			else if (keys[SDL_SCANCODE_N]) { c = 'N'; }
 			else if (keys[SDL_SCANCODE_M]) { c = 'M'; }
 			else if (keys[SDL_SCANCODE_MINUS]) { c = '_'; }
+			else if (keys[SDL_SCANCODE_SLASH]) { c = '?'; }
 		}
 		else
 		{
@@ -1145,9 +1242,37 @@ void ui_text_input_render(ui_text_input* t)
 	ui_label_render(t->text_label);
 }
 
-SJson* ui_text_input_to_json(ui_text_input* t) {}
+SJson* ui_text_input_to_json(ui_text_input* t) 
+{
+	SJson* json = sj_object_new();
+	SJson* data;
 
-ui_object* ui_text_input_from_json(SJson* json) {}
+	if (!json) return;
+
+	data = sj_new_int(t->position.x);
+	if (data) sj_object_insert(json, "x", data);
+
+	data = sj_new_int(t->position.y);
+	if (data) sj_object_insert(json, "y", data);
+
+	return json;
+}
+
+ui_object* ui_text_input_from_json(SJson* json) 
+{
+	int x, y;
+	SJson* data;
+
+	if (!json) return;
+
+	data = sj_object_get_value(json, "x");
+	if (data) sj_get_integer_value(data, &x);
+
+	data = sj_object_get_value(json, "y");
+	if (data) sj_get_integer_value(data, &y);
+
+	return ui_create_text_input(vector2d(x,y), NULL);
+}
 
 
 

@@ -112,7 +112,8 @@ Menu* note_menu_from_json(SJson* json)
 	data = sj_object_get_value(json, "title");
 	if (data) {
 		sprintf(str1, "%s", sj_get_string_value(data));
-		menu->title = str1;
+		menu->title = calloc(64, sizeof(char));
+		strcpy(menu->title,	str1);
 	}
 	menu->object_list[0] = ui_create_label(str1, WINDOW_WIDTH >> 2, WINDOW_HEIGHT >> 4, TITLE);
 

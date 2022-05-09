@@ -69,7 +69,7 @@ typedef struct UI_IMAGE {
 typedef struct UI_LABEL {
 	Uint8			_inuse;			/**< 1 : being used, 0 : not being used*/
 	ui_label_type	type;			/**< the type of label which determines the font used*/
-	char* str;			/**< the string being displayed*/
+	char* str;						/**< the string being displayed*/
 	SDL_Texture*	texture;		/**< texture created using SDL_ttf and is essential to rendering*/
 	SDL_Rect		render_rect;	/**< this rect encapsulates the text_label in the texture and is necessary for rendering*/
 	ui_image*		image;			/**< this is the label image*/

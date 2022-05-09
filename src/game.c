@@ -8,7 +8,6 @@
 #include "gfc_audio.h"
 
 #include "director.h"
-#include "menu_editor.h"
 
 Uint8 DEBUG = 0;
 const int CLICK_COOLDOWN = 20;
@@ -61,12 +60,7 @@ int main(int argc, char * argv[])
     ui_stuff_init();
     gfc_audio_init(10, 5, 5, 3, 1, 0);
     director_init();
-    menu_editor_init();
     global_prev_keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
-
-    /* Set default background */
-    //bg_default = gf2d_sprite_load_image("assets/images/backgrounds/bg_map.png");
-    //bg_current = bg_default;
 
     /* Set game start state */
     current_gamestate_id = MENU_START;
@@ -114,13 +108,13 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
 
         /*update things here*/
-        new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
+        //new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
+        new_gamestate_id = menu_editor_listen(mouse_state, mx, my, keys);
         if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 
         {
             slog("STATE CHANGE %d -> %d", current_gamestate_id, new_gamestate_id);
             current_gamestate_id = new_gamestate_id;
         }
-        //menu_editor_listen(mouse_state, mx, my, keys);
 
         if (mouse_state == 1) global_was_mouse_down = 1;
         else if (mouse_state == 0) global_was_mouse_down = 0;
@@ -134,8 +128,8 @@ int main(int argc, char * argv[])
         //gf2d_sprite_draw_image(bg_current,vector2d(0,0));
             
         /* Draw game elements */
-        director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
-        //menu_editor_render();
+        //director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
+        menu_editor_render();
 
         /* Draw UI elements last */        
 
