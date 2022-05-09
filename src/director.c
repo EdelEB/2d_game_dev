@@ -16,8 +16,6 @@ void director_init(void)
 	//event_manager_init(20);
 	//note_manager_init(50);
 	
-	
-
 	menu_manager_init(512);
 	menu_start_init();
 	menu_crew_select_init();
@@ -27,6 +25,7 @@ void director_init(void)
 	//event_menu_load_all("assets/json/events.json"); // events need to be loaded after crew is initialized
 	
 	note_menu_load_all("assets/json/notes.json");
+	menus_json_load_all();
 
 	entity_manager_init(256);
 	mini_holder.asteroid_dodge = mini_asteroid_init();
@@ -38,22 +37,23 @@ void director_init(void)
 
 gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int* mx, int* my, Uint8* keys)
 {
-	Menu* current_menu;
+	gamestate_id return_id;
 
-	if (id > THRESHOLD_MINI) {
-		switch (id)
-		{
-			case MINI_ASTEROID_DODGE:
-				mini_holder.current_mini = mini_holder.asteroid_dodge;
-				break;
-			case MINI_RATION_SPLIT:
-				mini_holder.current_mini = mini_holder.ration_split;
-				break;
-			case MINI_MOUSE_HUNT:
-				mini_holder.current_mini = mini_holder.mouse_hunt;
-				break;
-		}
-		if (!mini_holder.current_mini) return NONE;
+	switch (id)
+	{
+		case MINI_ASTEROID_DODGE:
+			mini_holder.current_mini = mini_holder.asteroid_dodge;
+			break;
+		case MINI_RATION_SPLIT:
+			mini_holder.current_mini = mini_holder.ration_split;
+			break;
+		case MINI_MOUSE_HUNT:
+			mini_holder.current_mini = mini_holder.mouse_hunt;
+			break;
+		default:
+			break;
+	}
+	if (mini_holder.current_mini) {
 
 		if (!mini_holder.current_mini->is_running)
 		{
@@ -68,25 +68,20 @@ gamestate_id director_think(gamestate_id id, Uint32 mouse_state, int* mx, int* m
 			if (mini_holder.current_mini->end_state)
 			{
 				mini_end(mini_holder.current_mini);
-				return mini_holder.current_mini->end_state;
+
+				return_id = mini_holder.current_mini->end_state;
+				mini_holder.current_mini = NULL;
+				return return_id;
 			}
 			return NONE;
 		}
 	}
-	else if (id == EDITOR_MENU)
-	{
-		return menu_editor_listen(mouse_state, mx, my, keys);
-	}
-	else
-	{
-		return menu_listen(menu_get_by_id(id), mouse_state, mx, my, keys);
-	}
-	return NONE;
+	return menu_listen(menu_get_by_id(id), mouse_state, mx, my, keys);
 }
 
 void director_draw(gamestate_id id)
 {
-	if (id > THRESHOLD_MINI)
+	if (id == MINI_ASTEROID_DODGE || id == MINI_MOUSE_HUNT || id == MINI_RATION_SPLIT)
 	{
 		if (mini_holder.current_mini) 
 		{
@@ -97,10 +92,6 @@ void director_draw(gamestate_id id)
 			mini_ration_draw(); // The background gets drawn over the UI without this. I will fix this later. It's also because ration_split has no entities
 		}
 		entity_manager_draw_all();
-	}
-	else if (id == EDITOR_MENU)
-	{
-		menu_editor_render();
 	}
 	else
 	{

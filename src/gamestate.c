@@ -2,10 +2,33 @@
 
 void gamestate_new(void) 
 {
-	gamestate.food = 40;
-	gamestate.map_spot = 0;
+	Uint8 i;
+	ship_room_type room_type;
+
+	gamestate.food = 20;
 	gamestate.fuel = 20;
-	gamestate.ship_type = 1;
+
+	room_type = gamestate.room_1;
+	for (i = 0; i < 2; i++)
+	{
+		switch (gamestate.room_1)
+		{
+		case FOOD_STORAGE:
+			gamestate.food += 20;
+			break;
+		case FUEL_STORAGE:
+			gamestate.fuel += 20;
+			break;
+		case ENTERTAINMENT:
+			break;
+		default:
+			break;
+		}
+		room_type = gamestate.room_2;
+	}
+	
+	gamestate.map_spot = 0;
+	
 }
 
 void gamestate_load(char* filename) 
@@ -29,8 +52,12 @@ void gamestate_load(char* filename)
 	data = sj_object_get_value(json, "map_spot");
 	if (data) sj_get_integer_value(data, &gamestate.map_spot);
 
-	data = sj_object_get_value(json, "ship_type");
-	if (data) sj_get_integer_value(data, &gamestate.ship_type);
+	data = sj_object_get_value(json, "room_1");
+	if (data) sj_get_integer_value(data, &gamestate.room_1);
+
+	data = sj_object_get_value(json, "room_2");
+	if (data) sj_get_integer_value(data, &gamestate.room_2);
+
 
 	arr = sj_object_get_value(json, "crew");
 	for (i = 0; i < MAX_CREW; i++)
@@ -116,7 +143,8 @@ void gamestate_save(char* filename)
 	sj_object_insert(json, "food", sj_new_int(gamestate.food));
 	sj_object_insert(json, "fuel", sj_new_int(gamestate.fuel));
 	sj_object_insert(json, "map_spot", sj_new_int(gamestate.map_spot));
-	sj_object_insert(json, "ship_type", sj_new_int(gamestate.ship_type));
+	sj_object_insert(json, "room_1", sj_new_int(gamestate.room_1));
+	sj_object_insert(json, "room_2", sj_new_int(gamestate.room_2));
 	sj_object_insert(json, "crew", arr);
 
 	sj_save(json, filename);

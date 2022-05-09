@@ -9,7 +9,7 @@
                 {
                     "clearance": "0",
                     "text": "I'm the best. Navigate the asteroid field yourself. <mini game>",
-                    "simple_nav": "42"
+                    "simple_nav": "46"
                 },
                 {
                     "clearance": "0",
@@ -36,7 +36,7 @@
                 {
                     "clearance": "0",
                     "text": "Try and divide them equally. <mini game>",
-                    "simple_nav": "43"
+                    "simple_nav": "47"
                 },
                 {
                     "clearance": "0",
@@ -85,7 +85,7 @@
                 {
                     "clearance": "0",
                     "text": "I played baseball. Try and throw things at it. <mini game>",
-                    "simple_nav": "44"
+                    "simple_nav": "48"
                 },
                 {
                     "clearance": "0",
@@ -145,6 +145,34 @@
                     "clearance": "8",
                     "text": "Tell your musician to play a song.",
                     "simple_nav": "31"
+                }
+            ]
+        }
+
+        {
+            "id": "50",
+            "title": "Faint Beeping by Engine",
+            "prompt": "The self destruct seems to have been initiated.",
+            "options": [
+                {
+                    "clearance": "0",
+                    "text": "Try and guess the cancellation code <minigame>",
+                    "simple_nav": "51"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Hit the computer console as hard as possible with a pipe.",
+                    "simple_nav": "52"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Pray to the gods.",
+                    "simple_nav": "53"
+                },
+                {
+                    "clearance": "0",
+                    "text": "sigh and have the last of the boos",
+                    "simple_nav":  "54"
                 }
             ]
         }

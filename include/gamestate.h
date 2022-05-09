@@ -15,7 +15,9 @@ struct GAMESTATE{
 	Uint32			food;
 	Uint32			fuel;
 	Uint32			map_spot; 
-	Uint32			ship_type;
+	
+	ship_room_type  room_1, room_2;
+	
 
 
 	gamestate_id	completed_events[128];

@@ -167,5 +167,47 @@
             "1": "Greta Van Fleet songs because they are the best band.",
             "2": "The crew loves it and morale is improved.",
             "3": " "
+        },
+        {
+            "id": "52",
+            "title": "Crew Intervention",
+            "0": "As you beat the computer console, metal clangs",
+            "1": "ring throughout the ship. A crew member comes to ",
+            "2": "see what is going on. Once aware of the situation",
+            "3": "they are able to guess the correct passcode."
+        },
+        {
+            "id": "53",
+            "title": "Divine Intervention",
+            "0": "You here a voice in the sky. It laughs at you like you",
+            "1": "are a child. You hear another voice say Don't be mean.",
+            "2": "You hear a final snap noise and the countdown stops.",
+            "3": " "
+        },
+        {
+            "id": "54",
+            "title": "Kaboom",
+            "0": "You sit back and stare out the window as you sip on the",
+            "1": "last of the whiskey. Just as a crew member walks in the ",
+            "2": "room to ask what is going on, the ship blows up. ",
+            "3": " "
+        },
+        {
+            "id": "55",
+            "title": "Guess Correct",
+            "0": "Congratulations you are confirmed to have at least half a ",
+            "1": "brain cell. Although, if you had more, you might know why",
+            "2": "the self destruct was activated in the first place. ",
+            "3": " "
+        },
+        {
+            "id": "56",
+            "title": "Guess Incorrect",
+            "0": "Your stupidity is painful to witness. Think before you answer ",
+            "1": "a question. Now the ship is going to blow up.",
+            "2": " ",
+            "3": " "
         }
+
+
     ]}

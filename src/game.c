@@ -9,6 +9,7 @@
 
 #include "director.h"
 
+Uint8 EDIT = 0;
 Uint8 DEBUG = 0;
 const int CLICK_COOLDOWN = 20;
 int debug_toggle_cooldown = 0;
@@ -108,8 +109,9 @@ int main(int argc, char * argv[])
         if (mf >= 16.0)mf = 0;
 
         /*update things here*/
-        //new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
-        new_gamestate_id = menu_editor_listen(mouse_state, mx, my, keys);
+
+        if (current_gamestate_id == EDITOR_MENU) new_gamestate_id = menu_editor_listen(mouse_state, mx, my, keys);
+        else new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
         if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 
         {
             slog("STATE CHANGE %d -> %d", current_gamestate_id, new_gamestate_id);
@@ -128,8 +130,8 @@ int main(int argc, char * argv[])
         //gf2d_sprite_draw_image(bg_current,vector2d(0,0));
             
         /* Draw game elements */
-        //director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
-        menu_editor_render();
+        if (current_gamestate_id == EDITOR_MENU) menu_editor_render();
+        else director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
 
         /* Draw UI elements last */        
 

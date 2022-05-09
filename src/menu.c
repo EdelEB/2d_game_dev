@@ -78,7 +78,7 @@ Menu* menu_get_by_id(gamestate_id id)
 		}
 	}
 
-	slog("Error: menu_get_by_id() failed");
+	slog("Error: menu_get_by_id(%d) failed", id);
 	return NULL;
 }
 
@@ -201,8 +201,7 @@ Menu* menu_from_json(SJson* json)
 	if (data) sj_get_integer_value(data, &menu->id);
 
 	data = sj_object_get_value(json, "title");
-	if (data) 
-	{
+	if (data) {
 		menu->title = calloc(64, sizeof(char));
 		strcpy(menu->title, sj_get_string_value(data));
 	}

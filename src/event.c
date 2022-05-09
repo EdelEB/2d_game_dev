@@ -143,7 +143,7 @@ Menu* event_menu_from_json(SJson* json)
 		sprintf(str, "%s", sj_get_string_value(data));
 		menu->title = str;
 	}
-	menu->object_list[0] = ui_create_label(str, WINDOW_WIDTH >> 2, WINDOW_HEIGHT >> 4, TITLE);
+	menu->object_list[0] = ui_create_label(str, WINDOW_WIDTH >> 3, WINDOW_HEIGHT >> 4, TITLE);
 
 	data = sj_object_get_value(json, "prompt");
 	sprintf(str, "%s", sj_get_string_value(data));

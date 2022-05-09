@@ -171,7 +171,7 @@ gamestate_id ui_object_listen(ui_object* o, Uint32 mouse_state, int mx, int my, 
 {
 	if (!o) {
 		slog("NULL ui_object* passed to ui_object_listen()");
-		return;
+		return NONE;
 	}
 
 	switch (o->id)
@@ -284,19 +284,22 @@ ui_object* ui_object_from_json(SJson* json)
 	data = sj_object_get_value(json, "id");
 	if (data) sj_get_integer_value(data, &id);
 
+	data = sj_object_get_value(json, "object");
+	if (!data) { slog("json has no \"object\" attribute for ui_object_from_json()"); return NULL; }
+
 	switch (id)
 	{
 		case LABEL:
-			object = ui_label_from_json(json);
+			object = ui_label_from_json(data);
 			break;
 		case IMAGE:
-			object = ui_image_from_json(json);
+			object = ui_image_from_json(data);
 			break;
 		case BUTTON:
-			object = ui_button_from_json(json);
+			object = ui_button_from_json(data);
 			break;
 		case TEXT_INPUT:
-			object = ui_text_input_from_json(json);
+			object = ui_text_input_from_json(data);
 			break;
 		case SLIDER:
 		case DRAGGABLE:
@@ -360,7 +363,7 @@ ui_object* ui_create_label(char* str, int x, int y, ui_label_type type)
 
 	label->type = type;
 	label->str = calloc(128, sizeof(char));
-	strcpy(label->str, str);
+	if(str) strcpy(label->str, str);
 
 	surface = TTF_RenderText_Solid(
 		font,
@@ -492,22 +495,27 @@ SJson* ui_label_to_json(ui_label* l)
 
 ui_object* ui_label_from_json(SJson* json)
 {
-	ui_object* ret;
-	char str[128];
+	ui_object* ret = NULL;
+	char str[128], *temp;
 	int x, y;
 	ui_label_type type;
+	SJson* data; 
 
 	if (!json) {
 		slog("NULL SJson* passed to ui_label_load");
 		return NULL;
 	}
 
-	strcpy(str, sj_get_string_value(sj_object_get_value(json, "str")));
+	data = sj_object_get_value(json, "str");
+	temp = sj_get_string_value(data);
+	if(temp) strcpy(str, temp);
+
 	sj_get_integer_value(sj_object_get_value(json, "x"), &x);
 	sj_get_integer_value(sj_object_get_value(json, "y"), &y);
 	sj_get_integer_value(sj_object_get_value(json, "type"), &type);
 
-	ret = ui_create_label(str, x, y, type);
+	if(str) ret = ui_create_label(str, x, y, type);
+	else ret = ui_create_label(" ", x, y, type);
 	if (ret) return ret;
 	return NULL;
 }
@@ -677,6 +685,7 @@ gamestate_id ui_button_listen(ui_button* b, Uint32 mouse_state, int mx, int my)
 				global_was_mouse_down = 0;
 				b->is_held = 0;
 				id = ui_button_click(b);
+				if (id > 300) return NONE; //TODO: get rid of this
 				if (id) return id;
 			}
 		}
@@ -864,25 +873,25 @@ SJson* ui_image_to_json(ui_image* image)
 	data = sj_new_int(image->position.y);
 	if (data) sj_object_insert(json, "pos_y", data);
 
-	data = sj_new_int(image->scale.x);
+	data = sj_new_float(image->scale.x);
 	if (data) sj_object_insert(json, "scale_x", data);
 
-	data = sj_new_int(image->scale.y);
+	data = sj_new_float(image->scale.y);
 	if (data) sj_object_insert(json, "scale_y", data);
 
-	data = sj_new_int(image->scale_center.x);
+	data = sj_new_float(image->scale_center.x);
 	if (data) sj_object_insert(json, "scale_center_x", data);
 
-	data = sj_new_int(image->scale_center.y);
+	data = sj_new_float(image->scale_center.y);
 	if (data) sj_object_insert(json, "scale_center_y", data);
 
-	data = sj_new_int(image->rotation.x);
+	data = sj_new_float(image->rotation.x);
 	if (data) sj_object_insert(json, "rotation_x", data);
 
-	data = sj_new_int(image->rotation.y);
+	data = sj_new_float(image->rotation.y);
 	if (data) sj_object_insert(json, "rotation_y", data);
 	
-	data = sj_new_int(image->rotation.z);
+	data = sj_new_float(image->rotation.z);
 	if (data) sj_object_insert(json, "rotation_z", data);
 
 	return json;
@@ -890,11 +899,10 @@ SJson* ui_image_to_json(ui_image* image)
 
 ui_object* ui_image_from_json(SJson* json) 
 {
-	Vector2D 
-		position = vector2d(0, 0), 
-		scale = vector2d(1, 1),
-		scale_center = vector2d(0, 0);
-	Vector3D rotation = vector3d(0, 0, 0);
+	float x = 0, y = 0, z = 0;
+	int ix, iy;
+	Vector2D position, scale, scale_center;
+	Vector3D rotation;
 	char filename[128];
 	SJson* data;
 
@@ -904,31 +912,39 @@ ui_object* ui_image_from_json(SJson* json)
 	if(data) strcpy(filename, sj_get_string_value(data));
 
 	data = sj_object_get_value(json, "pos_x");
-	if (data) sj_get_integer_value(data, &position.x);
+	if (data) sj_get_integer_value(data, &ix);
 
 	data = sj_object_get_value(json, "pos_y");
-	if (data) sj_get_integer_value(data, &position.y);
+	if (data) sj_get_integer_value(data, &iy);
+	
+	position = vector2d(ix, iy);
 
 	data = sj_object_get_value(json, "scale_x");
-	if (data) sj_get_integer_value(data, &scale.x);
+	if (data) sj_get_float_value(data, &x);
 
 	data = sj_object_get_value(json, "scale_y");
-	if (data) sj_get_integer_value(data, &scale.y);
+	if (data) sj_get_float_value(data, &y);
+	
+	scale = vector2d(x, y);
 
 	data = sj_object_get_value(json, "scale_center_x");
-	if (data) sj_get_integer_value(data, &scale_center.x);
+	if (data) sj_get_float_value(data, &x);
 
 	data = sj_object_get_value(json, "scale_center_y");
-	if (data) sj_get_integer_value(data, &scale_center.y);
+	if (data) sj_get_float_value(data, &y);
+	
+	scale_center = vector2d(x, y);
 
 	data = sj_object_get_value(json, "rotation_x");
-	if (data) sj_get_integer_value(data, &rotation.x);
+	if (data) sj_get_float_value(data, &x);
 
 	data = sj_object_get_value(json, "rotation_y");
-	if (data) sj_get_integer_value(data, &rotation.y);
+	if (data) sj_get_float_value(data, &y);
 
 	data = sj_object_get_value(json, "rotation_z");
-	if (data) sj_get_integer_value(data, &rotation.z);
+	if (data) sj_get_float_value(data, &z);
+	
+	rotation = vector3d(x, y, z);
 
 	return ui_create_image(filename, position, scale, scale_center, rotation);
 }

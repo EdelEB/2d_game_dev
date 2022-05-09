@@ -1,0 +1,56 @@
+{
+    
+    "id": "44",
+    "title": "code_guess",
+    "background": "assets/images/backgrounds/computer.png",
+    "objects": [
+        {
+            "id": "4",
+            "index": "0",
+            "object": {
+                "x": "143",
+                "y": "522"
+            }
+        },
+        {
+            "id": "0",
+            "index": "1",
+            "object": {
+                "str": "Self  Destruct Imminent",
+                "type": "0",
+                "x": "313",
+                "y": "76"
+            }
+        },
+        {
+            "id": "0",
+            "index": "2",
+            "object": {
+                "str": "Password  is  needed to abort this procedure.",
+                "type": "0",
+                "x": "232",
+                "y": "179"
+            }
+        },
+        {
+            "id": "0",
+            "index": "3",
+            "object": {
+                "str": "How many months have 28 days in them?",
+                "type": "0",
+                "x": "232",
+                "y": "419"
+            }
+        },
+        {
+            "id": "0",
+            "index": "4",
+            "object": {
+                "str": "Hint:",
+                "type": "0",
+                "x": "229",
+                "y": "371"
+            }
+        }
+    ]
+}

@@ -33,6 +33,14 @@ void map_init(void)
 		map_travel
 	);
 
+	menu->object_list[3] = ui_create_button_standard(
+		WINDOW_WIDTH - 320,
+		WINDOW_HEIGHT - 120,
+		"Ship View",
+		NULL
+	);
+	menu->object_list[3]->button->simple_nav = SHIP_VIEW;
+
 	map_set_position_by_spot(gamestate.map_spot);
 }
 

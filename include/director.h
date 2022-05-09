@@ -19,6 +19,7 @@
 #include "menu_crew_select.h"
 #include "menu_start.h"
 #include "menu_editor.h"
+#include "menus_json.h"
 
 typedef enum {
 	NO_STATE,

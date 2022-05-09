@@ -51,7 +51,7 @@ Menu* menu_start_init()
 gamestate_id start_new_game(void)
 {
 	gamestate_new();
-	return CREW_SELECT;
+	return SHIP_SELECT;
 }
 
 gamestate_id load_game(void)

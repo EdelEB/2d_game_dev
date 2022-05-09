@@ -1,0 +1,307 @@
+{
+    
+    "id": "44",
+    "title": "ship_select",
+    "background": "assets/images/backgrounds/bg_space_black.png",
+    "objects": [
+        {
+            "id": "0",
+            "index": "0",
+            "object": {
+                "str": "Ship Loadout",
+                "type": "0",
+                "x": "40",
+                "y": "113"
+            }
+        },
+        {
+            "id": "2",
+            "index": "1",
+            "object": {
+                "filename": "assets/images/ship_view/ship.png",
+                "pos_x": "34",
+                "pos_y": "221",
+                "scale_x": "0.548000",
+                "scale_y": "0.526000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "2",
+            "object": {
+                "filename": "assets/images/ship_view/floor1.png",
+                "pos_x": "172",
+                "pos_y": "325",
+                "scale_x": "0.130000",
+                "scale_y": "0.134000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "3",
+            "object": {
+                "filename": "assets/images/ship_view/floor1.png",
+                "pos_x": "248",
+                "pos_y": "325",
+                "scale_x": "0.120000",
+                "scale_y": "0.132000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "4",
+            "object": {
+                "filename": "assets/images/ship_view/floor1.png",
+                "pos_x": "320",
+                "pos_y": "325",
+                "scale_x": "0.116000",
+                "scale_y": "0.130000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "5",
+            "object": {
+                "filename": "assets/images/ship_view/floor1.png",
+                "pos_x": "171",
+                "pos_y": "425",
+                "scale_x": "0.132000",
+                "scale_y": "0.122000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "6",
+            "object": {
+                "filename": "assets/images/ship_view/floor1.png",
+                "pos_x": "319",
+                "pos_y": "426",
+                "scale_x": "0.122000",
+                "scale_y": "0.118000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "7",
+            "object": {
+                "filename": "assets/images/ship_view/floor1.png",
+                "pos_x": "246",
+                "pos_y": "425",
+                "scale_x": "0.126000",
+                "scale_y": "0.122000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "8",
+            "object": {
+                "filename": "assets/images/ship_view/floor1.png",
+                "pos_x": "108",
+                "pos_y": "377",
+                "scale_x": "0.126000",
+                "scale_y": "0.124000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "9",
+            "object": {
+                "filename": "assets/images/ship_view/icon_fuel.png",
+                "pos_x": "114",
+                "pos_y": "382",
+                "scale_x": "0.104000",
+                "scale_y": "0.100000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "10",
+            "object": {
+                "filename": "assets/images/ship_view/icon_bed.png",
+                "pos_x": "327",
+                "pos_y": "333",
+                "scale_x": "0.088000",
+                "scale_y": "0.096000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "11",
+            "object": {
+                "filename": "assets/images/ship_view/icon_bed.png",
+                "pos_x": "327",
+                "pos_y": "434",
+                "scale_x": "0.096000",
+                "scale_y": "0.084000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "12",
+            "object": {
+                "filename": "assets/images/ship_view/icon_food.png",
+                "pos_x": "179",
+                "pos_y": "428",
+                "scale_x": "0.108000",
+                "scale_y": "0.110000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "13",
+            "object": {
+                "filename": "assets/images/ship_view/icon_bed.png",
+                "pos_x": "257",
+                "pos_y": "431",
+                "scale_x": "0.088000",
+                "scale_y": "0.094000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "14",
+            "object": {
+                "filename": "assets/images/ship_view/icon_food.png",
+                "pos_x": "725",
+                "pos_y": "328",
+                "scale_x": "0.200000",
+                "scale_y": "0.200000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "15",
+            "object": {
+                "filename": "assets/images/ship_view/icon_fuel.png",
+                "pos_x": "723",
+                "pos_y": "499",
+                "scale_x": "0.200000",
+                "scale_y": "0.200000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "2",
+            "index": "16",
+            "object": {
+                "filename": "assets/images/ship_view/icon_morale.png",
+                "pos_x": "722",
+                "pos_y": "149",
+                "scale_x": "0.200000",
+                "scale_y": "0.200000",
+                "scale_center_x": "1.000000",
+                "scale_center_y": "1.000000",
+                "rotation_x": "0.000000",
+                "rotation_y": "0.000000",
+                "rotation_z": "0.000000"
+            }
+        },
+        {
+            "id": "1",
+            "index": "17",
+            "object": {
+                "str": "Food Storage",
+                "x": "865",
+                "y": "344",
+                "w": "200",
+                "h": "68"
+            }
+        },
+        {
+            "id": "1",
+            "index": "18",
+            "object": {
+                "str": "Fuel Storage",
+                "x": "854",
+                "y": "511",
+                "w": "200",
+                "h": "74"
+            }
+        },
+        {
+            "id": "1",
+            "index": "19",
+            "object": {
+                "str": "Entertainment Center",
+                "x": "860",
+                "y": "165",
+                "w": "231",
+                "h": "62"
+            }
+        }
+    ]
+}

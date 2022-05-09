@@ -24,7 +24,7 @@ void menu_editor_init()
 	menu_editor.editor_menu->object_list[5] = ui_create_button_standard(1000, 5, "Save Menu", prompt_save);
 
 	menu_editor.editor_menu->object_list[6] = ui_create_button_standard(0, WINDOW_HEIGHT - 60, "Return", NULL);
-	if (menu_editor.editor_menu->object_list[6]) menu_editor.editor_menu->object_list[0]->button->simple_nav = MENU_START;
+	if (menu_editor.editor_menu->object_list[6]) menu_editor.editor_menu->object_list[6]->button->simple_nav = MENU_START;
 
 	menu_editor.editor_menu->object_list[7] = ui_create_button_standard(WINDOW_WIDTH/2 - 100, WINDOW_HEIGHT - 60, "Background", prompt_background);
 
@@ -43,7 +43,7 @@ gamestate_id menu_editor_listen(Uint32 mouse_state, int mx, int my, Uint8* keys)
 	}
 
 	id = menu_listen(menu_editor.editor_menu, mouse_state, &mx, &my, keys);
-	if (id > 100) slog("%d", id);
+	if (id > 100) slog("%d", id); // weird error from void* that don't return gamestate_id
 	return id;
 }
 
@@ -87,15 +87,15 @@ void menu_editor_save_menu()
 	int i;
 
 	tbox = menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1];
-	if (tbox->id == TEXT_INPUT) {
-		sprintf(filename, "assets/json/working/%s.json", tbox->text_input->str);
-		ui_object_free(tbox);
-	}
+	
+	sprintf(filename, "assets/json/working/%s.json", tbox->text_input->str);
 	
 	menu_editor.working_menu->title = calloc(64, sizeof(char));
-	strcpy(menu_editor.working_menu->title, filename);
+	strcpy(menu_editor.working_menu->title, tbox->text_input->str);
+			
+	ui_object_free(tbox);
+	
 	menu_editor.working_menu->id = UNFINISHED_MENU;
-
 	if(menu_editor.background) menu_editor.working_menu->background = menu_editor.background;
 	for (i = 0; i < MAX_MENU_OBJECTS; i++)
 	{
@@ -108,7 +108,7 @@ void menu_editor_save_menu()
 
 	sj_save(json, filename);
 
-	menu_editor_new_menu();
+	//menu_editor_new_menu();
 
 	return 0;
 }
@@ -120,10 +120,8 @@ menu_editor_set_background(void) {
 	int i;
 
 	tbox = menu_editor.editor_menu->object_list[MAX_MENU_OBJECTS - 1];
-	if (tbox->id == TEXT_INPUT) {
-		sprintf(filename, "assets/images/backgrounds/%s.png", tbox->text_input->str);
-		ui_object_free(tbox);
-	}
+	sprintf(filename, "assets/images/backgrounds/%s.png", tbox->text_input->str);
+	ui_object_free(tbox);
 
 	menu_editor.background = ui_create_image( 
 		filename, 
