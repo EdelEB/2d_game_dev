@@ -196,6 +196,23 @@
                     "simple_nav": "60"
                 }
             ]
+        },
+        {
+            "id": "63",
+            "title": "Asteroid Fuel",
+            "prompt": "Nearby asteroids may hold gas we can use fuel.",
+            "options": [
+                {
+                    "clearance": "0",
+                    "text": "Scan the asteroids. <minigame>",
+                    "simple_nav": "64"
+                },
+                {
+                    "clearance": "0",
+                    "text": "I don't need no stinkin fuel.'",
+                    "simple_nav": "8"
+                }
+            ]
         }
     ]
 }

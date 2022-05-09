@@ -79,6 +79,7 @@ typedef enum {
 	LANDING_NO_ENGINE,
 	LANDING_SUCCESS,
 	LANDING_FAIL,
+	EVENT_ASTEROID_FUEL,
 
 }gamestate_id;
 

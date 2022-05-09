@@ -140,6 +140,7 @@ typedef struct UI_SIZABLE {
 /*This is a hideous attempt at polymorphism*/
 typedef struct UI_OBJECT {
 	Uint8			_inuse;
+	Uint8			is_hidden;
 	Uint32			index;			/**< index in a menu->object_list */
 	ui_object_id	id;
 
