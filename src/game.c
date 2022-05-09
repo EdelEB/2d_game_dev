@@ -67,8 +67,8 @@ int main(int argc, char * argv[])
     current_gamestate_id = MENU_START;
 
     Sound* music_grand = gfc_sound_load("assets/sound/music_grand.mp3", 1, 1);
-    gfc_sound_play(music_grand, 1, 0.1, -1, -1);
-    
+    gfc_sound_play(music_grand, 2, 0.035, -1, -1);
+    Sound* gamestate_change = gfc_sound_load("assets/sound/sound_click.wav", 1, 3);
 
     //event_manager_save_all("assets/json/events.json");
     //note_save_all("assets/json/notes.json");
@@ -114,6 +114,8 @@ int main(int argc, char * argv[])
         else new_gamestate_id = director_think(current_gamestate_id, mouse_state, &mx, &my, keys);  
         if (new_gamestate_id && new_gamestate_id != current_gamestate_id) 
         {
+            if (new_gamestate_id == MAP && gamestate.map_spot > 4) new_gamestate_id = MAP_MARS;
+            gfc_sound_play(gamestate_change, 0, 0.5, 3, 1);
             slog("STATE CHANGE %d -> %d", current_gamestate_id, new_gamestate_id);
             current_gamestate_id = new_gamestate_id;
         }
@@ -126,15 +128,10 @@ int main(int argc, char * argv[])
         /* clear drawing buffer */
         gf2d_graphics_clear_screen(); 
 
-        /* Draw backgrounds first */
-        //gf2d_sprite_draw_image(bg_current,vector2d(0,0));
-            
         /* Draw game elements */
         if (current_gamestate_id == EDITOR_MENU) menu_editor_render();
         else director_draw(current_gamestate_id); // director handles everything elements, UI, and backgrounds
-
-        /* Draw UI elements last */        
-
+                                          
         /* render current draw frame and skip to the next frame */
         gf2d_grahics_next_frame();
         

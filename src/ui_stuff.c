@@ -98,7 +98,7 @@ void ui_sound_fx_init(void)
 {
 	sound_fx.button_click = gfc_sound_load("assets/sound/sound_click2.wav", 1, 2);
 	if (sound_fx.button_click == NULL)slog("FUUUK");
-	sound_fx.gamestate_change = gfc_sound_load("assets/sound/sound_click.wav", 1, 2);
+	sound_fx.gamestate_change = gfc_sound_load("assets/sound/sound_click.wav", 1, 3);
 	if (sound_fx.gamestate_change == NULL)slog("Fuk2");
 }
 void ui_sound_fx_close(void)
@@ -652,9 +652,7 @@ gamestate_id ui_button_click(ui_button* b)
 	gfc_sound_play(sound_fx.button_click, 0, 0.3, -1, -1);
 
 	ret = b->on_click(b);
-	if (ret != NONE) {
-		gfc_sound_play(sound_fx.gamestate_change, 0, 0.3, -1, -1);
-	}
+	if (ret != NONE) { gfc_sound_play(sound_fx.gamestate_change, 0, 0.3, -1, -1); }
 	return ret;
 }
 

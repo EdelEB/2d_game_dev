@@ -88,13 +88,13 @@ gamestate_id map_travel(void)
 	case 0:
 		break;
 	case 1:
-		return EVENT_ASTEROIDS_AHEAD;
-	case 2:
-		return EVENT_AI_TAKEOVER;
-	case 3:
 		return EVENT_RATIONS_MISSING;
-	case 4:
+	case 2:
+		return EVENT_ASTEROIDS_AHEAD;
+	case 3:
 		return EVENT_RATIONS_LOW;
+	case 4:
+		return EVENT_MARS_INCOMING;
 	}
 
 	return NONE;

@@ -147,8 +147,7 @@
                     "simple_nav": "31"
                 }
             ]
-        }
-
+        },
         {
             "id": "50",
             "title": "Faint Beeping by Engine",
@@ -172,7 +171,29 @@
                 {
                     "clearance": "0",
                     "text": "sigh and have the last of the boos",
-                    "simple_nav":  "54"
+                    "simple_nav": "54"
+                }
+            ]
+        },
+        {
+            "id": "57",
+            "title": "Mars Incoming",
+            "prompt": "The ship is in range of Mars and ready to land",
+            "options": [
+                {
+                    "clearance": "0",
+                    "text": "Prepare to land the ship yourself <minigame>",
+                    "simple_nav": "58"
+                },
+                {
+                    "clearance": "1",
+                    "text": "Pilot, take her in. <skip minigame>",
+                    "simple_nav": "59"
+                },
+                {
+                    "clearance": "0",
+                    "text": "Just shut off the engines so we land slowly.",
+                    "simple_nav": "60"
                 }
             ]
         }

@@ -207,7 +207,37 @@
             "1": "a question. Now the ship is going to blow up.",
             "2": " ",
             "3": " "
+        },
+        {
+            "id": "59",
+            "title": "Pilotted to Victory",
+            "0": "Your exceptional pilot landed you without a hitch. Congradulations",
+            "1": "and welcome to Mars.",
+            "2": " ",
+            "3": " "
+        },
+        {
+            "id": "60",
+            "title": "Coming in Hot",
+            "0": "With the engines off, you were unable to slow down on entry.",
+            "1": "Congradulations, you have made a months long journey, just to",
+            "2": "crash into your destination.",
+            "3": " "
+        },
+        {
+            "id": "61",
+            "title": "Landing Success",
+            "0": "You are a tremendous pilot. You successfully landed without a problem.",
+            "1": "Welcome to The Red Planet.",
+            "2": " ",
+            "3": " "
+        },
+        {
+            "id": "62",
+            "title": "Landing Failure",
+            "0": "You couldn't keep the ship steady and landed a little more roughly than",
+            "1": "intended. However, no one got hurt. You have made it to Mars.",
+            "2": " ",
+            "3": " "
         }
-
-
     ]}

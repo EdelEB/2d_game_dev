@@ -144,6 +144,88 @@ void menus_json_load_ship_select()
 
 /* map_mars */
 
+void build1(void) {
+	Vector2D position;
+	Menu* menu = menu_get_by_id(MAP_MARS);
+	if (!menu) return;
+	
+	position = vector2d(menu->object_list[3]->button->click_box.x, menu->object_list[3]->button->click_box.y);
+	ui_object_free(menu->object_list[3]);
+	menu->object_list[3] = ui_create_image(
+		"assets/images/buildings/dish.png",
+		position,
+		vector2d(0.2, 0.2),
+		vector2d(0, 0),
+		vector3d(0, 0, 0)
+	);
+}
+void build2(void) {
+	Vector2D position;
+	Menu* menu = menu_get_by_id(MAP_MARS);
+	if (!menu) return;
+
+	position = vector2d(menu->object_list[4]->button->click_box.x, menu->object_list[4]->button->click_box.y);
+	ui_object_free(menu->object_list[4]);
+	menu->object_list[4] = ui_create_image(
+		"assets/images/buildings/greenhouse.png",
+		position,
+		vector2d(0.2, 0.2),
+		vector2d(0, 0),
+		vector3d(0, 0, 0)
+	);
+}
+void build3(void) {
+	Vector2D position;
+	Menu* menu = menu_get_by_id(MAP_MARS);
+	if (!menu) return;
+
+	position = vector2d(menu->object_list[5]->button->click_box.x, menu->object_list[5]->button->click_box.y);
+	ui_object_free(menu->object_list[5]);
+	menu->object_list[5] = ui_create_image(
+		"assets/images/buildings/mushroom_house.png",
+		position,
+		vector2d(0.2, 0.2),
+		vector2d(0, 0),
+		vector3d(0, 0, 0)
+	);
+}
+void build4(void) {
+	Vector2D position;
+	Menu* menu = menu_get_by_id(MAP_MARS);
+	if (!menu) return;
+
+	position = vector2d(menu->object_list[6]->button->click_box.x, menu->object_list[6]->button->click_box.y);
+	ui_object_free(menu->object_list[6]);
+	menu->object_list[6] = ui_create_image(
+		"assets/images/buildings/stadium.png",
+		position,
+		vector2d(0.2, 0.2),
+		vector2d(0, 0),
+		vector3d(0, 0, 0)
+	);
+}
+void build5(void) {
+	Vector2D position;
+	Menu* menu = menu_get_by_id(MAP_MARS);
+	if (!menu) return;
+
+	position = vector2d(menu->object_list[7]->button->click_box.x, menu->object_list[7]->button->click_box.y);
+	ui_object_free(menu->object_list[7]);
+	menu->object_list[7] = ui_create_image(
+		"assets/images/buildings/telescope.png",
+		position,
+		vector2d(0.2, 0.2),
+		vector2d(0, 0),
+		vector3d(0, 0, 0)
+	);
+}
+
+gamestate_id mars_map_to_crew_view(void)
+{
+	crew_view_update();
+	return CREW_VIEW;
+}
+
 void menus_json_load_map_mars()
 {
 	SJson* json = sj_load("assets/json/menus/map_mars.json");
@@ -153,6 +235,40 @@ void menus_json_load_map_mars()
 
 	menu = menu_from_json(json);
 	menu->id = MAP_MARS;
+
+	menu->object_list[3]->button->on_click = build1;
+	menu->object_list[4]->button->on_click = build2;
+	menu->object_list[5]->button->on_click = build3;
+	menu->object_list[6]->button->on_click = build4;
+	menu->object_list[7]->button->on_click = build5;
+
+	menu->object_list[8] = ui_create_button_standard(
+		20,
+		20,
+		"Crew View",
+		mars_map_to_crew_view
+	);
+
+	ui_button_set_images(
+		menu->object_list[1]->button,
+		"quest",
+		vector2d(0.1, 0.1),
+		vector2d(0, 0),
+		vector3d(0, 0, 0)
+	);
+	menu->object_list[1]->button->hide_click_box = 1;
+	menu->object_list[1]->button->simple_nav = NONE; // TODO : NEW EVENT
+
+	ui_button_set_images(
+		menu->object_list[2]->button,
+		"quest",
+		vector2d(0.1, 0.1),
+		vector2d(0, 0),
+		vector3d(0, 0, 0)
+	);
+	menu->object_list[2]->button->hide_click_box = 1;
+	menu->object_list[2]->button->simple_nav = NONE; // TODO : NEW EVENT
+
 }
 
 /* Code Guess */
@@ -165,10 +281,8 @@ gamestate_id on_guess()
 
 	if (strcmp(menu->object_list[0]->text_input->str, "12") == 0)
 	{
-		strcpy(menu->object_list[0]->text_input->str, " ");
 		return FB_GUESS_SUCCESS;
 	}
-	strcpy(menu->object_list[0]->text_input->str, " ");
 	return FB_GUESS_FAIL;
 }
 
