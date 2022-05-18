@@ -1307,7 +1307,6 @@ void ui_slider_free(ui_slider* s)
 {
 	if (!s) return;
 
-	//no pointers in sliders
 	memset(s, 0, sizeof(ui_slider));
 }
 

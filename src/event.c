@@ -76,7 +76,7 @@ Event* event_new(void)
 
 void event_free(Event* e)
 {
-	if (!e)	{ slog("cannot free nothing (event)"); }
+	if (!e)	{ return; }
 	else { memset(e, 0, sizeof(Event)); }
 }
 

@@ -36,7 +36,8 @@ void menu_manager_close()
 	int i;
 	for (i = 0; i < menu_manager.max_menus; i++) { menu_free(&menu_manager.menu_list[i]); }
 
-	memset(&menu_manager, 0, sizeof(Menu) * menu_manager.max_menus);
+	if(&menu_manager) memset(&menu_manager, 0, sizeof(Menu) * menu_manager.max_menus);
+
 	slog("Menu Manager closed");
 }
 

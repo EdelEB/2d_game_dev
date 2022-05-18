@@ -421,6 +421,8 @@ void editable_render(Editable* e)
 
 void editable_free(Editable* e)
 {
+	if (!e) return;
+
 	ui_object_free(e->object);
 	ui_draggable_free(e->draggable);
 	ui_sizable_free(e->sizable);
